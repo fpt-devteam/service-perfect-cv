@@ -1,0 +1,57 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Domain", "src\ServicePerfectCV.Domain\ServicePerfectCV.Domain.csproj", "{B3BDB9E8-9631-440B-BB91-C15653416200}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Application", "src\ServicePerfectCV.Application\ServicePerfectCV.Application.csproj", "{6546787C-2FFD-4657-9E2C-AF0BCFB234B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Infrastructure", "src\ServicePerfectCV.Infrastructure\ServicePerfectCV.Infrastructure.csproj", "{135B9725-47A5-4ACA-A284-3AE7CA914F80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.WebApi", "src\ServicePerfectCV.WebApi\ServicePerfectCV.WebApi.csproj", "{3CBF79C3-D493-4B59-9454-ED0817489467}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Tests", "tests\ServicePerfectCV.Tests\ServicePerfectCV.Tests.csproj", "{211E1404-5F3F-4BEA-80F8-62773A923493}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CA13B030-A1CF-4812-BF72-360E8D8D8B28}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{AA128C38-AC16-4CAC-A219-42C10E9DF459}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3BDB9E8-9631-440B-BB91-C15653416200}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3BDB9E8-9631-440B-BB91-C15653416200}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3BDB9E8-9631-440B-BB91-C15653416200}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3BDB9E8-9631-440B-BB91-C15653416200}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6546787C-2FFD-4657-9E2C-AF0BCFB234B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6546787C-2FFD-4657-9E2C-AF0BCFB234B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6546787C-2FFD-4657-9E2C-AF0BCFB234B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6546787C-2FFD-4657-9E2C-AF0BCFB234B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{135B9725-47A5-4ACA-A284-3AE7CA914F80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{135B9725-47A5-4ACA-A284-3AE7CA914F80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{135B9725-47A5-4ACA-A284-3AE7CA914F80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{135B9725-47A5-4ACA-A284-3AE7CA914F80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CBF79C3-D493-4B59-9454-ED0817489467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CBF79C3-D493-4B59-9454-ED0817489467}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CBF79C3-D493-4B59-9454-ED0817489467}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CBF79C3-D493-4B59-9454-ED0817489467}.Release|Any CPU.Build.0 = Release|Any CPU
+		{211E1404-5F3F-4BEA-80F8-62773A923493}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{211E1404-5F3F-4BEA-80F8-62773A923493}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{211E1404-5F3F-4BEA-80F8-62773A923493}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{211E1404-5F3F-4BEA-80F8-62773A923493}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B3BDB9E8-9631-440B-BB91-C15653416200} = {CA13B030-A1CF-4812-BF72-360E8D8D8B28}
+		{6546787C-2FFD-4657-9E2C-AF0BCFB234B8} = {CA13B030-A1CF-4812-BF72-360E8D8D8B28}
+		{135B9725-47A5-4ACA-A284-3AE7CA914F80} = {CA13B030-A1CF-4812-BF72-360E8D8D8B28}
+		{3CBF79C3-D493-4B59-9454-ED0817489467} = {CA13B030-A1CF-4812-BF72-360E8D8D8B28}
+		{211E1404-5F3F-4BEA-80F8-62773A923493} = {AA128C38-AC16-4CAC-A219-42C10E9DF459}
+	EndGlobalSection
+EndGlobal

@@ -52,3 +52,40 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Ignore environment files
+.env
+*.env
+
+# Ignore Docker files
+sqlserver_data/
+init-scripts/
+
+# Ignore build output
+bin/
+obj/
+
+# Ignore Visual Studio folders
+.vscode/
+.vs/
+
+# Ignore user-specific files
+*.user
+*.suo
+
+# Ignore log files
+*.log
+
+# Ignore IDE settings
+.idea/
+*.sln.iml
+
+# Ignore publish output
+wwwroot/
+node_modules/
+
+
+# Ignore macOS system files
+.DS_Store
+
+.template.config
