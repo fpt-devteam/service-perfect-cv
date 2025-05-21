@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
+using System;
+using System.Collections.Generic;
 
 namespace ServicePerfectCV.Infrastructure.Data.Seeding
 {

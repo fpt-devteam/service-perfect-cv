@@ -1,9 +1,9 @@
+using FluentValidation;
+using ServicePerfectCV.Application.DTOs.Order.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FluentValidation;
-using ServicePerfectCV.Application.DTOs.Order.Requests;
 
 namespace ServicePerfectCV.Application.Validators
 {
@@ -27,5 +27,3 @@ namespace ServicePerfectCV.Application.Validators
         }
     }
 }
-
-

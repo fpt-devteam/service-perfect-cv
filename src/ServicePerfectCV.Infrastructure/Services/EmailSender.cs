@@ -1,8 +1,8 @@
+using ServicePerfectCV.Application.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ServicePerfectCV.Application.Interfaces;
 
 namespace ServicePerfectCV.Infrastructure.Services
 {

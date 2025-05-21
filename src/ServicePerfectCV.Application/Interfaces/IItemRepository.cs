@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ServicePerfectCV.Application.DTOs.Order.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Request;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Interfaces
 {

@@ -1,10 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Infrastructure.Data.Configurations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ServicePerfectCV.Domain.Entities;
-using ServicePerfectCV.Infrastructure.Data.Configurations;
 
 namespace ServicePerfectCV.Infrastructure.Data
 {
@@ -31,5 +31,3 @@ namespace ServicePerfectCV.Infrastructure.Data
         }
     }
 }
-
-

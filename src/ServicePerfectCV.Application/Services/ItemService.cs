@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ServicePerfectCV.Application.DTOs.Item.Requests;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Services
 {

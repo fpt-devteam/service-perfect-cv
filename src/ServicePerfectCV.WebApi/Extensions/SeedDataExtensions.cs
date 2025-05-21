@@ -1,10 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using ServicePerfectCV.Infrastructure.Data;
+using ServicePerfectCV.Infrastructure.Data.Seeding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ServicePerfectCV.Infrastructure.Data;
-using ServicePerfectCV.Infrastructure.Data.Seeding;
 
 namespace ServicePerfectCV.WebApi.Extensions
 {

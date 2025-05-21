@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ServicePerfectCV.Application.DTOs.Pagination.Request;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
@@ -9,6 +5,10 @@ using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Repositories.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Repositories
 {

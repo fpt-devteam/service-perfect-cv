@@ -7,6 +7,8 @@ Backend API service for web and mobile applications.
 - [Run Database with Docker Compose](#run-database-with-docker-compose)
 - [Database Migration](#database-migration)
 - [Seed Data](#seed-data)
+- [Documentation](#documentation)
+- [Code Formatting](#code-formatting)
 
 ---
 
@@ -96,3 +98,13 @@ To disable seeding, set Seed.Enabled to false and restart the project.
 Build and run the `api` project should also generate `swagger` spec from Micronaut annotations at:
 
 - Swagger https://localhost:8080/swagger/index.html
+
+## Code Formatting
+
+Before committing and pushing your code to Git, please ensure your code is properly formatted.
+
+To format the code, run the following command in your terminal **at the root folder where the solution (.sln) file is located**:
+
+```bash
+dotnet format
+```

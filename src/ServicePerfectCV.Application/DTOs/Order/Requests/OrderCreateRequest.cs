@@ -1,8 +1,8 @@
+using ServicePerfectCV.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ServicePerfectCV.Domain.Enums;
 
 namespace ServicePerfectCV.Application.DTOs.Order.Requests
 {

@@ -1,6 +1,6 @@
-using System;
 using ServicePerfectCV.Domain.Common;
 using ServicePerfectCV.Domain.Exception;
+using System;
 
 namespace ServicePerfectCV.Domain.Entities
 {

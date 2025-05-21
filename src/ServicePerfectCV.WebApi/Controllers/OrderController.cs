@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ServicePerfectCV.Application.DTOs.Order.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Request;
@@ -9,6 +5,10 @@ using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Services;
 using ServicePerfectCV.Application.Validators;
 using ServicePerfectCV.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.WebApi.Controllers
 {

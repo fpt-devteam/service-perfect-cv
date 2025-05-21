@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Common;
 using ServicePerfectCV.Infrastructure.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Repositories.Common
 {

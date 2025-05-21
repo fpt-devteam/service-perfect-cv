@@ -1,5 +1,5 @@
-using System;
 using ServicePerfectCV.Domain.Entities;
+using System;
 
 namespace ServicePerfectCV.Infrastructure.Data.Seeding
 {

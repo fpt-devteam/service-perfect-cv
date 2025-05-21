@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using ServicePerfectCV.Application.DTOs.Order.Requests;
 using ServicePerfectCV.Application.DTOs.Order.Responses;
@@ -10,6 +6,10 @@ using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Services
 {

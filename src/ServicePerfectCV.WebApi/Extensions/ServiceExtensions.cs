@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +9,10 @@ using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Repositories;
 using ServicePerfectCV.Infrastructure.Repositories.Common;
 using ServicePerfectCV.Infrastructure.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.WebApi.Extensions
 {

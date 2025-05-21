@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using ServicePerfectCV.Application.DTOs;
 using ServicePerfectCV.Application.DTOs.Order.Requests;
 using ServicePerfectCV.Application.DTOs.Order.Responses;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Mappings
 {
