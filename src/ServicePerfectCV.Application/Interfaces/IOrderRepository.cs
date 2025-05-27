@@ -1,4 +1,4 @@
-using ServicePerfectCV.Application.DTOs.Pagination.Request;
+using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Domain.Entities;
 using System;

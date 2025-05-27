@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using ServicePerfectCV.Application.Helpers;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Mappings;
 using ServicePerfectCV.Application.Services;
@@ -25,6 +26,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             // register repositories
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IItemRepository, ItemRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEmailSender, EmailSender>();
 
             // register generic repository
@@ -33,10 +35,11 @@ namespace ServicePerfectCV.WebApi.Extensions
             // register services
             services.AddScoped<OrderService>();
             services.AddScoped<ItemService>();
+            services.AddScoped<AuthService>();
+            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             // register validators
-            // services.AddValidatorsFromAssemblyContaining<OrderCreateRequestValidator>();
-            // services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<OrderCreateRequestValidator>();
 
 

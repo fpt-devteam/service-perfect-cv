@@ -1,0 +1,47 @@
+using AutoMapper;
+using ServicePerfectCV.Application.DTOs.Authentication.Requests;
+using ServicePerfectCV.Application.DTOs.Authentication.Responses;
+using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ServicePerfectCV.Application.Services
+{
+    public class AuthService(IPasswordHasher passwordHasher, IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator, IMapper mapper)
+    {
+
+        public async Task<RegisterResponse> RegisterAsync(RegisterRequest registerRequest)
+        {
+            if (await userRepository.GetByEmailAsync(registerRequest.Email) != null)
+            {
+                throw new ArgumentException("Username already exists");
+            }
+
+            User newUser = mapper.Map<User>(registerRequest);
+            newUser.PasswordHash = passwordHasher.HashPassword(registerRequest.Password);
+
+            await userRepository.CreateAsync(newUser);
+            await userRepository.SaveChangesAsync();
+            return new RegisterResponse
+            {
+                user = newUser,
+                Message = "Register successfully"
+            };
+        }
+
+        public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
+        {
+            var user = await userRepository.GetByEmailAsync(loginRequest.Email);
+            if (user == null)
+                throw new ArgumentException("Invalid credentials!");
+            if (user == null || !passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
+                throw new ArgumentException("Invalid credentials!");
+            return new LoginResponse { Token = jwtTokenGenerator.GenerateToken(user) };
+        }
+
+
+    }
+}

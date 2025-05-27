@@ -14,7 +14,7 @@ namespace ServicePerfectCV.Domain.Entities
         public Enums.OrderStatus Status { get; set; } = Enums.OrderStatus.Pending;
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
-        public virtual ICollection<OrderItem> OrderItems { get; set; } = default!;
+        public virtual IEnumerable<OrderItem> OrderItems { get; set; } = default!;
 
         public Guid UserId { get; set; }
         public virtual User User { get; set; } = default!;

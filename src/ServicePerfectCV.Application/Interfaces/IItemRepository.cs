@@ -1,5 +1,5 @@
 using ServicePerfectCV.Application.DTOs.Order.Requests;
-using ServicePerfectCV.Application.DTOs.Pagination.Request;
+using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Domain.Entities;
 using System;
@@ -13,8 +13,8 @@ namespace ServicePerfectCV.Application.Interfaces
     {
         Task<Item?> GetByIdAsync(Guid id);
         Task<PaginationData<Item>> ListAllAsync(PaginationRequest request);
-        Task<List<Item>> GetByIdsAsync(List<Guid> ids);
-        Task<Guid?> GetFirstInsufficientStockItemIdAsync(
-            List<OrderItemRequest> items);
+        Task<IEnumerable<Item>> GetByIdsAsync(IEnumerable<Guid> ids);
+        // Task<Guid?> FindInsufficientStockIdAsync(Dictionary<Guid, int> itemRequests);
+        Task<Guid?> UpdateQuantityStock(IEnumerable<OrderItemRequest> itemRequests);
     }
 }

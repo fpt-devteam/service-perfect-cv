@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using ServicePerfectCV.Application.Configurations;
 using System;
 using System.Linq;
 
@@ -7,50 +9,28 @@ namespace ServicePerfectCV.WebApi.Extensions
 {
     public static class CorsExtensions
     {
-        public static IServiceCollection AddConfiguredCors(this IServiceCollection services, IConfiguration configuration, string policyName = "DevelopmentPolicy")
+        public static IServiceCollection AddConfiguredCors(this IServiceCollection services, IConfiguration configuration)
         {
-            // Retrieve CORS configuration from appsettings.json or appsettings.Development.json
-            var corsSettings = configuration.GetSection("Cors");
-
-            var allowedOrigins = corsSettings.GetSection("AllowedOrigins").Get<string[]>();
-            var allowedMethods = corsSettings.GetSection("AllowedMethods").Get<string[]>();
-            var allowedHeaders = corsSettings.GetSection("AllowedHeaders").Get<string[]>();
-            var exposedHeaders = corsSettings.GetSection("ExposedHeaders").Get<string[]>();
-            var allowCredentials = corsSettings.GetValue<bool>("AllowCredentials");
-            var preflightMaxAge = corsSettings.GetValue<int>("PreflightMaxAge");
-
+            var corsOptions = configuration
+          .GetSection("CorsSettings")
+          .Get<CorsSettings>()
+          ?? throw new InvalidOperationException("Missing CorsSettings");
             services.AddCors(options =>
             {
-                options.AddPolicy(policyName, builder =>
+                options.AddPolicy("AppCorsPolicy", policyBuilder =>
                 {
-                    // Configure allowed origins
-                    if (allowedOrigins!.Contains("*"))
-                        builder.AllowAnyOrigin();
+                    policyBuilder
+                        .WithOrigins(corsOptions.AllowedOrigins ?? Array.Empty<string>())
+                        .WithHeaders(corsOptions.AllowedHeaders ?? Array.Empty<string>())
+                        .WithMethods(corsOptions.AllowedMethods ?? new[] { "GET", "POST" })
+                        .WithExposedHeaders(corsOptions.ExposedHeaders ?? Array.Empty<string>());
+
+                    if (corsOptions.AllowCredentials)
+                        policyBuilder.AllowCredentials();
                     else
-                        builder.WithOrigins(allowedOrigins!);
+                        policyBuilder.DisallowCredentials();
 
-                    // Configure allowed methods
-                    if (allowedMethods!.Contains("*"))
-                        builder.AllowAnyMethod();
-                    else
-                        builder.WithMethods(allowedMethods!);
-
-                    // Configure allowed headers
-                    if (allowedHeaders!.Contains("*"))
-                        builder.AllowAnyHeader();
-                    else
-                        builder.WithHeaders(allowedHeaders!);
-
-                    // Configure exposed headers if available
-                    if (exposedHeaders != null && exposedHeaders.Length > 0)
-                        builder.WithExposedHeaders(exposedHeaders);
-
-                    // Configure allow credentials
-                    if (allowCredentials)
-                        builder.AllowCredentials();
-
-                    // Configure preflight max age
-                    builder.SetPreflightMaxAge(TimeSpan.FromSeconds(preflightMaxAge));
+                    policyBuilder.SetPreflightMaxAge(TimeSpan.FromSeconds(corsOptions.PreflightMaxAge));
                 });
             });
 

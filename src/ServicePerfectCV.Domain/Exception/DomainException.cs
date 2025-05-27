@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Domain.Exception
 {
-    public class DomainException : System.Exception
+    public class DomainException(string message) : System.Exception(message)
     {
-        public DomainException(string message) : base(message) { }
     }
 }

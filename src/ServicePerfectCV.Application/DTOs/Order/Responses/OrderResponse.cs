@@ -12,6 +12,6 @@ namespace ServicePerfectCV.Application.DTOs.Order.Responses
         public Guid UserId { get; set; }
         public string Status { get; set; } = default!;
         public DateTime OrderDate { get; set; }
-        public List<OrderItemResponse> Items { get; set; } = default!;
+        public IEnumerable<OrderItemResponse> Items { get; set; } = default!;
     }
 }

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ServicePerfectCV.Application.DTOs.Pagination.Request;
+using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
@@ -12,11 +12,8 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Repositories
 {
-    public class OrderRepository : CrudRepositoryBase<Order, Guid>, IOrderRepository
+    public class OrderRepository(ApplicationDbContext context) : CrudRepositoryBase<Order, Guid>(context), IOrderRepository
     {
-        public OrderRepository(ApplicationDbContext context) : base(context)
-        {
-        }
         public async Task<Order?> GetByIdAsync(Guid id)
         {
 

@@ -9,16 +9,12 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Services
 {
-    public class ItemService
+    public class ItemService(IItemRepository itemRepository)
     {
-        private readonly IItemRepository _itemRepository;
-        public ItemService(IItemRepository itemRepository)
-        {
-            _itemRepository = itemRepository;
-        }
+
         public async Task UpdateItemAsync(Guid itemId, ItemUpdateRequest request)
         {
-            var item = await _itemRepository.GetByIdAsync(itemId) ??
+            var item = await itemRepository.GetByIdAsync(itemId) ??
                 throw new NotFoundException<Item>();
             if (request.Quantity is null && request.Price is null)
                 throw new BadRequestException<Item>("At least one of the fields must be provided.");
@@ -29,17 +25,17 @@ namespace ServicePerfectCV.Application.Services
             item.Price = request.Price ?? item.Price;
             item.Quantity = request.Quantity ?? item.Quantity;
             item.UpdatedAt = DateTime.UtcNow;
-            await _itemRepository.UpdateAsync(item);
-            await _itemRepository.SaveChangesAsync();
+            await itemRepository.UpdateAsync(item);
+            await itemRepository.SaveChangesAsync();
         }
 
         public async Task DeleteItemAsync(Guid id)
         {
-            var item = await _itemRepository.GetByIdAsync(id) ??
+            var item = await itemRepository.GetByIdAsync(id) ??
                 throw new NotFoundException<Item>();
             item.DeletedAt = DateTime.UtcNow;
-            await _itemRepository.UpdateAsync(item);
-            await _itemRepository.SaveChangesAsync();
+            await itemRepository.UpdateAsync(item);
+            await itemRepository.SaveChangesAsync();
         }
     }
 }
