@@ -1,3 +1,4 @@
+using ServicePerfectCV.Domain.Common;
 using ServicePerfectCV.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Domain.Entities
 {
-    public class User
+    public class User : IEntity<Guid>
     {
         public Guid Id { get; set; }
         public string Email { get; set; } = default!;

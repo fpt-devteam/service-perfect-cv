@@ -1,6 +1,7 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using ServicePerfectCV.Application.DTOs.Order.Requests;
-using ServicePerfectCV.Application.DTOs.Pagination.Request;
+using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
@@ -8,17 +9,14 @@ using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Repositories.Common;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Repositories
 {
-    public class ItemRepository : CrudRepositoryBase<Item, Guid>, IItemRepository
+    public class ItemRepository(ApplicationDbContext context) : CrudRepositoryBase<Item, Guid>(context), IItemRepository
     {
-        public ItemRepository(ApplicationDbContext context) : base(context)
-        {
-        }
-
         public async Task<Item?> GetByIdAsync(Guid id)
         {
             var item = await _context.Items.Where(x => x.DeletedAt == null)
@@ -43,24 +41,26 @@ namespace ServicePerfectCV.Infrastructure.Repositories
 
         }
 
-        public async Task<Guid?> GetFirstInsufficientStockItemIdAsync(
-            List<OrderItemRequest> items)
+        public async Task<Guid?> UpdateQuantityStock(IEnumerable<OrderItemRequest> itemRequests)
         {
-            var ids = items.Select(x => x.ItemId).ToList();
+            var itemIds = itemRequests.Select(r => r.ItemId).ToList();
             var dbItems = await _context.Items
-                                        .Where(i => ids.Contains(i.Id) && i.DeletedAt == null)
-                                        .ToListAsync();
+                                      .Where(i => itemIds.Contains(i.Id) && i.DeletedAt == null)
+                                      .ToDictionaryAsync(i => i.Id);
 
-            foreach (var req in items)
+            foreach (var req in itemRequests)
             {
-                var db = dbItems.FirstOrDefault(i => i.Id == req.ItemId);
-                if (db != null && db.Quantity < req.Quantity)
+                if (!dbItems.TryGetValue(req.ItemId, out var dbItem) || dbItem.Quantity < req.Quantity)
                     return req.ItemId;
+
+                dbItem.Quantity -= req.Quantity;
+                _context.Items.Update(dbItem);
             }
+
             return null;
         }
 
-        public async Task<List<Item>> GetByIdsAsync(List<Guid> ids)
+        public async Task<IEnumerable<Item>> GetByIdsAsync(IEnumerable<Guid> ids)
         {
             var items = await _context.Items
                 .Where(x => ids.Contains(x.Id) && x.DeletedAt == null)
@@ -68,6 +68,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
 
             return items;
         }
+
     }
 
 }

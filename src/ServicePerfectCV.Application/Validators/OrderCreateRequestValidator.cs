@@ -13,7 +13,7 @@ namespace ServicePerfectCV.Application.Validators
         {
             RuleFor(x => x.Items)
                 .NotEmpty().NotNull()
-                .Must(items => items.Count > 0).WithMessage("At least one item is required.");
+                .Must(items => items.Count() > 0).WithMessage("At least one item is required.");
             RuleForEach(x => x.Items).ChildRules(child =>
             {
                 child.RuleFor(i => i.ItemId)

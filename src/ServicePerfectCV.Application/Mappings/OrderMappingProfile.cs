@@ -24,15 +24,13 @@ namespace ServicePerfectCV.Application.Mappings
 
             CreateMap<OrderCreateRequest, Order>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => Guid.NewGuid()))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => OrderStatus.Pending))
             .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.UtcNow));
 
             CreateMap<OrderItem, OrderItemResponse>()
             .ForMember(dest => dest.ItemId, opt => opt.MapFrom(src => src.ItemId))
             .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity));
-            // .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.TotalPrice))
-            // .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.TotalPrice == default ? src.TotalPrice * src.Quantity : src.TotalPrice));
 
             CreateMap<OrderItemRequest, OrderItem>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))

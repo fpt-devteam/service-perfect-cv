@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ServicePerfectCV.Application.DTOs.Pagination.Request
+namespace ServicePerfectCV.Application.DTOs.Pagination.Requests
 {
     public class PaginationRequest
     {
