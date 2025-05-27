@@ -41,42 +41,6 @@ namespace ServicePerfectCV.WebApi.Extensions
                     }
                 };
 
-                // options.Events = new JwtBearerEvents
-                //    {
-                //        OnTokenValidated = async context =>
-                //        {
-                //            var userRepository = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
-
-                //            var userId = context.Principal!.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                //            var jit = context.Principal.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
-                //            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(jit))
-                //            {
-                //                context.Fail("Missing claims");
-                //                return;
-                //            }
-
-                //            var lastLogout = await userRepository.GetLastLogoutAsync(Guid.Parse(userId));
-                //            if (lastLogout.HasValue)
-                //            {
-                //                var iatClaim = context.Principal.FindFirst(JwtRegisteredClaimNames.Iat)?.Value;
-                //                if (iatClaim != null && long.TryParse(iatClaim, out long iatUnix))
-                //                {
-                //                    var tokenIssuedAt = DateTimeOffset.FromUnixTimeSeconds(iatUnix).UtcDateTime;
-                //                    if (tokenIssuedAt < lastLogout.Value)
-                //                    {
-                //                        context.Fail("Token has been revoked due to logout from all devices");
-                //                    }
-                //                }
-                //            }
-
-                //            var blacklistService = context.HttpContext.RequestServices.GetRequiredService<ITokenBlacklistedStore>();
-                //            if (await blacklistService.IsBlacklistedAsync(userId, jit))
-                //            {
-                //                context.Fail("Token has been revoked");
-                //            }
-                //        }
-                //    };
-
             });
         }
     }

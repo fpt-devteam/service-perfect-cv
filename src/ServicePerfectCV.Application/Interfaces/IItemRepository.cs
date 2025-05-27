@@ -12,7 +12,7 @@ namespace ServicePerfectCV.Application.Interfaces
     public interface IItemRepository : IGenericRepository<Item, Guid>
     {
         Task<Item?> GetByIdAsync(Guid id);
-        Task<PaginationData<Item>> ListAllAsync(PaginationRequest request);
+        Task<PaginationData<Item>> ListAsync(PaginationRequest request);
         Task<IEnumerable<Item>> GetByIdsAsync(IEnumerable<Guid> ids);
         // Task<Guid?> FindInsufficientStockIdAsync(Dictionary<Guid, int> itemRequests);
         Task<Guid?> UpdateQuantityStock(IEnumerable<OrderItemRequest> itemRequests);

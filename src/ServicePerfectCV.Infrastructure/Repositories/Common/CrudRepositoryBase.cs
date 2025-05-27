@@ -29,8 +29,6 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
             return entity;
         }
 
-
-
         public virtual async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
