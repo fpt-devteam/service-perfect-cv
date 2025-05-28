@@ -35,9 +35,9 @@ namespace ServicePerfectCV.Application.Services
 
         public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
         {
-            User? user = await userRepository.GetByEmailAsync(loginRequest.Email) ?? throw new NotFoundException<User>(); // TODO: replace with custom exception
+            User? user = await userRepository.GetByEmailAsync(loginRequest.Email) ?? throw new DomainException(UserErrors.NotFound); // TODO: replace with custom exception
             if (!passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
-                throw new ArgumentException("Invalid credentials!"); // TODO: replace with custom exception
+                throw new DomainException(UserErrors.PasswordInvalid); // TODO: replace with custom exception
             return new LoginResponse { Token = jwtTokenGenerator.GenerateToken(user) };
         }
 
