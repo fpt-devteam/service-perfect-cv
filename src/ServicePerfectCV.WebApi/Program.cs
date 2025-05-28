@@ -7,7 +7,7 @@ using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.Validators;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.WebApi.Extensions;
-using ServicePerfectCV.WebApi.Middlewares;
+using ServicePerfectCV.WebApi.Middleware;
 
 namespace ServicePerfectCV.WebApi
 {
@@ -41,7 +41,7 @@ namespace ServicePerfectCV.WebApi
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
-            app.UseMiddleware<ExceptionMiddleware>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             await app.Services.SeedDatabaseAsync();
 
             // Configure the HTTP request pipeline.

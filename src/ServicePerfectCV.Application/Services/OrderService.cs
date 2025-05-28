@@ -22,21 +22,14 @@ namespace ServicePerfectCV.Application.Services
         {
             var invalidItemId = await GetFirstInvalidItemIdAsync(request.Items.ToList().Select(item => item.ItemId));
             if (invalidItemId != Guid.Empty)
-                throw new NotFoundException<Item>();
-
-            // var insufficientStockItemId = await _itemRepository
-            // .FindInsufficientStockIdAsync(request.Items.ToDictionary(
-            //     item => item.ItemId,
-            //     item => item.Quantity
-            // ));
+                throw new DomainException(OrderErrors.NotFound);
 
             var insufficientStockItemId = await itemRepository
                 .UpdateQuantityStock(request.Items);
             if (insufficientStockItemId.HasValue)
             {
-                throw new BadRequestException<Item>(
-                    $"Insufficient stock. " +
-                    "The quantity must be less than or equal to the available stock.");
+                throw new DomainException(ItemErrors.InsufficientStock);
+
             }
 
             var orderItems = mapper.Map<IEnumerable<OrderItem>>(request.Items);
@@ -63,7 +56,7 @@ namespace ServicePerfectCV.Application.Services
 
         public async Task<OrderResponse> GetByIdAsync(Guid orderId)
         {
-            var order = await orderRepository.GetByIdAsync(orderId) ?? throw new NotFoundException<Item>();
+            var order = await orderRepository.GetByIdAsync(orderId) ?? throw new DomainException(OrderErrors.NotFound);
             var response = mapper.Map<OrderResponse>(order);
             return response;
         }

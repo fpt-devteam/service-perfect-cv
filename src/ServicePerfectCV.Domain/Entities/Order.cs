@@ -1,6 +1,5 @@
 using Microsoft.VisualBasic;
 using ServicePerfectCV.Domain.Common;
-using ServicePerfectCV.Domain.Exception;
 using System;
 using System.Collections.Generic;
 using System.Linq;

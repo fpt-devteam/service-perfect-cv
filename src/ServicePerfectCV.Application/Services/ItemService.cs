@@ -15,13 +15,13 @@ namespace ServicePerfectCV.Application.Services
         public async Task UpdateItemAsync(Guid itemId, ItemUpdateRequest request)
         {
             var item = await itemRepository.GetByIdAsync(itemId) ??
-                throw new NotFoundException<Item>();
+                throw new DomainException(ItemErrors.NotFound);
             if (request.Quantity is null && request.Price is null)
-                throw new BadRequestException<Item>("At least one of the fields must be provided.");
+                throw new DomainException(ItemErrors.NotFound);
             if (request.Quantity < 0)
-                throw new BadRequestException<Item>("Quantity must be greater than or equal to 0.");
+                throw new DomainException(ItemErrors.NotFound);
             if (request.Price < 0)
-                throw new BadRequestException<Item>("Price must be greater than or equal to 0.");
+                throw new DomainException(ItemErrors.NotFound);
             item.Price = request.Price ?? item.Price;
             item.Quantity = request.Quantity ?? item.Quantity;
             item.UpdatedAt = DateTime.UtcNow;
@@ -32,7 +32,7 @@ namespace ServicePerfectCV.Application.Services
         public async Task DeleteItemAsync(Guid id)
         {
             var item = await itemRepository.GetByIdAsync(id) ??
-                throw new NotFoundException<Item>();
+                throw new DomainException(ItemErrors.NotFound);
             item.DeletedAt = DateTime.UtcNow;
             await itemRepository.UpdateAsync(item);
             await itemRepository.SaveChangesAsync();
