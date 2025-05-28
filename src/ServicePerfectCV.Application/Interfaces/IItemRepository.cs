@@ -14,7 +14,6 @@ namespace ServicePerfectCV.Application.Interfaces
         Task<Item?> GetByIdAsync(Guid id);
         Task<PaginationData<Item>> ListAsync(PaginationRequest request);
         Task<IEnumerable<Item>> GetByIdsAsync(IEnumerable<Guid> ids);
-        // Task<Guid?> FindInsufficientStockIdAsync(Dictionary<Guid, int> itemRequests);
         Task<Guid?> UpdateQuantityStock(IEnumerable<OrderItemRequest> itemRequests);
     }
 }

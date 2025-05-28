@@ -2,7 +2,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ServicePerfectCV.Application.Helpers;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Mappings;
 using ServicePerfectCV.Application.Services;
