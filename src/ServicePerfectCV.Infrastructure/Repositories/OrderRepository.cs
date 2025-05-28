@@ -23,7 +23,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<PaginationData<Order>> ListAllAsync(PaginationRequest request)
+        public async Task<PaginationData<Order>> ListAsync(PaginationRequest request)
         {
             var query = await _context.Orders.Include(x => x.OrderItems)
                                                 .ThenInclude(x => x.Item).ToListAsync();

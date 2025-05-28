@@ -50,7 +50,6 @@ namespace ServicePerfectCV.Application.Services
         {
             var existingItems = await itemRepository.GetByIdsAsync(requestedIds);
             var existingIds = existingItems.Select(item => item.Id).ToList();
-
             return requestedIds.Except(existingIds).FirstOrDefault();
         }
 
@@ -61,9 +60,9 @@ namespace ServicePerfectCV.Application.Services
             return response;
         }
 
-        public async Task<PaginationData<OrderResponse>> ListAllAsync(PaginationRequest request)
+        public async Task<PaginationData<OrderResponse>> ListAsync(PaginationRequest request)
         {
-            var paginationData = await orderRepository.ListAllAsync(request);
+            var paginationData = await orderRepository.ListAsync(request);
             var response = new PaginationData<OrderResponse>
             {
                 Total = paginationData.Total,

@@ -17,7 +17,6 @@ namespace ServicePerfectCV.WebApi.Controllers
         [HttpPut("{itemId}")]
         public async Task<IActionResult> UpdateAsync(Guid itemId, [FromBody] ItemUpdateRequest request)
         {
-
             await itemService.UpdateItemAsync(itemId, request);
             return Ok();
         }

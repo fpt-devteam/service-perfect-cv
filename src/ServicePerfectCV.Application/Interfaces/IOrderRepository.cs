@@ -11,6 +11,6 @@ namespace ServicePerfectCV.Application.Interfaces
     public interface IOrderRepository : IGenericRepository<Order, Guid>
     {
         Task<Order?> GetByIdAsync(Guid id);
-        Task<PaginationData<Order>> ListAllAsync(PaginationRequest request);
+        Task<PaginationData<Order>> ListAsync(PaginationRequest request);
     }
 }

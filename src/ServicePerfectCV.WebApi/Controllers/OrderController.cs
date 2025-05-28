@@ -40,10 +40,10 @@ namespace ServicePerfectCV.WebApi.Controllers
         }
 
         [HttpPost("list")]
-        public async Task<IActionResult> ListAll([FromBody] PaginationRequest request)
+        public async Task<IActionResult> List([FromBody] PaginationRequest request)
         {
 
-            var orders = await orderService.ListAllAsync(request);
+            var orders = await orderService.ListAsync(request);
             return Ok(orders);
         }
 
