@@ -23,13 +23,6 @@ namespace ServicePerfectCV.Application.Services
             var invalidItemId = await GetFirstInvalidItemIdAsync(request.Items.ToList().Select(item => item.ItemId));
             if (invalidItemId != Guid.Empty)
                 throw new NotFoundException<Item>();
-
-            // var insufficientStockItemId = await _itemRepository
-            // .FindInsufficientStockIdAsync(request.Items.ToDictionary(
-            //     item => item.ItemId,
-            //     item => item.Quantity
-            // ));
-
             var insufficientStockItemId = await itemRepository
                 .UpdateQuantityStock(request.Items);
             if (insufficientStockItemId.HasValue)
@@ -57,7 +50,6 @@ namespace ServicePerfectCV.Application.Services
         {
             var existingItems = await itemRepository.GetByIdsAsync(requestedIds);
             var existingIds = existingItems.Select(item => item.Id).ToList();
-
             return requestedIds.Except(existingIds).FirstOrDefault();
         }
 
@@ -68,9 +60,9 @@ namespace ServicePerfectCV.Application.Services
             return response;
         }
 
-        public async Task<PaginationData<OrderResponse>> ListAllAsync(PaginationRequest request)
+        public async Task<PaginationData<OrderResponse>> ListAsync(PaginationRequest request)
         {
-            var paginationData = await orderRepository.ListAllAsync(request);
+            var paginationData = await orderRepository.ListAsync(request);
             var response = new PaginationData<OrderResponse>
             {
                 Total = paginationData.Total,

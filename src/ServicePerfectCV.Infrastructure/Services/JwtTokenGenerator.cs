@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.DTOs.Authentication;
@@ -14,29 +15,26 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Services
 {
-    public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerator
+    public class JwtTokenGenerator(IOptions<JwtSettings> jwtSettings) : IJwtTokenGenerator
     {
+        private readonly JwtSettings _jwtSettings = jwtSettings.Value ?? throw new ArgumentNullException(nameof(jwtSettings));
 
         public string GenerateToken(User user)
         {
-            var jwtSettings = configuration
-         .GetSection("JwtSettings")
-         .Get<JwtSettings>()
-         ?? throw new InvalidOperationException("Missing JwtSettings");
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
+            var key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Issuer = jwtSettings.Issuer,
-                Audience = jwtSettings.Audience,
+                Issuer = _jwtSettings.Issuer,
+                Audience = _jwtSettings.Audience,
                 Subject = new ClaimsIdentity(
                 [
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Role, user.Role.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 ]),
-                Expires = DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings.ExpireMinutes.ToString())),
+                Expires = DateTime.UtcNow.AddMinutes(int.Parse(_jwtSettings.ExpireMinutes.ToString())),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

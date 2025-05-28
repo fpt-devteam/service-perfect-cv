@@ -1,6 +1,7 @@
 using AutoMapper;
 using ServicePerfectCV.Application.DTOs.Authentication.Requests;
 using ServicePerfectCV.Application.DTOs.Authentication.Responses;
+using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
 using System;
@@ -27,18 +28,16 @@ namespace ServicePerfectCV.Application.Services
             await userRepository.SaveChangesAsync();
             return new RegisterResponse
             {
-                user = newUser,
+                User = newUser,
                 Message = "Register successfully"
             };
         }
 
         public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
         {
-            var user = await userRepository.GetByEmailAsync(loginRequest.Email);
-            if (user == null)
-                throw new ArgumentException("Invalid credentials!");
-            if (user == null || !passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
-                throw new ArgumentException("Invalid credentials!");
+            User? user = await userRepository.GetByEmailAsync(loginRequest.Email) ?? throw new NotFoundException<User>(); // TODO: replace with custom exception
+            if (!passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
+                throw new ArgumentException("Invalid credentials!"); // TODO: replace with custom exception
             return new LoginResponse { Token = jwtTokenGenerator.GenerateToken(user) };
         }
 

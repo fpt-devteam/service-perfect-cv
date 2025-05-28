@@ -26,7 +26,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
 
         }
 
-        public async Task<PaginationData<Item>> ListAllAsync(PaginationRequest request)
+        public async Task<PaginationData<Item>> ListAsync(PaginationRequest request)
         {
             var query = await _context.Items.Where(x => x.DeletedAt == null).ToListAsync();
             var totalCount = query.Count;
@@ -65,7 +65,6 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             var items = await _context.Items
                 .Where(x => ids.Contains(x.Id) && x.DeletedAt == null)
                 .ToListAsync();
-
             return items;
         }
 

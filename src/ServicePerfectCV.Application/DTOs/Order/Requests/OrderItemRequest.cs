@@ -9,7 +9,6 @@ namespace ServicePerfectCV.Application.DTOs.Order.Requests
     public class OrderItemRequest
     {
         [Required]
-
         public Guid ItemId { get; set; }
         [Required]
         public int Quantity { get; set; }

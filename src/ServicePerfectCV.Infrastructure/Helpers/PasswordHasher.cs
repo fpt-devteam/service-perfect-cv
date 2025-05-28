@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ServicePerfectCV.Application.Helpers
+namespace ServicePerfectCV.Infrastructure.Helpers
 {
     public class PasswordHasher : IPasswordHasher
     {

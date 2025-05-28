@@ -8,7 +8,7 @@ namespace ServicePerfectCV.Application.DTOs.Authentication.Responses
 {
     public class RegisterResponse
     {
-        public User user { get; set; } = default!;
+        public User User { get; set; } = default!;
         public string Message { get; set; } = default!;
     }
 }

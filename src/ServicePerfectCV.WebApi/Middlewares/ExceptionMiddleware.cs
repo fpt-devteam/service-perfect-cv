@@ -35,8 +35,6 @@ namespace ServicePerfectCV.WebApi.Middlewares
         {
             // Create ErrorResponse
             var errorResponse = ErrorResponse.FromException(context, exception);
-
-
             var json = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
