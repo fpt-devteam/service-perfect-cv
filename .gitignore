@@ -89,3 +89,4 @@ node_modules/
 .DS_Store
 
 .template.config
+.fake
