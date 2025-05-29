@@ -19,6 +19,7 @@ namespace ServicePerfectCV.WebApi
             Env.Load();
             var builder = WebApplication.CreateBuilder(args);
 
+            // Setup configuration sources.
             builder.Configuration
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
@@ -26,13 +27,15 @@ namespace ServicePerfectCV.WebApi
 
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection("CorsSettings"));
+            builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection("RedisSettings"));
             builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("ConnectionStrings"));
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            RedisExtensions.AddRedis(builder.Services, builder.Configuration);
             CorsExtensions.AddConfiguredCors(builder.Services, builder.Configuration);
             builder.Services.AddControllers();
-            builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters()
-                .AddValidatorsFromAssemblyContaining<OrderCreateRequestValidator>();
+
             builder.Services.ConfigureServices();
             builder.Services.AddAuthorizationPolicies(builder.Configuration);
 

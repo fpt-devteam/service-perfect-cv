@@ -42,6 +42,7 @@ namespace ServicePerfectCV.WebApi.Extensions
 
             // register validators
             services.AddValidatorsFromAssemblyContaining<OrderCreateRequestValidator>();
+            services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
 
 
 

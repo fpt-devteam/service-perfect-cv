@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Configurations
 {
-    public class DatabaseSettings
+    public class RedisSettings
     {
-        public string DefaultConnection { get; init; } = default!;
+        public string ConnectionString { get; init; } = default!;
+        public string InstanceName { get; init; } = default!;
     }
 }

@@ -14,9 +14,22 @@ services:
     networks:
       - fpt-network
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    hostname: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    networks:
+      - fpt-network
+
 networks:
   fpt-network:
     name: fpt-network
 
 volumes:
   db-data:
+  redis-data:

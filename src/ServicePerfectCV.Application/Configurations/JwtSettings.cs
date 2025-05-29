@@ -7,9 +7,9 @@ namespace ServicePerfectCV.Application.Configurations
 {
     public class JwtSettings
     {
-        public string SecretKey { get; set; } = default!;
-        public string Issuer { get; set; } = default!;
-        public string Audience { get; set; } = default!;
-        public int ExpireMinutes { get; set; }
+        public string SecretKey { get; init; } = default!;
+        public string Issuer { get; init; } = default!;
+        public string Audience { get; init; } = default!;
+        public int ExpireMinutes { get; init; }
     }
 }
