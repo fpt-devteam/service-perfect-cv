@@ -23,8 +23,8 @@ namespace ServicePerfectCV.Application.Exceptions
             Message: "User is not authenticated.",
             HttpStatusCode.Unauthorized);
 
-        public static readonly Error Fobbidden = new(
-        Code: "Fobbidden",
+        public static readonly Error Forbidden = new(
+        Code: "Forbidden",
         Message: "You do not have permission to access this resource.",
         HttpStatusCode.Forbidden);
     }

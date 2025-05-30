@@ -41,7 +41,7 @@ namespace ServicePerfectCV.Application.Services
                 UserId = user.Id.ToString(),
                 Role = user.Role.ToString()
             });
-            await refreshTokenService.SaveAsync(tokens.Item2.ToString(), user.Id.ToString());
+            await refreshTokenService.SaveAsync(tokens.Item2, user.Id.ToString());
             return new LoginResponse
             {
                 AccessToken = tokens.Item1,
