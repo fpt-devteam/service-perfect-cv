@@ -16,18 +16,15 @@ using System.Threading.Tasks;
 namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
-    [Route("api/orders")]
+    [Route("api/orders")]   
     public class OrdersController(OrderService orderService) : ControllerBase
     {
-        [Authorize(Roles = "User")]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] OrderCreateRequest request)
         {
-
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? throw new UnauthorizedAccessException("User is not authenticated.");
-
-            request.UserId = Guid.Parse(userIdClaim.Value);
-            var orderId = await orderService.CreateAsync(request);
+            Guid userIdClaim = Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out Guid id) ? id : throw new DomainException(AuthErrors.UserNotAuthenticated);
+            var orderId = await orderService.CreateAsync(userIdClaim, request);
             return Created($"/api/orders/{orderId}", new { orderId });
         }
 

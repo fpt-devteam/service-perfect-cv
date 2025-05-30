@@ -18,7 +18,7 @@ namespace ServicePerfectCV.Application.Services
     {
 
 
-        public async Task<Guid> CreateAsync(OrderCreateRequest request)
+        public async Task<Guid> CreateAsync(Guid userId, OrderCreateRequest request)
         {
             var invalidItemId = await GetFirstInvalidItemIdAsync(request.Items.ToList().Select(item => item.ItemId));
             if (invalidItemId != Guid.Empty)
@@ -31,10 +31,10 @@ namespace ServicePerfectCV.Application.Services
                 throw new DomainException(ItemErrors.InsufficientStock);
 
             }
-
             var orderItems = mapper.Map<IEnumerable<OrderItem>>(request.Items);
 
             var order = mapper.Map<Order>(request);
+            order.UserId = userId;
             order.OrderItems = orderItems;
             await orderRepository.CreateAsync(order);
 

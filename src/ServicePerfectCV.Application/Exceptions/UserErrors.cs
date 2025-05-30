@@ -12,10 +12,10 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "UserNotFound",
             Message: "User not found.",
             HttpStatusCode.NotFound);
+        public static readonly Error EmailAlreadyExists = new(
+            Code: "EmailAlreadyExists",
+            Message: "Email already exists.",
+            HttpStatusCode.Conflict);
 
-        public static readonly Error PasswordInvalid = new(
-            Code: "PasswordInvalid",
-            Message: "Invalid password.",
-            HttpStatusCode.BadRequest);
     }
 }

@@ -9,9 +9,9 @@ namespace ServicePerfectCV.Application.DTOs.Authentication.Requests
     public class LoginRequest
     {
         [Required]
-        public string Email { get; set; } = default!;
+        public string Email { get; set; } = null!;
         [Required]
-        public string Password { get; set; } = default!;
+        public string Password { get; set; } = null!;
 
     }
 }
