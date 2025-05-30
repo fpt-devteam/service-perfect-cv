@@ -1,3 +1,4 @@
+using ServicePerfectCV.Application.DTOs.Authentication;
 using ServicePerfectCV.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -6,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Interfaces
 {
-    public interface IJwtTokenGenerator
+    public interface ITokenGenerator
     {
-        string GenerateToken(User user);
+        (string, string) GenerateToken(ClaimsAccessToken claimsAccessToken);
     }
 }

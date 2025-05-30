@@ -24,7 +24,6 @@ namespace ServicePerfectCV.Application.Mappings
 
             CreateMap<OrderCreateRequest, Order>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => OrderStatus.Pending))
             .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.UtcNow));
 

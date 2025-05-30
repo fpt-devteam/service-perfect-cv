@@ -2,12 +2,16 @@
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.Validators;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.WebApi.Extensions;
 using ServicePerfectCV.WebApi.Middleware;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace ServicePerfectCV.WebApi
 {
@@ -26,14 +30,16 @@ namespace ServicePerfectCV.WebApi
             .AddEnvironmentVariables();
 
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+            builder.Services.Configure<RefreshTokenConfiguration>(builder.Configuration.GetSection("RefreshToken"));
             builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection("CorsSettings"));
             builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection("RedisSettings"));
             builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("ConnectionStrings"));
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            RedisExtensions.AddRedis(builder.Services, builder.Configuration);
-            CorsExtensions.AddConfiguredCors(builder.Services, builder.Configuration);
+
+            builder.Services.AddRedis(builder.Configuration);
+            builder.Services.AddConfiguredCors(builder.Configuration);
             builder.Services.AddControllers();
 
             builder.Services.ConfigureServices();
@@ -50,14 +56,15 @@ namespace ServicePerfectCV.WebApi
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                // System.Console.WriteLine("hihi");
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
             // app.UseExceptionHandling();
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

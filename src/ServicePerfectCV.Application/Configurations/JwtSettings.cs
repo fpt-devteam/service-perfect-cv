@@ -10,6 +10,6 @@ namespace ServicePerfectCV.Application.Configurations
         public string SecretKey { get; init; } = default!;
         public string Issuer { get; init; } = default!;
         public string Audience { get; init; } = default!;
-        public int ExpireMinutes { get; init; }
+        public int Expire { get; init; }
     }
 }

@@ -13,6 +13,7 @@ using ServicePerfectCV.Infrastructure.Repositories.Common;
 using ServicePerfectCV.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,6 +24,7 @@ namespace ServicePerfectCV.WebApi.Extensions
         public static void ConfigureServices(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(OrderMappingProfile));
+            services.AddAutoMapper(typeof(AuthMappingProfile));
 
             // register repositories
             services.AddScoped<IOrderRepository, OrderRepository>();
@@ -37,15 +39,15 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<OrderService>();
             services.AddScoped<ItemService>();
             services.AddScoped<AuthService>();
-            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<ICacheService, RedisCacheService>();
+            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            services.AddScoped<JwtSecurityTokenHandler>();
 
             // register validators
             services.AddValidatorsFromAssemblyContaining<OrderCreateRequestValidator>();
             services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
-
-
-
         }
     }
 }
