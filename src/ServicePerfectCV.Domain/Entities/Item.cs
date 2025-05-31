@@ -1,22 +1,16 @@
 using ServicePerfectCV.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Domain.Entities
 {
     public class Item : IEntity<Guid>
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public string Name { get; set; } = default!;
-        public decimal Price { get; set; }
-        public int Quantity { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public required string Name { get; set; }
+        public required decimal Price { get; set; }
+        public required int Quantity { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public virtual ICollection<OrderItem> OrderItems { get; set; } = default!;
-
+        public virtual ICollection<OrderItem> OrderItems { get; set; } = null!;
+        public Guid Id { get; set; } = Guid.NewGuid();
     }
-
 }
