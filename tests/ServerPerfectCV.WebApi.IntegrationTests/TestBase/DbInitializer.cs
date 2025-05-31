@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Bogus;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
@@ -10,13 +8,12 @@ namespace ServerPerfectCV.WebApi.IntegrationTests.TestBase
     public static class DbInitializer
     {
         // We will use the Faker instance in the methods that create test data
-        
         public static void InitializeDbForTests(ApplicationDbContext context)
         {
             // Ensures database is created
             context.Database.EnsureCreated();
         }
-        
+
         public static void ResetDatabase(ApplicationDbContext context)
         {
             context.OrderItems.RemoveRange(context.OrderItems);
@@ -25,10 +22,10 @@ namespace ServerPerfectCV.WebApi.IntegrationTests.TestBase
             context.Users.RemoveRange(context.Users);
             context.SaveChanges();
         }
-        
+
         public static User AddUser(ApplicationDbContext dbContext)
         {
-            var faker = new Faker<User>()
+            Faker<User>? faker = new Faker<User>()
                 .RuleFor(u => u.Id, f => Guid.NewGuid())
                 .RuleFor(u => u.Email, f => f.Internet.Email())
                 .RuleFor(u => u.PasswordHash, f => f.Internet.Password())
@@ -36,34 +33,34 @@ namespace ServerPerfectCV.WebApi.IntegrationTests.TestBase
                 .RuleFor(u => u.UpdatedAt, f => DateTime.UtcNow)
                 .RuleFor(u => u.Status, f => UserStatus.Active)
                 .RuleFor(u => u.Role, f => UserRole.User);
-            
-            var user = faker.Generate();
+
+            User? user = faker.Generate();
             dbContext.Users.Add(user);
             dbContext.SaveChanges();
-            
+
             return user;
         }
-        
+
         public static List<Item> AddItems(ApplicationDbContext dbContext, int count = 5)
         {
-            var faker = new Faker<Item>()
+            Faker<Item>? faker = new Faker<Item>()
                 .RuleFor(i => i.Id, f => Guid.NewGuid())
                 .RuleFor(i => i.Name, f => f.Commerce.ProductName())
                 .RuleFor(i => i.Price, f => decimal.Parse(f.Commerce.Price()))
                 .RuleFor(i => i.Quantity, f => f.Random.Int(10, 100))
                 .RuleFor(i => i.CreatedAt, f => DateTime.UtcNow)
                 .RuleFor(i => i.UpdatedAt, f => DateTime.UtcNow);
-            
-            var items = faker.Generate(count);
+
+            List<Item>? items = faker.Generate(count);
             dbContext.Items.AddRange(items);
             dbContext.SaveChanges();
-            
+
             return items;
         }
-        
+
         public static Order AddOrder(ApplicationDbContext dbContext, Guid userId, List<Item> items)
         {
-            var order = new Order
+            Order order = new()
             {
                 Id = Guid.NewGuid(),
                 UserId = userId,
@@ -71,11 +68,11 @@ namespace ServerPerfectCV.WebApi.IntegrationTests.TestBase
                 OrderDate = DateTime.UtcNow,
                 OrderItems = new List<OrderItem>()
             };
-            
-            foreach (var item in items.Take(new Random().Next(1, items.Count)))
+
+            foreach (Item item in items.Take(new Random().Next(1, items.Count)))
             {
-                var quantity = new Random().Next(1, 5);
-                var orderItem = new OrderItem
+                int quantity = new Random().Next(1, 5);
+                OrderItem orderItem = new()
                 {
                     Id = Guid.NewGuid(),
                     OrderId = order.Id,
@@ -83,13 +80,13 @@ namespace ServerPerfectCV.WebApi.IntegrationTests.TestBase
                     Quantity = quantity,
                     TotalPrice = item.Price * quantity
                 };
-                
+
                 ((List<OrderItem>)order.OrderItems).Add(orderItem);
             }
-            
+
             dbContext.Orders.Add(order);
             dbContext.SaveChanges();
-            
+
             return order;
         }
     }

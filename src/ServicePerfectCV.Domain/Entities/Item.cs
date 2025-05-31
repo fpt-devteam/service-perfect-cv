@@ -10,7 +10,7 @@ namespace ServicePerfectCV.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public virtual ICollection<OrderItem> OrderItems { get; set; } = default!;
+        public virtual ICollection<OrderItem> OrderItems { get; set; } = null!;
         public Guid Id { get; set; } = Guid.NewGuid();
     }
 }

@@ -9,16 +9,12 @@ using Microsoft.Extensions.Options;
 
 namespace ServerPerfectCV.WebApi.IntegrationTests.TestBase
 {
-    public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class TestAuthHandler(
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder)
+        : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
     {
-        public TestAuthHandler(
-            IOptionsMonitor<AuthenticationSchemeOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder)
-            : base(options, logger, encoder)
-        {
-        }
-
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             // Extract the user ID from the Authorization header
