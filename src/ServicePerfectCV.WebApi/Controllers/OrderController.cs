@@ -1,17 +1,12 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServicePerfectCV.Application.DTOs.Order.Requests;
+using ServicePerfectCV.Application.DTOs.Order.Responses;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
-using ServicePerfectCV.Application.Exceptions;
+using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Services;
-using ServicePerfectCV.Application.Validators;
-using ServicePerfectCV.Domain.Entities;
-using ServicePerfectCV.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using ServicePerfectCV.Application.Exceptions;
 
 namespace ServicePerfectCV.WebApi.Controllers
 {
@@ -31,7 +26,7 @@ namespace ServicePerfectCV.WebApi.Controllers
         [HttpGet("{orderId}")]
         public async Task<IActionResult> GetById(Guid orderId)
         {
-            var order = await orderService.GetByIdAsync(orderId);
+            OrderResponse order = await orderService.GetByIdAsync(orderId);
 
             return Ok(order);
         }
@@ -39,10 +34,8 @@ namespace ServicePerfectCV.WebApi.Controllers
         [HttpPost("list")]
         public async Task<IActionResult> List([FromBody] PaginationRequest request)
         {
-
-            var orders = await orderService.ListAsync(request);
+            PaginationData<OrderResponse> orders = await orderService.ListAsync(request);
             return Ok(orders);
         }
-
     }
 }

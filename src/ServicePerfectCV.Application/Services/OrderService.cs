@@ -6,30 +6,30 @@ using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Services
 {
-    public class OrderService(IOrderRepository orderRepository, IEmailSender emailSender, IMapper mapper, IItemRepository itemRepository)
+    public class OrderService(
+        IOrderRepository orderRepository,
+        IEmailSender emailSender,
+        IMapper mapper,
+        IItemRepository itemRepository)
     {
 
 
         public async Task<Guid> CreateAsync(Guid userId, OrderCreateRequest request)
         {
-            var invalidItemId = await GetFirstInvalidItemIdAsync(request.Items.ToList().Select(item => item.ItemId));
+            Guid? invalidItemId = await GetFirstInvalidItemIdAsync(request.Items.ToList().Select(item => item.ItemId));
             if (invalidItemId != Guid.Empty)
+            {
                 throw new DomainException(OrderErrors.NotFound);
+            }
 
-            var insufficientStockItemId = await itemRepository
+            Guid? insufficientStockItemId = await itemRepository
                 .UpdateQuantityStock(request.Items);
             if (insufficientStockItemId.HasValue)
             {
                 throw new DomainException(ItemErrors.InsufficientStock);
-
             }
             var orderItems = mapper.Map<IEnumerable<OrderItem>>(request.Items);
 
@@ -48,30 +48,30 @@ namespace ServicePerfectCV.Application.Services
 
         private async Task<Guid?> GetFirstInvalidItemIdAsync(IEnumerable<Guid> requestedIds)
         {
-            var existingItems = await itemRepository.GetByIdsAsync(requestedIds);
-            var existingIds = existingItems.Select(item => item.Id).ToList();
+            IEnumerable<Item> existingItems = await itemRepository.GetByIdsAsync(requestedIds);
+            List<Guid> existingIds = existingItems.Select(item => item.Id).ToList();
             return requestedIds.Except(existingIds).FirstOrDefault();
         }
 
         public async Task<OrderResponse> GetByIdAsync(Guid orderId)
         {
-            var order = await orderRepository.GetByIdAsync(orderId) ?? throw new DomainException(OrderErrors.NotFound);
-            var response = mapper.Map<OrderResponse>(order);
+            Order order = await orderRepository.GetByIdAsync(orderId) ??
+                          throw new DomainException(OrderErrors.NotFound);
+            OrderResponse? response = mapper.Map<OrderResponse>(order);
             return response;
         }
 
         public async Task<PaginationData<OrderResponse>> ListAsync(PaginationRequest request)
         {
-            var paginationData = await orderRepository.ListAsync(request);
-            var response = new PaginationData<OrderResponse>
+            PaginationData<Order> paginationData = await orderRepository.ListAsync(request);
+            PaginationData<OrderResponse> response = new()
             {
-                Total = paginationData.Total,
-                Items = mapper.Map<IEnumerable<OrderResponse>>(paginationData.Items)
+                Total = paginationData.Total, Items = mapper.Map<IEnumerable<OrderResponse>>(paginationData.Items)
             };
 
-            foreach (var order in response.Items)
+            foreach (OrderResponse order in response.Items)
             {
-                var orderItems = paginationData.Items
+                IEnumerable<OrderItem>? orderItems = paginationData.Items
                     .FirstOrDefault(o => o.Id == order.OrderId)?.OrderItems;
 
                 if (orderItems != null)
@@ -79,9 +79,8 @@ namespace ServicePerfectCV.Application.Services
                     order.Items = mapper.Map<IEnumerable<OrderItemResponse>>(orderItems);
                 }
             }
+
             return response;
-
         }
-
     }
 }
