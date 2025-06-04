@@ -7,8 +7,8 @@ namespace ServicePerfectCV.Domain.Enums
 {
     public enum UserStatus
     {
+        Undefined = 0,
         Active = 1,
         Inactive = 2,
-        Banned = 3,
     }
 }

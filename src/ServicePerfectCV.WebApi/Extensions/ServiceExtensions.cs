@@ -23,12 +23,9 @@ namespace ServicePerfectCV.WebApi.Extensions
     {
         public static void ConfigureServices(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(OrderMappingProfile));
             services.AddAutoMapper(typeof(AuthMappingProfile));
 
             // register repositories
-            services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IEmailSender, EmailSender>();
 
@@ -36,8 +33,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped(typeof(IGenericRepository<,>), typeof(CrudRepositoryBase<,>));
 
             // register services
-            services.AddScoped<OrderService>();
-            services.AddScoped<ItemService>();
             services.AddScoped<AuthService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -46,7 +41,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<JwtSecurityTokenHandler>();
 
             // register validators
-            services.AddValidatorsFromAssemblyContaining<OrderCreateRequestValidator>();
             services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
         }
     }

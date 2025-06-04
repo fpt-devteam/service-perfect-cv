@@ -30,6 +30,8 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(u => u.UpdatedAt)
                 .IsRequired(false);
+            builder.Property(u => u.DeletedAt)
+                .IsRequired(false);
 
             builder.Property(u => u.Status)
                 .IsRequired()
@@ -39,14 +41,11 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasConversion<string>();
 
-            builder.Property(u => u.RefreshToken)
-                .HasMaxLength(512)
-                .IsRequired(false);
+            builder.HasMany(u => u.CVs)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasMany(u => u.Orders)
-               .WithOne(o => o.User)
-               .HasForeignKey(o => o.UserId)
-               .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

@@ -18,29 +18,16 @@ namespace ServicePerfectCV.Infrastructure.Data.Seeding
                 await context.Database.ExecuteSqlRawAsync("EXEC sp_MSforeachtable @command1 = 'ALTER TABLE ? NOCHECK CONSTRAINT ALL'");
 
                 // delete existing data
-                await context.Database.ExecuteSqlRawAsync("DELETE FROM OrderItems");
-                await context.Database.ExecuteSqlRawAsync("DELETE FROM Orders");
-                await context.Database.ExecuteSqlRawAsync("DELETE FROM Items");
                 await context.Database.ExecuteSqlRawAsync("DELETE FROM Users");
 
+                // seed users
+                var users = UserSeed.Data;
+                if (users.Any())
+                {
+                    await context.Users.AddRangeAsync(users);
+                }
                 // turn on foreign key constraints
-                await context.Database.ExecuteSqlRawAsync("EXEC sp_MSforeachtable @command1 = 'ALTER TABLE ? CHECK CONSTRAINT ALL'");
-
-                // Seed Users
-                await context.Users.AddRangeAsync(UserSeed.Data);
-                Console.WriteLine("Users seeded.");
-                // Seed Items
-                await context.Items.AddRangeAsync(ItemSeed.Data);
-                Console.WriteLine("Items seeded.");
-
-                // Seed Orders
-                await context.Orders.AddRangeAsync(OrderSeed.Data);
-                Console.WriteLine("Orders seeded.");
-
-                // Seed OrderItems
-                await context.OrderItems.AddRangeAsync(OrderItemSeed.Data);
-                Console.WriteLine("OrderItems seeded.");
-
+                await context.Database.ExecuteSqlRawAsync("EXEC sp_MSforeachtable @command1 = 'ALTER TABLE ? WITH CHECK CHECK CONSTRAINT ALL'");
                 await context.SaveChangesAsync();
                 await transaction.CommitAsync();
                 Console.WriteLine("Seeding completed successfully.");
