@@ -1,4 +1,3 @@
-
 using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -7,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using ServicePerfectCV.Application.Configurations;
-using ServicePerfectCV.Application.Validators;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.WebApi.Extensions;
 using ServicePerfectCV.WebApi.Middleware;
@@ -22,17 +20,19 @@ namespace ServicePerfectCV.WebApi
         {
             // Load environment variables from .env file
             Env.Load();
-            var builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             // Setup configuration sources.
             builder.Configuration
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-            .AddEnvironmentVariables();
+                .AddJsonFile("appsettings.json", false, true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true)
+                .AddEnvironmentVariables();
 
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<RefreshTokenConfiguration>(builder.Configuration.GetSection("RefreshToken"));
+            builder.Services.Configure<RefreshTokenConfiguration>(builder.Configuration.GetSection("RefreshToken"));
             builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection("CorsSettings"));
+            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection("RedisSettings"));
             builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("ConnectionStrings"));
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
@@ -52,13 +52,14 @@ namespace ServicePerfectCV.WebApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
+            WebApplication app = builder.Build();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             await app.Services.SeedDatabaseAsync();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                // System.Console.WriteLine("hihi");
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
@@ -74,7 +75,7 @@ namespace ServicePerfectCV.WebApi
             });
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

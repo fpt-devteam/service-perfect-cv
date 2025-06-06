@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
 using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.DTOs.Authentication;
@@ -12,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.WebApi.Controllers
 {
@@ -47,7 +45,6 @@ namespace ServicePerfectCV.WebApi.Controllers
             var response = await authService.LoginAsync(loginRequest);
             return Ok(response);
         }
-        [AllowAnonymous]
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshToken refreshTokenRequest)
         {

@@ -22,14 +22,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             var allowedMethods = corsOptions.AllowedMethods.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             var exposedHeaders = corsOptions.ExposedHeaders.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            // Log the CORS settings to the console for debugging.
-            Console.WriteLine($"CORS Settings: AllowedOrigins={string.Join(",", allowedOrigins)}, " +
-                              $"AllowedHeaders={string.Join(",", allowedHeaders)}, " +
-                              $"AllowedMethods={string.Join(",", allowedMethods)}, " +
-                              $"ExposedHeaders={string.Join(",", exposedHeaders)}, " +
-                              $"AllowCredentials={corsOptions.AllowCredentials}, " +
-                              $"PreflightMaxAge={corsOptions.PreflightMaxAge}");
-
             services.AddCors(options =>
             {
                 options.AddPolicy("AppCorsPolicy", policyBuilder =>
