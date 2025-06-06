@@ -17,15 +17,10 @@ namespace ServicePerfectCV.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
-                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
-
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<User, RegisterResponse>()
-                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src));
-
+                .ForMember(dest => dest.Mail, opt => opt.MapFrom(src => src.Email));
             CreateMap<LoginRequest, User>();
-
-
         }
     }
 }

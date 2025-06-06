@@ -24,10 +24,12 @@ namespace ServicePerfectCV.WebApi.Extensions
         public static void ConfigureServices(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(AuthMappingProfile));
+            services.AddAutoMapper(typeof(UserMappingProfile));
 
             // register repositories
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
 
             // register generic repository
             services.AddScoped(typeof(IGenericRepository<,>), typeof(CrudRepositoryBase<,>));

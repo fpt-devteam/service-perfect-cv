@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Interfaces
 {
-    public interface IEmailSender
+    public interface IEmailService
     {
-        void SendEmail(string to, string subject, string body);
+        Task SendEmailAsync(string mail, string subject, string body);
     }
 }

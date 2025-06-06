@@ -19,10 +19,11 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                .HasMaxLength(200);
 
             builder.Property(c => c.CreatedAt)
-               .HasDefaultValueSql("GETUTCDATE()");
+                  .IsRequired()
+                  .HasDefaultValueSql("GETUTCDATE()");
 
             builder.HasOne(c => c.User)
-               .WithMany()
+               .WithMany(u => u.CVs)
                .HasForeignKey(c => c.UserId)
                .OnDelete(DeleteBehavior.NoAction);
 
@@ -37,24 +38,24 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                .IsRequired(false);
 
             builder.HasMany(c => c.Educations)
-               .WithOne()
-               .HasForeignKey("CVSId");
+               .WithOne(e => e.Cv)
+                  .HasForeignKey(e => e.CVSId);
 
             builder.HasMany(c => c.Experiences)
-               .WithOne()
-               .HasForeignKey("CVSId");
+               .WithOne(e => e.Cv)
+               .HasForeignKey(e => e.CVSId);
 
             builder.HasMany(c => c.Projects)
-               .WithOne()
-               .HasForeignKey("CVSId");
+               .WithOne(p => p.Cv)
+               .HasForeignKey(p => p.CVSId);
 
             builder.HasMany(c => c.Skills)
-               .WithOne()
-               .HasForeignKey("CVSId");
+               .WithOne(s => s.Cv)
+               .HasForeignKey(s => s.CVSId);
 
             builder.HasMany(c => c.Certifications)
-               .WithOne()
-               .HasForeignKey("CVSId");
+               .WithOne(ce => ce.Cv)
+               .HasForeignKey(ce => ce.CVSId); ;
         }
     }
 }

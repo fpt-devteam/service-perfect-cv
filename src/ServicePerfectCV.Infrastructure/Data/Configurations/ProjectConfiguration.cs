@@ -14,8 +14,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Project> builder)
         {
-            builder.ToTable("Projects");
-
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.Title)
@@ -37,7 +35,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(p => p.EndDate);
 
             builder.HasOne(p => p.Cv)
-                .WithMany() 
+                .WithMany(c => c.Projects)
                 .HasForeignKey(p => p.CVSId)
                 .OnDelete(DeleteBehavior.NoAction);
         }

@@ -10,5 +10,6 @@ namespace ServicePerfectCV.Application.Interfaces
     public interface ITokenGenerator
     {
         (string, string) GenerateToken(ClaimsAccessToken claimsAccessToken);
+        string GenerateAccessToken(ClaimsAccessToken claimsAccessToken);
     }
 }

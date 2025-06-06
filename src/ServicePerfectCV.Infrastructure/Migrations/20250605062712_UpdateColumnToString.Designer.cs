@@ -12,8 +12,8 @@ using ServicePerfectCV.Infrastructure.Data;
 namespace ServicePerfectCV.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250602183130_InitDB")]
-    partial class InitDB
+    [Migration("20250605062712_UpdateColumnToString")]
+    partial class UpdateColumnToString
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,9 +45,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Property<Guid?>("SummaryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("TemplateId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -57,9 +54,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UserId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -72,11 +66,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("[SummaryId] IS NOT NULL");
 
-                    b.HasIndex("TemplateId");
-
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("CVs");
                 });
@@ -88,9 +78,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CVSId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CvId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Issuer")
@@ -114,9 +101,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVSId");
 
-                    b.HasIndex("CvId");
-
-                    b.ToTable("Certifications", (string)null);
+                    b.ToTable("Certifications");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Contact", b =>
@@ -214,9 +199,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("CvId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -237,8 +219,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVSId");
 
-                    b.HasIndex("CvId");
-
                     b.ToTable("Experiences");
                 });
 
@@ -249,9 +229,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CVSId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CVSId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
@@ -281,9 +258,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVSId");
 
-                    b.HasIndex("CVSId1");
-
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Skill", b =>
@@ -300,9 +275,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("CvId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ItemsJson")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -310,8 +282,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CVSId");
-
-                    b.HasIndex("CvId");
 
                     b.ToTable("Skills");
                 });
@@ -338,42 +308,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("CvId");
 
                     b.ToTable("Summaries");
-                });
-
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Template", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CssUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Descriptor")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PreviewUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ReactBundle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Template");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.User", b =>
@@ -416,7 +350,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.CVS", b =>
@@ -430,43 +364,25 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasForeignKey("ServicePerfectCV.Domain.Entities.CVS", "SummaryId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("ServicePerfectCV.Domain.Entities.Template", "Template")
-                        .WithMany("CVs")
-                        .HasForeignKey("TemplateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ServicePerfectCV.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("CVs")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("ServicePerfectCV.Domain.Entities.User", null)
-                        .WithMany("CVs")
-                        .HasForeignKey("UserId1");
-
                     b.Navigation("Contact");
 
                     b.Navigation("Summary");
-
-                    b.Navigation("Template");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", null)
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
                         .WithMany("Certifications")
                         .HasForeignKey("CVSId")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
-                        .WithMany()
-                        .HasForeignKey("CvId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cv");
@@ -496,16 +412,10 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Experience", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", null)
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
                         .WithMany("Experiences")
                         .HasForeignKey("CVSId")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
-                        .WithMany()
-                        .HasForeignKey("CvId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cv");
@@ -514,30 +424,20 @@ namespace ServicePerfectCV.Infrastructure.Migrations
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Project", b =>
                 {
                     b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
-                        .WithMany()
+                        .WithMany("Projects")
                         .HasForeignKey("CVSId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", null)
-                        .WithMany("Projects")
-                        .HasForeignKey("CVSId1");
 
                     b.Navigation("Cv");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Skill", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", null)
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
                         .WithMany("Skills")
                         .HasForeignKey("CVSId")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
-                        .WithMany()
-                        .HasForeignKey("CvId")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cv");
@@ -563,11 +463,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Navigation("Projects");
 
                     b.Navigation("Skills");
-                });
-
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Template", b =>
-                {
-                    b.Navigation("CVs");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.User", b =>

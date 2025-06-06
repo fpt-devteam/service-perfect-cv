@@ -1,6 +1,6 @@
 using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
-using ServicePerfectCV.Domain.Enums;
 using ServicePerfectCV.Infrastructure.Helpers;
 using System;
 using System.Collections.Generic;

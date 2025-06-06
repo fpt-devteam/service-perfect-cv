@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.Extensions.Options;
+using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.DTOs.Authentication;
 using ServicePerfectCV.Application.DTOs.Authentication.Requests;
 using ServicePerfectCV.Application.DTOs.Authentication.Responses;
@@ -15,7 +18,7 @@ namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Route("api/auth")]
-    public class AuthController(AuthService authService) : ControllerBase
+    public class AuthController(AuthService authService, IOptions<BaseUrlSettings> option) : ControllerBase
     {
 
         [HttpPost("register")]
@@ -24,8 +27,19 @@ namespace ServicePerfectCV.WebApi.Controllers
             var response = await authService.RegisterAsync(registerRequest);
             return Ok(response);
         }
-
-
+        [HttpGet("activation-account")]
+        public async Task<IActionResult> ActivateAccountAsync([FromQuery] string token)
+        {
+            Guid userId = authService.VerifyTokenAsync(token);
+            if (await authService.ActivateAccountAsync(userId)) return Redirect(option.Value.SuccessUrl);
+            return Redirect(option.Value.FailUrl);
+        }
+        [HttpPost("resend-activation-email")]
+        public async Task<IActionResult> ResendActivationEmailAsync([FromBody] ResendEmailRequest resendAEmailRequest)
+        {
+            await authService.SendActivationEmailAsync(resendAEmailRequest.Email);
+            return Ok();
+        }
 
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginRequest loginRequest)

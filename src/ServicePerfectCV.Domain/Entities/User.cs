@@ -1,5 +1,5 @@
 using ServicePerfectCV.Domain.Common;
-using ServicePerfectCV.Domain.Enums;
+using ServicePerfectCV.Domain.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;

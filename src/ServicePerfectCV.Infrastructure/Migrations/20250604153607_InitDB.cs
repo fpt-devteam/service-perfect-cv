@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -11,25 +11,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Template",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CssUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ReactBundle = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PreviewUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Descriptor = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Template", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -57,8 +38,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Issuer = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     YearObtained = table.Column<int>(type: "int", nullable: true),
-                    Relevance = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CvId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Relevance = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -89,14 +69,12 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TemplateId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ContactId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     SummaryId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UserId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -107,19 +85,8 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         principalTable: "Contacts",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_CVs_Template_TemplateId",
-                        column: x => x.TemplateId,
-                        principalTable: "Template",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_CVs_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_CVs_Users_UserId1",
-                        column: x => x.UserId1,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
@@ -159,8 +126,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CvId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -170,12 +136,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         column: x => x.CVSId,
                         principalTable: "CVs",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Experiences_CVs_CvId",
-                        column: x => x.CvId,
-                        principalTable: "CVs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -189,8 +149,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     Link = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
-                    TechJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CVSId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    TechJson = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -198,11 +157,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Projects_CVs_CVSId",
                         column: x => x.CVSId,
-                        principalTable: "CVs",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Projects_CVs_CVSId1",
-                        column: x => x.CVSId1,
                         principalTable: "CVs",
                         principalColumn: "Id");
                 });
@@ -214,8 +168,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CVSId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Category = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ItemsJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CvId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ItemsJson = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -225,12 +178,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         column: x => x.CVSId,
                         principalTable: "CVs",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Skills_CVs_CvId",
-                        column: x => x.CvId,
-                        principalTable: "CVs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -251,11 +198,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         principalTable: "CVs",
                         principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Certifications_CvId",
-                table: "Certifications",
-                column: "CvId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Certifications_CVSId",
@@ -283,29 +225,14 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 filter: "[SummaryId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CVs_TemplateId",
-                table: "CVs",
-                column: "TemplateId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_CVs_UserId",
                 table: "CVs",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CVs_UserId1",
-                table: "CVs",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Educations_CVSId",
                 table: "Educations",
                 column: "CVSId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Experiences_CvId",
-                table: "Experiences",
-                column: "CvId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Experiences_CVSId",
@@ -316,16 +243,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 name: "IX_Projects_CVSId",
                 table: "Projects",
                 column: "CVSId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Projects_CVSId1",
-                table: "Projects",
-                column: "CVSId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Skills_CvId",
-                table: "Skills",
-                column: "CvId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Skills_CVSId",
@@ -349,14 +266,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 column: "CVSId",
                 principalTable: "CVs",
                 principalColumn: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Certifications_CVs_CvId",
-                table: "Certifications",
-                column: "CvId",
-                principalTable: "CVs",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Contacts_CVs_CVSId",
@@ -407,9 +316,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Summaries");
-
-            migrationBuilder.DropTable(
-                name: "Template");
 
             migrationBuilder.DropTable(
                 name: "Users");

@@ -12,7 +12,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Certification> builder)
         {
-            builder.ToTable("Certifications");
 
             builder.HasKey(c => c.Id);
 
@@ -32,7 +31,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.HasOne(c => c.Cv)
             .WithMany(cv => cv.Certifications)
-            .HasForeignKey(c => c.CVSId)
+            .HasForeignKey(cv => cv.CVSId)
             .IsRequired().OnDelete(DeleteBehavior.NoAction);
         }
     }
