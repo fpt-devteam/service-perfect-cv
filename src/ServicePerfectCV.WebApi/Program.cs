@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Infrastructure.Data;
@@ -29,10 +30,13 @@ namespace ServicePerfectCV.WebApi
 
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<RefreshTokenConfiguration>(builder.Configuration.GetSection("RefreshToken"));
+            builder.Services.Configure<RefreshTokenConfiguration>(builder.Configuration.GetSection("RefreshToken"));
             builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection("CorsSettings"));
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection("RedisSettings"));
             builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("ConnectionStrings"));
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.Configure<BaseUrlSettings>(builder.Configuration.GetSection("BaseUrlSettings"));
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -50,7 +54,7 @@ namespace ServicePerfectCV.WebApi
 
             WebApplication app = builder.Build();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
-            // await app.Services.SeedDatabaseAsync();
+            await app.Services.SeedDatabaseAsync();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -59,15 +63,19 @@ namespace ServicePerfectCV.WebApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseCors("AppCorsPolicy");
             app.UseHttpsRedirection();
-            // app.UseExceptionHandling();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), "Templates")),
+                RequestPath = "/templates"
+            });
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

@@ -35,7 +35,7 @@ namespace ServicePerfectCV.Infrastructure.Services
             return Convert.ToBase64String(randomNumber);
         }
 
-        private string GenerateAccessToken(ClaimsAccessToken claimsAccessToken)
+        public string GenerateAccessToken(ClaimsAccessToken claimsAccessToken)
         {
             byte[] key = Encoding.UTF8.GetBytes(_jwtSettings.SecretKey);
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor

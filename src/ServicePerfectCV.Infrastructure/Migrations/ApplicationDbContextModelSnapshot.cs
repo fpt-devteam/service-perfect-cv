@@ -22,87 +22,289 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Item", b =>
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.CVS", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ContactId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
+                    b.Property<Guid?>("SummaryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Items");
-                });
-
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Order", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ContactId")
+                        .IsUnique()
+                        .HasFilter("[ContactId] IS NOT NULL");
+
+                    b.HasIndex("SummaryId")
+                        .IsUnique()
+                        .HasFilter("[SummaryId] IS NOT NULL");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("CVs");
                 });
 
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.OrderItem", b =>
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ItemId")
+                    b.Property<Guid>("CVSId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Issuer")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("Quantity")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Relevance")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("YearObtained")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemId");
+                    b.HasIndex("CVSId");
 
-                    b.HasIndex("OrderId");
+                    b.ToTable("Certifications");
+                });
 
-                    b.ToTable("OrderItems");
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Contact", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("CVSId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("GitHubUrl")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("LinkedInUrl")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PersonalWebsiteUrl")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CVSId")
+                        .IsUnique();
+
+                    b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AdditionalInfo")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("CVSId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Degree")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("Gpa")
+                        .HasColumnType("decimal(3, 2)");
+
+                    b.Property<string>("Institution")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Location")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Minor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("YearObtained")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CVSId");
+
+                    b.ToTable("Educations");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Experience", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CVSId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Company")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CVSId");
+
+                    b.ToTable("Experiences");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Project", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CVSId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Link")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("TechJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CVSId");
+
+                    b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Skill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CVSId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ItemsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CVSId");
+
+                    b.ToTable("Skills");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Summary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CVSId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Context")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<Guid?>("CvId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CvId");
+
+                    b.ToTable("Summaries");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.User", b =>
@@ -116,6 +318,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -123,10 +328,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
-                    b.Property<string>("RefreshToken")
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
@@ -146,52 +347,124 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Order", b =>
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.CVS", b =>
                 {
+                    b.HasOne("ServicePerfectCV.Domain.Entities.Contact", "Contact")
+                        .WithOne()
+                        .HasForeignKey("ServicePerfectCV.Domain.Entities.CVS", "ContactId");
+
+                    b.HasOne("ServicePerfectCV.Domain.Entities.Summary", "Summary")
+                        .WithOne()
+                        .HasForeignKey("ServicePerfectCV.Domain.Entities.CVS", "SummaryId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("ServicePerfectCV.Domain.Entities.User", "User")
-                        .WithMany("Orders")
+                        .WithMany("CVs")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.Navigation("Contact");
+
+                    b.Navigation("Summary");
+
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.OrderItem", b =>
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.Item", "Item")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("ItemId")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
+                        .WithMany("Certifications")
+                        .HasForeignKey("CVSId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("ServicePerfectCV.Domain.Entities.Order", "Order")
-                        .WithMany("OrderItems")
-                        .HasForeignKey("OrderId")
+                    b.Navigation("Cv");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Contact", b =>
+                {
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
+                        .WithOne()
+                        .HasForeignKey("ServicePerfectCV.Domain.Entities.Contact", "CVSId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Item");
-
-                    b.Navigation("Order");
+                    b.Navigation("Cv");
                 });
 
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Item", b =>
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
                 {
-                    b.Navigation("OrderItems");
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
+                        .WithMany("Educations")
+                        .HasForeignKey("CVSId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Cv");
                 });
 
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Order", b =>
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Experience", b =>
                 {
-                    b.Navigation("OrderItems");
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
+                        .WithMany("Experiences")
+                        .HasForeignKey("CVSId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Cv");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Project", b =>
+                {
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
+                        .WithMany("Projects")
+                        .HasForeignKey("CVSId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Cv");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Skill", b =>
+                {
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
+                        .WithMany("Skills")
+                        .HasForeignKey("CVSId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Cv");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Summary", b =>
+                {
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CVS", "Cv")
+                        .WithMany()
+                        .HasForeignKey("CvId");
+
+                    b.Navigation("Cv");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.CVS", b =>
+                {
+                    b.Navigation("Certifications");
+
+                    b.Navigation("Educations");
+
+                    b.Navigation("Experiences");
+
+                    b.Navigation("Projects");
+
+                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.User", b =>
                 {
-                    b.Navigation("Orders");
+                    b.Navigation("CVs");
                 });
 #pragma warning restore 612, 618
         }

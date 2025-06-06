@@ -1,5 +1,5 @@
 using ServicePerfectCV.Domain.Common;
-using ServicePerfectCV.Domain.Enums;
+using ServicePerfectCV.Domain.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +9,15 @@ namespace ServicePerfectCV.Domain.Entities
 {
     public class User : IEntity<Guid>
     {
-        public Guid Id { get; set; }
-        public string Email { get; set; } = default!;
-        public string PasswordHash { get; set; } = default!;
+        public required Guid Id { get; set; }
+        public required string Email { get; set; }
+        public required string PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
-        public UserStatus Status { get; set; } = UserStatus.Active;
+        public DateTime? DeletedAt { get; set; }
+        public UserStatus Status { get; set; } = UserStatus.Undefined;
         public UserRole Role { get; set; } = UserRole.User;
-        public string? RefreshToken { get; set; }
 
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<CVS> CVs { get; set; } = [];
     }
 }

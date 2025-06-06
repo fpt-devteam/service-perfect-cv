@@ -13,13 +13,8 @@ namespace ServicePerfectCV.Infrastructure.Repositories
     {
         public async Task<User?> GetByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(user => user.Email == email && user.Status == Domain.Enums.UserStatus.Active);
+            return await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
 
-        }
-
-        public async Task<User?> GetByIdAsync(Guid id)
-        {
-            return await _context.Users.FirstOrDefaultAsync(user => user.Id == id && user.Status == Domain.Enums.UserStatus.Active);
         }
     }
 }

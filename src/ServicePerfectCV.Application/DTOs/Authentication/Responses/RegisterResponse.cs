@@ -8,6 +8,7 @@ namespace ServicePerfectCV.Application.DTOs.Authentication.Responses
 {
     public class RegisterResponse
     {
-        public User User { get; set; } = default!;
+        public string Mail { get; set; } = null!;
+
     }
 }

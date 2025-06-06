@@ -29,15 +29,67 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
             return entity;
         }
 
+        public virtual async Task<bool> DeleteAsync(TKey id)
+        {
+            var keyProperty = typeof(TEntity).GetProperty(nameof(IEntity<TKey>.Id))
+                       ?? throw new Exception("Entity must have Id property");
+
+            var idValue = keyProperty.GetValue(id) ?? throw new Exception("Id is null");
+
+            var entity = await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
+                                                && EF.Property<DateTime?>(e, "DeletedAt") == null);
+
+            if (entity == null) return false;
+
+            keyProperty.SetValue(entity, idValue);
+            _context.Entry(entity).Property("DeletedAt").CurrentValue = DateTime.UtcNow;
+
+            return true;
+        }
+
+        public virtual async Task<TEntity?> GetByIdAsync(TKey id)
+        {
+            var keyProperty = typeof(TEntity).GetProperty(nameof(IEntity<TKey>.Id))
+                     ?? throw new Exception("Entity must have Id property");
+
+            var idValue = keyProperty.GetValue(id) ?? throw new Exception("Id is null");
+
+            return await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
+                                                && EF.Property<DateTime?>(e, "DeletedAt") == null);
+        }
+
         public virtual async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }
 
-        public virtual async Task UpdateAsync(TEntity entity)
+        public virtual async Task<bool> UpdateAsync(TEntity entity)
         {
-            _dbSet.Update(entity);
-            await Task.CompletedTask;
+            var keyProperty = typeof(TEntity).GetProperty(nameof(IEntity<TKey>.Id));
+
+
+            var idValue = keyProperty!.GetValue(entity);
+
+            var oldEntity = await _dbSet
+                .FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
+                                       && EF.Property<DateTime?>(e, "DeletedAt") == null);
+
+            if (oldEntity == null) return false;
+
+            foreach (var prop in typeof(TEntity).GetProperties())
+            {
+                if (prop.Name == "Id" || prop.Name == "DeletedAt") continue;
+
+                var newValue = prop.GetValue(entity);
+                if (newValue != null)
+                {
+                    prop.SetValue(oldEntity, newValue);
+                }
+            }
+
+            _dbSet.Update(oldEntity);
+            return true;
         }
+
     }
 }

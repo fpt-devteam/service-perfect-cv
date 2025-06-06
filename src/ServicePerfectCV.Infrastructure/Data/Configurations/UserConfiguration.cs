@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.ToTable("Users");
             builder.HasKey(u => u.Id);
 
             builder.Property(u => u.Email)
@@ -30,23 +30,25 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(u => u.UpdatedAt)
                 .IsRequired(false);
+            builder.Property(u => u.DeletedAt)
+                .IsRequired(false);
 
             builder.Property(u => u.Status)
                 .IsRequired()
-                .HasConversion<string>();
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (UserStatus)Enum.Parse(typeof(UserStatus), v));
 
             builder.Property(u => u.Role)
                 .IsRequired()
-                .HasConversion<string>();
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (UserRole)Enum.Parse(typeof(UserRole), v));
+            builder.HasMany(u => u.CVs)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Property(u => u.RefreshToken)
-                .HasMaxLength(512)
-                .IsRequired(false);
-
-            builder.HasMany(u => u.Orders)
-               .WithOne(o => o.User)
-               .HasForeignKey(o => o.UserId)
-               .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

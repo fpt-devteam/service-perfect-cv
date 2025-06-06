@@ -12,18 +12,25 @@ namespace ServicePerfectCV.WebApi.Extensions
         public static IServiceCollection AddConfiguredCors(this IServiceCollection services, IConfiguration configuration)
         {
             var corsOptions = configuration
-          .GetSection("CorsSettings")
-          .Get<CorsSettings>()
-          ?? throw new InvalidOperationException("Missing CorsSettings");
+                .GetSection("CorsSettings")
+                .Get<CorsSettings>()
+                ?? throw new InvalidOperationException("Missing CorsSettings");
+
+            // Convert configuration comma-separated strings into arrays.
+            var allowedOrigins = corsOptions.AllowedOrigins.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var allowedHeaders = corsOptions.AllowedHeaders.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var allowedMethods = corsOptions.AllowedMethods.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var exposedHeaders = corsOptions.ExposedHeaders.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AppCorsPolicy", policyBuilder =>
                 {
                     policyBuilder
-                        .WithOrigins(corsOptions.AllowedOrigins ?? Array.Empty<string>())
-                        .WithHeaders(corsOptions.AllowedHeaders ?? Array.Empty<string>())
-                        .WithMethods(corsOptions.AllowedMethods ?? new[] { "GET", "POST" })
-                        .WithExposedHeaders(corsOptions.ExposedHeaders ?? Array.Empty<string>());
+                        .WithOrigins(allowedOrigins)
+                        .WithHeaders(allowedHeaders)
+                        .WithMethods(allowedMethods)
+                        .WithExposedHeaders(exposedHeaders);
 
                     if (corsOptions.AllowCredentials)
                         policyBuilder.AllowCredentials();
