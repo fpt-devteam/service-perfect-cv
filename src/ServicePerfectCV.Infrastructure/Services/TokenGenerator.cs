@@ -22,7 +22,7 @@ namespace ServicePerfectCV.Infrastructure.Services
     {
         private readonly JwtSettings _jwtSettings = jwtSettings.Value ?? throw new ArgumentNullException(nameof(jwtSettings));
 
-        public (string, string) GenerateToken(ClaimsAccessToken claimsAccessToken)
+        public (string AccessToken, string RefreshToken) GenerateToken(ClaimsAccessToken claimsAccessToken)
         {
 
             return (GenerateAccessToken(claimsAccessToken), GenerateRefreshToken());

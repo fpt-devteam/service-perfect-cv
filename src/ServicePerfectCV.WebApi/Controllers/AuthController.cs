@@ -52,6 +52,15 @@ namespace ServicePerfectCV.WebApi.Controllers
             return Ok(response);
 
         }
-
+        [Authorize]
+        [HttpPost("logout")]
+        public async Task<IActionResult> LogoutAsync([FromBody] LogoutRequest logoutRequest)
+        {
+            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(nameIdentifier, out var userId))
+                throw new DomainException(UserErrors.NotFound);
+            await authService.LogoutAsync(logoutRequest.RefreshToken, userId);
+            return NoContent();
+        }
     }
 }

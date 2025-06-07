@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.BearerToken;
 using ServicePerfectCV.Application.DTOs.Authentication;
 using ServicePerfectCV.Domain.Entities;
 using System;
@@ -9,7 +10,7 @@ namespace ServicePerfectCV.Application.Interfaces
 {
     public interface ITokenGenerator
     {
-        (string, string) GenerateToken(ClaimsAccessToken claimsAccessToken);
+        (string AccessToken, string RefreshToken) GenerateToken(ClaimsAccessToken claimsAccessToken);
         string GenerateAccessToken(ClaimsAccessToken claimsAccessToken);
     }
 }
