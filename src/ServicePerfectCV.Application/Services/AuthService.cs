@@ -52,7 +52,7 @@ namespace ServicePerfectCV.Application.Services
 
         public async Task<string> SendActivationEmailAsync(string email)
         {
-            User? user = await userRepository.GetByEmailAsync(email) ?? throw new DomainException(UserErrors.NotFound);
+            User user = await userRepository.GetByEmailAsync(email) ?? throw new DomainException(UserErrors.NotFound);
             var filePath = Path.Combine(AppContext.BaseDirectory, "Templates", "ActivationAccount.html");
             var token = tokenGenerator.GenerateAccessToken(new ClaimsAccessToken
             {
@@ -108,42 +108,50 @@ namespace ServicePerfectCV.Application.Services
             return true;
         }
 
-
-
         public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
         {
-            User? user = await userRepository.GetByEmailAsync(loginRequest.Email) ?? throw new DomainException(UserErrors.NotFound);
+            User user = await userRepository.GetByEmailAsync(loginRequest.Email) ?? throw new DomainException(UserErrors.NotFound);
             if (!passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
                 throw new DomainException(AuthErrors.PasswordInvalid);
-            (string, string) tokens = tokenGenerator.GenerateToken(new ClaimsAccessToken
+            (string AccessToken, string RefreshToken) tokens = tokenGenerator.GenerateToken(new ClaimsAccessToken
             {
                 UserId = user.Id.ToString(),
                 Role = user.Role.ToString()
             });
-            await refreshTokenService.SaveAsync(tokens.Item2, user.Id.ToString());
+            await refreshTokenService.SaveAsync(tokens.RefreshToken, user.Id.ToString());
             return new LoginResponse
             {
-                AccessToken = tokens.Item1,
-                RefreshToken = tokens.Item2,
+                AccessToken = tokens.AccessToken,
+                RefreshToken = tokens.RefreshToken,
             };
         }
 
         public async Task<RefreshTokenResponse> RefreshTokenAsync(string refreshToken)
         {
-            string? userId = await refreshTokenService.GetAsync(refreshToken) ?? throw new DomainException(AuthErrors.RefreshTokenInvalid);
-            User? user = await userRepository.GetByIdAsync(Guid.Parse(userId)) ?? throw new DomainException(UserErrors.NotFound);
-            (string, string) tokens = tokenGenerator.GenerateToken(new ClaimsAccessToken
+            string userId = await refreshTokenService.GetAsync(refreshToken) ?? throw new DomainException(AuthErrors.RefreshTokenInvalid);
+            User user = await userRepository.GetByIdAsync(Guid.Parse(userId)) ?? throw new DomainException(UserErrors.NotFound);
+            (string AccessToken, string RefreshToken) tokens = tokenGenerator.GenerateToken(new ClaimsAccessToken
             {
                 UserId = userId,
                 Role = user.Role.ToString()
             });
             await refreshTokenService.RevokeAsync(refreshToken);
-            await refreshTokenService.SaveAsync(tokens.Item2, userId);
+            await refreshTokenService.SaveAsync(tokens.RefreshToken, userId);
             return new RefreshTokenResponse
             {
-                AccessToken = tokens.Item1,
-                RefreshToken = tokens.Item2,
+                AccessToken = tokens.AccessToken,
+                RefreshToken = tokens.RefreshToken,
             };
+        }
+
+        public async Task LogoutAsync(string refreshToken, Guid userId)
+        {
+            string tokenUserId = await refreshTokenService.GetAsync(refreshToken) ?? throw new DomainException(UserErrors.NotFound);
+            if (userId != Guid.Parse(tokenUserId))
+            {
+                throw new DomainException(AuthErrors.RefreshTokenInvalid);
+            }
+            await refreshTokenService.RevokeAsync(refreshToken);
         }
     }
 }
