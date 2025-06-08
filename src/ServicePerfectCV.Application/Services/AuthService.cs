@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -144,6 +144,50 @@ namespace ServicePerfectCV.Application.Services
                 AccessToken = tokens.Item1,
                 RefreshToken = tokens.Item2,
             };
+        }
+
+        public async Task<string> ForgotPasswordAsync(string email)
+        {
+            User? user = await userRepository.GetByEmailAsync(email) ?? throw new DomainException(UserErrors.NotFound);
+
+            // Tạo mã thông báo đặt lại mật khẩu hết hạn sau 1 giờ
+            var token = tokenGenerator.GenerateAccessToken(new ClaimsAccessToken 
+            {
+                UserId = user.Id.ToString(),
+                Role = user.Role.ToString()
+            });
+
+            // Gửi email đặt lại mật khẩu
+            var filePath = Path.Combine(AppContext.BaseDirectory, "Templates", "ResetPassword.html");
+            await emailSender.SendEmailAsync(
+                mail: user.Email,
+                subject: "Reset your password",
+                body: await helper.RenderEmailTemplateAsync(filePath, new Dictionary<string, string>
+                {
+                    { "UserName", user.Email },
+                    { "ResetLink", $"{options.Value.ResetPasswordURL} ? token={token}" }
+                })
+            );
+            return token;
+        }
+
+        public async Task<bool> ResetPasswordAsync(string token, string newPwd)
+        {
+            // Xác minh token
+            Guid userId = VerifyTokenAsync(token);
+
+            // Nhận người dùng
+            User? user = await userRepository.GetByIdAsync(userId) ?? throw new DomainException(UserErrors.NotFound);
+
+            // Cập nhật pwd
+            user.PasswordHash = passwordHasher.HashPassword(newPwd);
+            user.UpdatedAt = DateTime.UtcNow;
+
+            // Save
+            if (!await userRepository.UpdateAsync(user))
+                throw new DomainException(UserErrors.NotFound);
+            await userRepository.SaveChangesAsync();
+            return true;
         }
     }
 }

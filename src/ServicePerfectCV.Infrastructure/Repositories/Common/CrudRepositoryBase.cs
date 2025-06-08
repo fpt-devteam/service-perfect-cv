@@ -49,12 +49,13 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
 
         public virtual async Task<TEntity?> GetByIdAsync(TKey id)
         {
-            var keyProperty = typeof(TEntity).GetProperty(nameof(IEntity<TKey>.Id))
-                     ?? throw new Exception("Entity must have Id property");
+         //   var keyProperty = typeof(TEntity).GetProperty(nameof(IEntity<TKey>.Id))
+         //?? throw new Exception("Entity must have Id property");
 
-            var idValue = keyProperty.GetValue(id) ?? throw new Exception("Id is null");
+         //   var idValue = keyProperty.GetValue(id) ?? throw new Exception("Id is null");
 
-            return await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
+         //   return await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
+            return await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id)
                                                 && EF.Property<DateTime?>(e, "DeletedAt") == null);
         }
 

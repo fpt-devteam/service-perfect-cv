@@ -1,3 +1,4 @@
+﻿using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -53,5 +54,26 @@ namespace ServicePerfectCV.WebApi.Controllers
 
         }
 
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest)
+        {
+            var token = await authService.ForgotPasswordAsync(forgotPasswordRequest.Email);
+            return Ok(new {message = "Password reset email has been sent.",
+            token = token
+            });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
+        {
+            if (resetPasswordRequest.NewPassword != resetPasswordRequest.ConfirmPassword)
+            {
+                return BadRequest(new { message = "The new password and confirmation password do not match." });
+            }
+
+            var result = await authService.ResetPasswordAsync(resetPasswordRequest.Token, resetPasswordRequest.NewPassword);
+
+            return Ok(new {message = "Password has been reset successfully." });
+        }
     }
 }

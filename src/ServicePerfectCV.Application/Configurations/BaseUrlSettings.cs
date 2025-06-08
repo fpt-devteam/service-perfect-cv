@@ -11,5 +11,6 @@ namespace ServicePerfectCV.Application.Configurations
         public string SuccessUrl { get; set; } = string.Empty;
         public string FailUrl { get; set; } = string.Empty;
         public string ActivationAccountApi { get; set; } = string.Empty;
+        public string ResetPasswordURL {  get; set; } = null;
     }
 }
