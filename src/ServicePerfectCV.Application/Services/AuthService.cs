@@ -110,7 +110,10 @@ namespace ServicePerfectCV.Application.Services
 
         public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
         {
-            User user = await userRepository.GetByEmailAsync(loginRequest.Email) ?? throw new DomainException(UserErrors.NotFound);
+            User user = await userRepository.GetByEmailAsync(loginRequest.Email)
+                ?? throw new DomainException(UserErrors.NotFound);
+            if (user.Status != UserStatus.Active)
+                throw new DomainException(UserErrors.AccountNotActivated);
             if (!passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
                 throw new DomainException(AuthErrors.PasswordInvalid);
             (string AccessToken, string RefreshToken) tokens = tokenGenerator.GenerateToken(new ClaimsAccessToken

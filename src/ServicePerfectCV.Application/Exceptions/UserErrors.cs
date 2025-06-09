@@ -16,9 +16,9 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "EmailAlreadyExists",
             Message: "Email already exists.",
             HttpStatusCode.Conflict);
-        public static readonly Error IdRequired = new(
-            Code: "IdRequired",
-            Message: "User ID is required.",
-            HttpStatusCode.BadRequest);
+        public static readonly Error AccountNotActivated = new(
+            Code: "AccountNotActivated",
+            Message: "Account is not activated.",
+            HttpStatusCode.Forbidden);
     }
 }
