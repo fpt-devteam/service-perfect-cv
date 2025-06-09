@@ -16,7 +16,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
     {
         public async Task<PaginationData<CV>> ListAsync(PaginationRequest paginationRequest, Guid userId)
         {
-            var query = _context.CVs.Where(cv => cv.UserId == userId);
+            var query = _context.CVs.Where(cv => cv.UserId == userId).Include(cv => cv.Educations);
             var totalCount = await query.CountAsync();
             var items = await query
                 .Skip(paginationRequest.Offset)

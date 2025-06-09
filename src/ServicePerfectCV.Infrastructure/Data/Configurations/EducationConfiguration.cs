@@ -15,12 +15,20 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Degree)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(100);
 
             builder.Property(e => e.Institution)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(200);
 
             builder.Property(e => e.Location)
+                .HasMaxLength(100);
+
+            builder.Property(e => e.YearObtained)
+                .IsRequired(false);
+
+            builder.Property(e => e.Minor)
                 .HasMaxLength(100);
 
             builder.Property(e => e.AdditionalInfo)

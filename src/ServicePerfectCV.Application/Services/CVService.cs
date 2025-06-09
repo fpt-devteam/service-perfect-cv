@@ -17,7 +17,7 @@ namespace ServicePerfectCV.Application.Services
         IMapper mapper
     )
     {
-        public async Task<CVResponse> CreateCVAsync(CreateCVRequest request, Guid userId)
+        public async Task<CVResponse> CreateAsync(CreateCVRequest request, Guid userId)
         {
             CV newCv = mapper.Map<CV>(request);
             newCv.UserId = userId;

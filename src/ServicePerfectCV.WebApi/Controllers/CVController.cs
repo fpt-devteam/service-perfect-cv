@@ -18,12 +18,12 @@ namespace ServicePerfectCV.WebApi.Controllers
     {
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreateCV([FromBody] CreateCVRequest request)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateCVRequest request)
         {
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
-            var result = await cVService.CreateCVAsync(request, userId);
+            var result = await cVService.CreateAsync(request, userId);
             return Ok(result);
         }
 

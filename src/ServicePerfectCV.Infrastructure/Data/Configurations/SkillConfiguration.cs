@@ -19,7 +19,8 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasMaxLength(100);
 
             builder.Property(s => s.ItemsJson)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(1000);
 
             builder.HasOne(s => s.Cv)
                 .WithMany(c => c.Skills)

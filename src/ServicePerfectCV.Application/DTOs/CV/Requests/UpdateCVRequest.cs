@@ -1,0 +1,18 @@
+using ServicePerfectCV.Application.DTOs.Education.Requests;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace ServicePerfectCV.Application.DTOs.CV.Requests
+{
+    public class UpdateCVRequest
+    {
+        [Required(ErrorMessage = "CV ID is required.")]
+        public Guid Id { get; init; }
+        [MaxLength(200, ErrorMessage = "Title cannot exceed 100 characters.")]
+        public string Title { get; init; } = null!;
+        public JobDetailDto? JobDetail { get; init; }
+    }
+}

@@ -8,59 +8,65 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Data.Configurations
 {
-    public class CVConfiguration : IEntityTypeConfiguration<CV>
-    {
-        public void Configure(EntityTypeBuilder<CV> builder)
-        {
-            builder.HasKey(c => c.Id);
+   public class CVConfiguration : IEntityTypeConfiguration<CV>
+   {
+      public void Configure(EntityTypeBuilder<CV> builder)
+      {
+         builder.HasKey(c => c.Id);
 
-            builder.Property(c => c.Title)
+         builder.Property(c => c.Title)
+            .IsRequired()
+            .HasMaxLength(200);
+
+         builder.Property(c => c.CreatedAt)
                .IsRequired()
-               .HasMaxLength(200);
+               .HasDefaultValueSql("GETUTCDATE()");
+         builder.Property(c => c.UpdatedAt)
+               .IsRequired(false)
+               .HasDefaultValueSql("NULL");
+         builder.Property(c => c.DeletedAt)
+               .IsRequired(false)
+               .HasDefaultValueSql("NULL");
 
-            builder.Property(c => c.CreatedAt)
-                  .IsRequired()
-                  .HasDefaultValueSql("GETUTCDATE()");
+         builder.HasOne(c => c.User)
+            .WithMany(u => u.CVs)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(c => c.User)
-               .WithMany(u => u.CVs)
-               .HasForeignKey(c => c.UserId)
-               .OnDelete(DeleteBehavior.NoAction);
-
-            builder.HasMany(c => c.Educations)
-               .WithOne(e => e.Cv)
-                  .HasForeignKey(e => e.CVId);
-
-            builder.HasMany(c => c.Experiences)
-               .WithOne(e => e.Cv)
+         builder.HasMany(c => c.Educations)
+            .WithOne(e => e.Cv)
                .HasForeignKey(e => e.CVId);
 
-            builder.HasMany(c => c.Projects)
-               .WithOne(p => p.Cv)
-               .HasForeignKey(p => p.CVId);
+         builder.HasMany(c => c.Experiences)
+            .WithOne(e => e.Cv)
+            .HasForeignKey(e => e.CVId);
 
-            builder.HasMany(c => c.Skills)
-               .WithOne(s => s.Cv)
-               .HasForeignKey(s => s.CVId);
+         builder.HasMany(c => c.Projects)
+            .WithOne(p => p.Cv)
+            .HasForeignKey(p => p.CVId);
 
-            builder.HasMany(c => c.Certifications)
-               .WithOne(ce => ce.Cv)
-               .HasForeignKey(ce => ce.CVId);
+         builder.HasMany(c => c.Skills)
+            .WithOne(s => s.Cv)
+            .HasForeignKey(s => s.CVId);
 
-            builder.OwnsOne(c => c.JobDetail, jd =>
-            {
-                jd.Property(p => p.JobTitle)
-                      .HasColumnName("JobTitle")
-                      .HasMaxLength(100);
+         builder.HasMany(c => c.Certifications)
+            .WithOne(ce => ce.Cv)
+            .HasForeignKey(ce => ce.CVId);
 
-                jd.Property(p => p.CompanyName)
-                      .HasColumnName("CompanyName")
-                      .HasMaxLength(120);
+         builder.OwnsOne(c => c.JobDetail, jd =>
+         {
+            jd.Property(p => p.JobTitle)
+                     .HasColumnName("JobTitle")
+                     .HasMaxLength(100);
 
-                jd.Property(p => p.Description)
-                      .HasColumnName("JobDescription")
-                      .HasMaxLength(5000);
-            });
-        }
-    }
+            jd.Property(p => p.CompanyName)
+                     .HasColumnName("CompanyName")
+                     .HasMaxLength(120);
+
+            jd.Property(p => p.Description)
+                     .HasColumnName("JobDescription")
+                     .HasMaxLength(5000);
+         });
+      }
+   }
 }
