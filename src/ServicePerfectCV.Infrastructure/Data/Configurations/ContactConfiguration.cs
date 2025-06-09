@@ -33,8 +33,9 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             .HasMaxLength(500);
 
             builder.HasOne(x => x.Cv)
-            .WithOne()
-            .HasForeignKey<Contact>(x => x.CVSId)
+            .WithOne(c => c.Contact)
+            .HasForeignKey<Contact>(x => x.CVId)
+            .IsRequired()
             .IsRequired().OnDelete(DeleteBehavior.NoAction); ;
         }
     }

@@ -31,31 +31,17 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
 
         public virtual async Task<bool> DeleteAsync(TKey id)
         {
-            var keyProperty = typeof(TEntity).GetProperty(nameof(IEntity<TKey>.Id))
-                       ?? throw new Exception("Entity must have Id property");
-
-            var idValue = keyProperty.GetValue(id) ?? throw new Exception("Id is null");
-
-            var entity = await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
-                                                && EF.Property<DateTime?>(e, "DeletedAt") == null);
-
+            var entity = await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id)
+                        && EF.Property<DateTime?>(e, "DeletedAt") == null);
             if (entity == null) return false;
-
-            keyProperty.SetValue(entity, idValue);
             _context.Entry(entity).Property("DeletedAt").CurrentValue = DateTime.UtcNow;
-
             return true;
         }
 
         public virtual async Task<TEntity?> GetByIdAsync(TKey id)
         {
-            var keyProperty = typeof(TEntity).GetProperty(nameof(IEntity<TKey>.Id))
-                     ?? throw new Exception("Entity must have Id property");
-
-            var idValue = keyProperty.GetValue(id) ?? throw new Exception("Id is null");
-
-            return await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
-                                                && EF.Property<DateTime?>(e, "DeletedAt") == null);
+            return await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id)
+                        && EF.Property<DateTime?>(e, "DeletedAt") == null);
         }
 
         public virtual async Task SaveChangesAsync()
@@ -66,13 +52,11 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
         public virtual async Task<bool> UpdateAsync(TEntity entity)
         {
             var keyProperty = typeof(TEntity).GetProperty(nameof(IEntity<TKey>.Id));
-
-
             var idValue = keyProperty!.GetValue(entity);
 
             var oldEntity = await _dbSet
-                .FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
-                                       && EF.Property<DateTime?>(e, "DeletedAt") == null);
+                            .FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
+                            && EF.Property<DateTime?>(e, "DeletedAt") == null);
 
             if (oldEntity == null) return false;
 

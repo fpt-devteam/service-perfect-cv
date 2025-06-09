@@ -9,7 +9,7 @@ namespace ServicePerfectCV.Domain.Entities
     public class Education : IEntity<Guid>
     {
         public Guid Id { get; set; }
-        public Guid CVSId { get; set; }
+        public Guid CVId { get; set; }
 
         public required string Degree { get; set; }
         public required string Institution { get; set; }
@@ -19,6 +19,6 @@ namespace ServicePerfectCV.Domain.Entities
         public decimal? Gpa { get; set; }
         public string? AdditionalInfo { get; set; }
         // Navigation property
-        public virtual CVS Cv { get; set; } = default!;
+        public virtual CV Cv { get; set; } = default!;
     }
 }

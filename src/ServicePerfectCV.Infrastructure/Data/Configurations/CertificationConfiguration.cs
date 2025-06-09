@@ -31,7 +31,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.HasOne(c => c.Cv)
             .WithMany(cv => cv.Certifications)
-            .HasForeignKey(cv => cv.CVSId)
+            .HasForeignKey(cv => cv.CVId)
             .IsRequired().OnDelete(DeleteBehavior.NoAction);
         }
     }

@@ -1,4 +1,5 @@
 using ServicePerfectCV.Domain.Common;
+using ServicePerfectCV.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Domain.Entities
 {
-    public class CVS : IEntity<Guid>
+    public class CV : IEntity<Guid>
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public Guid? ContactId { get; set; }
-        public Guid? SummaryId { get; set; }
+        public JobDetail? JobDetail { get; set; }
         public string Title { get; set; } = default!;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }

@@ -19,6 +19,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Seeding
 
                 // delete existing data
                 await context.Database.ExecuteSqlRawAsync("DELETE FROM Users");
+                await context.Database.ExecuteSqlRawAsync("DELETE FROM CVs");
 
                 // seed users
                 var users = UserSeed.Data;

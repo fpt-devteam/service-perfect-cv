@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Mappings;
 using ServicePerfectCV.Application.Services;
-using ServicePerfectCV.Application.Validators;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Helpers;
 using ServicePerfectCV.Infrastructure.Repositories;
@@ -25,9 +24,11 @@ namespace ServicePerfectCV.WebApi.Extensions
         {
             services.AddAutoMapper(typeof(AuthMappingProfile));
             services.AddAutoMapper(typeof(UserMappingProfile));
+            services.AddAutoMapper(typeof(CVMappingProfile));
 
             // register repositories
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICVRepository, CVRepository>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
 
@@ -36,14 +37,12 @@ namespace ServicePerfectCV.WebApi.Extensions
 
             // register services
             services.AddScoped<AuthService>();
+            services.AddScoped<CVService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             services.AddScoped<JwtSecurityTokenHandler>();
-
-            // register validators
-            services.AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
         }
     }
 }

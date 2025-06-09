@@ -18,6 +18,6 @@ namespace ServicePerfectCV.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public ICollection<CVS> CVs { get; set; } = [];
+        public ICollection<CV> CVs { get; set; } = [];
     }
 }

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Data.Configurations
 {
-    public class CVSConfiguration : IEntityTypeConfiguration<CVS>
+    public class CVConfiguration : IEntityTypeConfiguration<CV>
     {
-        public void Configure(EntityTypeBuilder<CVS> builder)
+        public void Configure(EntityTypeBuilder<CV> builder)
         {
             builder.HasKey(c => c.Id);
 
@@ -27,35 +27,40 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                .HasForeignKey(c => c.UserId)
                .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(c => c.Contact)
-               .WithOne()
-               .HasForeignKey<CVS>(c => c.ContactId)
-               .IsRequired(false);
-
-            builder.HasOne(c => c.Summary)
-               .WithOne()
-               .HasForeignKey<CVS>(c => c.SummaryId)
-               .IsRequired(false);
-
             builder.HasMany(c => c.Educations)
                .WithOne(e => e.Cv)
-                  .HasForeignKey(e => e.CVSId);
+                  .HasForeignKey(e => e.CVId);
 
             builder.HasMany(c => c.Experiences)
                .WithOne(e => e.Cv)
-               .HasForeignKey(e => e.CVSId);
+               .HasForeignKey(e => e.CVId);
 
             builder.HasMany(c => c.Projects)
                .WithOne(p => p.Cv)
-               .HasForeignKey(p => p.CVSId);
+               .HasForeignKey(p => p.CVId);
 
             builder.HasMany(c => c.Skills)
                .WithOne(s => s.Cv)
-               .HasForeignKey(s => s.CVSId);
+               .HasForeignKey(s => s.CVId);
 
             builder.HasMany(c => c.Certifications)
                .WithOne(ce => ce.Cv)
-               .HasForeignKey(ce => ce.CVSId); ;
+               .HasForeignKey(ce => ce.CVId);
+
+            builder.OwnsOne(c => c.JobDetail, jd =>
+            {
+                jd.Property(p => p.JobTitle)
+                      .HasColumnName("JobTitle")
+                      .HasMaxLength(100);
+
+                jd.Property(p => p.CompanyName)
+                      .HasColumnName("CompanyName")
+                      .HasMaxLength(120);
+
+                jd.Property(p => p.Description)
+                      .HasColumnName("JobDescription")
+                      .HasMaxLength(5000);
+            });
         }
     }
 }

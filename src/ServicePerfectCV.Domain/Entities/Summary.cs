@@ -9,10 +9,10 @@ namespace ServicePerfectCV.Domain.Entities
     public class Summary : IEntity<Guid>
     {
         public Guid Id { get; set; }
-        public Guid CVSId { get; set; }
+        public Guid CVId { get; set; }
         public required string Context { get; set; }
 
         // Navigation property
-        public virtual CVS? Cv { get; set; }
+        public virtual CV? Cv { get; set; }
     }
 }

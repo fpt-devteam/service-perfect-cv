@@ -11,7 +11,7 @@ namespace ServicePerfectCV.Domain.Entities
     public class Project : IEntity<Guid>
     {
         public Guid Id { get; set; }
-        public Guid CVSId { get; set; }
+        public Guid CVId { get; set; }
         public required string Title { get; set; }
         public required string Description { get; set; }
         public string? Link { get; set; }
@@ -26,6 +26,6 @@ namespace ServicePerfectCV.Domain.Entities
         }
 
         // Navigation property
-        public virtual CVS Cv { get; set; } = default!;
+        public virtual CV Cv { get; set; } = default!;
     }
 }

@@ -18,6 +18,6 @@ namespace ServicePerfectCV.Domain.Entities
         public UserStatus Status { get; set; } = UserStatus.Undefined;
         public UserRole Role { get; set; } = UserRole.User;
 
-        public ICollection<CVS> CVs { get; set; } = [];
+        public ICollection<CV> CVs { get; set; } = [];
     }
 }

@@ -19,7 +19,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.HasOne(s => s.Cv)
                 .WithOne(c => c.Summary)
-                .HasForeignKey<Summary>(s => s.CVSId)
+                .HasForeignKey<Summary>(s => s.CVId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

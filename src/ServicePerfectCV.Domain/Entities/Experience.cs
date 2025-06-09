@@ -9,7 +9,7 @@ namespace ServicePerfectCV.Domain.Entities
     public class Experience : IEntity<Guid>
     {
         public Guid Id { get; set; }
-        public Guid CVSId { get; set; }
+        public Guid CVId { get; set; }
         public required string Role { get; set; }
         public required string Company { get; set; }
         public DateOnly StartDate { get; set; }
@@ -18,6 +18,6 @@ namespace ServicePerfectCV.Domain.Entities
         public string? Description { get; set; }
 
         // Navigation property
-        public virtual CVS Cv { get; set; } = default!;
+        public virtual CV Cv { get; set; } = default!;
     }
 }
