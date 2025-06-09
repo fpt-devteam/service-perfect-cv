@@ -36,7 +36,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.HasOne(p => p.Cv)
                 .WithMany(c => c.Projects)
-                .HasForeignKey(p => p.CVSId)
+                .HasForeignKey(p => p.CVId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

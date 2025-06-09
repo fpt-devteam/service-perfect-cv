@@ -9,13 +9,13 @@ namespace ServicePerfectCV.Domain.Entities
     public class Certification : IEntity<Guid>
     {
         public Guid Id { get; set; }
-        public Guid CVSId { get; set; }
+        public Guid CVId { get; set; }
         public required string Name { get; set; }
         public required string Issuer { get; set; }
         public int? YearObtained { get; set; }
         public string? Relevance { get; set; }
 
         // Navigation property
-        public virtual CVS Cv { get; set; } = default!;
+        public virtual CV Cv { get; set; } = default!;
     }
 }

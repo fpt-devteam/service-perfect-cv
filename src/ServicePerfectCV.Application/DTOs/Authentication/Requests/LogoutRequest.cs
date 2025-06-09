@@ -9,6 +9,6 @@ namespace ServicePerfectCV.Application.DTOs.Authentication.Requests
     public class LogoutRequest
     {
         [Required(ErrorMessage = "Refresh token is required.")]
-        public required string RefreshToken { get; set; }
+        public required string RefreshToken { get; init; }
     }
 }

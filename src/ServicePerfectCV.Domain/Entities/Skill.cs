@@ -11,7 +11,7 @@ namespace ServicePerfectCV.Domain.Entities
     public class Skill : IEntity<Guid>
     {
         public Guid Id { get; set; }
-        public Guid CVSId { get; set; }
+        public Guid CVId { get; set; }
         public required string Category { get; set; }
         public required string ItemsJson { get; set; }
         [NotMapped]
@@ -20,6 +20,6 @@ namespace ServicePerfectCV.Domain.Entities
             get => JsonSerializer.Deserialize<List<string>>(ItemsJson) ?? [];
             set => ItemsJson = JsonSerializer.Serialize(value);
         }
-        public virtual CVS Cv { get; set; } = default!;
+        public virtual CV Cv { get; set; } = default!;
     }
 }

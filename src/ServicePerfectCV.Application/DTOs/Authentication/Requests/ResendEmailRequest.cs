@@ -9,6 +9,7 @@ namespace ServicePerfectCV.Application.DTOs.Authentication.Requests
     public class ResendEmailRequest
     {
         [Required(ErrorMessage = "Email is required.")]
-        public required string Email { get; set; }
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
+        public required string Email { get; init; }
     }
 }

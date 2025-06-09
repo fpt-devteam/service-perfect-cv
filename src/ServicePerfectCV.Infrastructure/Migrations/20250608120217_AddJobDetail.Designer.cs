@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServicePerfectCV.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using ServicePerfectCV.Infrastructure.Data;
 namespace ServicePerfectCV.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250608120217_AddJobDetail")]
+    partial class AddJobDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -347,11 +350,11 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                             b1.Property<Guid>("CVId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<string>("CompanyName")
+                            b1.Property<string>("Company")
                                 .IsRequired()
                                 .HasMaxLength(120)
                                 .HasColumnType("nvarchar(120)")
-                                .HasColumnName("CompanyName");
+                                .HasColumnName("JobCompany");
 
                             b1.Property<string>("Description")
                                 .IsRequired()
@@ -359,7 +362,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("JobDescription");
 
-                            b1.Property<string>("JobTitle")
+                            b1.Property<string>("Title")
                                 .IsRequired()
                                 .HasMaxLength(100)
                                 .HasColumnType("nvarchar(100)")
