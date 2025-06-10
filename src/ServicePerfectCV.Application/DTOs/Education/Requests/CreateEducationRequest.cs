@@ -19,7 +19,7 @@ namespace ServicePerfectCV.Application.DTOs.Education.Requests
         [MaxLength(200, ErrorMessage = "Institution cannot exceed 200 characters")]
         public required string Institution { get; init; }
         
-        [MaxLength(100, ErrorMessage = "Location cannot exceed 200 characters")]
+        [MaxLength(100, ErrorMessage = "Location cannot exceed 100 characters")]
         public string? Location { get; init; }
 
         public int? YearObtained { get; init; }

@@ -15,7 +15,7 @@ namespace ServicePerfectCV.Application.DTOs.Education.Requests
         [StringLength(100, ErrorMessage = "Degree cannot exceed 100 characters.")]
         public string Degree { get; init; } = null!;
 
-        [StringLength(200, ErrorMessage = "Institution cannot exceed 100 characters.")]
+        [StringLength(200, ErrorMessage = "Institution cannot exceed 200 characters.")]
         public string Institution { get; init; } = null!;
 
         [StringLength(100, ErrorMessage = "Location cannot exceed 100 characters.")]
@@ -25,8 +25,7 @@ namespace ServicePerfectCV.Application.DTOs.Education.Requests
 
         [StringLength(100, ErrorMessage = "Minor cannot exceed 100 characters.")]
         public string? Minor { get; init; }
-
-        [Range(0, 10.0, ErrorMessage = "GPA must be between 0 and 10.")]
+        [Range(0, 4, ErrorMessage = "GPA must be between 0 and 4.")]
         public decimal? Gpa { get; init; } = null!;
 
         [StringLength(500, ErrorMessage = "Additional information cannot exceed 500 characters.")]

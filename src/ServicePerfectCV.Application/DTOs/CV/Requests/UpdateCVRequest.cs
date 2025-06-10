@@ -11,7 +11,7 @@ namespace ServicePerfectCV.Application.DTOs.CV.Requests
     {
         [Required(ErrorMessage = "CV ID is required.")]
         public Guid Id { get; init; }
-        [MaxLength(200, ErrorMessage = "Title cannot exceed 100 characters.")]
+        [MaxLength(200, ErrorMessage = "Title cannot exceed 200 characters.")]
         public string Title { get; init; } = null!;
         public JobDetailDto? JobDetail { get; init; }
     }
