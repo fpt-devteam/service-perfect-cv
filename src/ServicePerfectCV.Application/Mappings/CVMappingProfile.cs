@@ -1,3 +1,4 @@
+using ServicePerfectCV.Application.DTOs.CV;
 using ServicePerfectCV.Application.DTOs.CV.Requests;
 using ServicePerfectCV.Application.DTOs.CV.Responses;
 using ServicePerfectCV.Domain.Entities;
@@ -13,11 +14,12 @@ namespace ServicePerfectCV.Application.Mappings
     {
         public CVMappingProfile()
         {
-            CreateMap<JobDetail, JobDetailResponse>();
+            CreateMap<JobDetail, JobDetailDto>();
             CreateMap<CV, CVResponse>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
-                .ForMember(dest => dest.JobDetail, opt => opt.MapFrom(src => src.JobDetail));
+                .ForMember(dest => dest.JobDetail, opt => opt.MapFrom(src => src.JobDetail))
+                .ForMember(dest => dest.Educations, opt => opt.MapFrom(src => src.Educations));
             CreateMap<CreateCVRequest, CV>()
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.JobDetail, opt => opt.MapFrom(src => src.JobDetail))

@@ -21,18 +21,23 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasMaxLength(200);
 
             builder.Property(p => p.Description)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(2000);
 
             builder.Property(p => p.Link)
                 .HasMaxLength(200);
 
             builder.Property(p => p.TechJson)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(1000);
 
             builder.Property(p => p.StartDate)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.Property(p => p.EndDate);
+            builder.Property(p => p.EndDate)
+                .IsRequired(false)
+                .HasDefaultValueSql("NULL");
 
             builder.HasOne(p => p.Cv)
                 .WithMany(c => c.Projects)

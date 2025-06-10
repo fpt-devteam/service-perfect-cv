@@ -18,6 +18,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(u => u.Email)
                 .IsRequired()
                 .HasMaxLength(256);
+
             builder.HasIndex(u => u.Email).IsUnique();
 
             builder.Property(u => u.PasswordHash)
@@ -30,6 +31,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(u => u.UpdatedAt)
                 .IsRequired(false);
+                
             builder.Property(u => u.DeletedAt)
                 .IsRequired(false);
 
@@ -44,6 +46,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasConversion(
                     v => v.ToString(),
                     v => (UserRole)Enum.Parse(typeof(UserRole), v));
+
             builder.HasMany(u => u.CVs)
                 .WithOne(c => c.User)
                 .HasForeignKey(c => c.UserId)

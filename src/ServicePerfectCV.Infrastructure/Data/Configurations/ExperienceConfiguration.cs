@@ -15,19 +15,26 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Role)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(50);
 
             builder.Property(e => e.Company)
-                .IsRequired();
+                .IsRequired()
+                .HasMaxLength(100);
 
             builder.Property(e => e.StartDate)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.Property(e => e.EndDate);
+            builder.Property(e => e.EndDate)
+                .IsRequired(false)
+                .HasDefaultValueSql("NULL");
 
-            builder.Property(e => e.Location);
+            builder.Property(e => e.Location)
+                .HasMaxLength(100);
 
-            builder.Property(e => e.Description);
+            builder.Property(e => e.Description)
+                .HasMaxLength(2000);
 
             builder.HasOne(e => e.Cv)
                 .WithMany(c => c.Experiences)
