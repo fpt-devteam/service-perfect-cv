@@ -52,11 +52,10 @@ namespace ServicePerfectCV.WebApi
 
             await app.Services.SeedDatabaseAsync();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
 
             app.UseCors("AppCorsPolicy");
             app.UseHttpsRedirection();
