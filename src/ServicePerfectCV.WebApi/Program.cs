@@ -1,16 +1,10 @@
 using DotNetEnv;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.IdentityModel.Tokens;
 using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.WebApi.Extensions;
 using ServicePerfectCV.WebApi.Middleware;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace ServicePerfectCV.WebApi
 {
@@ -18,11 +12,9 @@ namespace ServicePerfectCV.WebApi
     {
         public static async Task Main(string[] args)
         {
-            // Load environment variables from .env file
             Env.Load();
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-            // Setup configuration sources.
             builder.Configuration
                 .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true)
@@ -30,9 +22,7 @@ namespace ServicePerfectCV.WebApi
 
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<RefreshTokenConfiguration>(builder.Configuration.GetSection("RefreshToken"));
-            builder.Services.Configure<RefreshTokenConfiguration>(builder.Configuration.GetSection("RefreshToken"));
             builder.Services.Configure<CorsSettings>(builder.Configuration.GetSection("CorsSettings"));
-            builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection("RedisSettings"));
             builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("ConnectionStrings"));
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
@@ -48,21 +38,26 @@ namespace ServicePerfectCV.WebApi
             builder.Services.ConfigureServices();
             builder.Services.AddAuthorizationPolicies(builder.Configuration);
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             WebApplication app = builder.Build();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+            using (IServiceScope scope = app.Services.CreateScope())
+            {
+                ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                await dbContext.Database.MigrateAsync();
+            }
+
             await app.Services.SeedDatabaseAsync();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                // System.Console.WriteLine("hihi");
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
             app.UseCors("AppCorsPolicy");
             app.UseHttpsRedirection();
             app.UseAuthentication();
