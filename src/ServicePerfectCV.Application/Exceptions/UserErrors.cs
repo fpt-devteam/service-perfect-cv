@@ -20,5 +20,13 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "AccountNotActivated",
             Message: "Account is not activated.",
             HttpStatusCode.Forbidden);
+        public static readonly Error InvalidResetCode = new(
+            Code: "InvalidResetCode",
+            Message: "Invalid or expired reset code.",
+            HttpStatusCode.BadRequest);
+        public static readonly Error ResetCodeNotFound = new(
+            Code: "ResetCodeNotFound",
+            Message: "Reset code not found.",
+            HttpStatusCode.NotFound);
     }
 }

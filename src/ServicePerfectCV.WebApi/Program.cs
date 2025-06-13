@@ -2,6 +2,7 @@ using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using ServicePerfectCV.Application.Configurations;
+using ServicePerfectCV.Application.Services;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.WebApi.Extensions;
 using ServicePerfectCV.WebApi.Middleware;
@@ -37,6 +38,7 @@ namespace ServicePerfectCV.WebApi
 
             builder.Services.ConfigureServices();
             builder.Services.AddAuthorizationPolicies(builder.Configuration);
+            builder.Services.AddScoped<UserService>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
