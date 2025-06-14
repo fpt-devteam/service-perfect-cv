@@ -28,8 +28,8 @@ namespace ServicePerfectCV.WebApi.Controllers
         }
 
         [Authorize]
-        [HttpPost("list")]
-        public async Task<IActionResult> ListAsync(PaginationRequest paginationRequest)
+        [HttpGet]
+        public async Task<IActionResult> ListAsync([FromQuery] PaginationRequest paginationRequest)
         {
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(nameIdentifier, out var userId))
