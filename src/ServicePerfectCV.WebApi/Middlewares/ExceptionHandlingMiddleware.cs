@@ -34,11 +34,16 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
 
         response.StatusCode = (int)error.HttpStatusCode;
 
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        
         string result = JsonSerializer.Serialize(new
         {
             Code = error.Code,
             Message = error.Message
-        });
+        }, options);
 
         logger.LogError(exception, "An error occurred: {Message}", error.Message);
 
