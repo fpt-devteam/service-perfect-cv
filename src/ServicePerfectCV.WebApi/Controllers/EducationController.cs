@@ -24,10 +24,10 @@ namespace ServicePerfectCV.WebApi.Controllers
         }
 
         [Authorize]
-        [HttpPost("list")]
-        public async Task<IActionResult> ListAsync([FromBody] ListEducationRequest request)
+        [HttpGet]
+        public async Task<IActionResult> ListAsync([FromQuery] Guid cvId)
         {
-            var response = await educationService.ListAsync(request.CVId);
+            var response = await educationService.ListAsync(cvId);
             return Ok(response);
         }
 

@@ -87,13 +87,23 @@ namespace ServicePerfectCV.Application.Services
                 RequireExpirationTime = true,
                 RequireSignedTokens = true
             };
-            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
-            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var role = principal.FindFirst(ClaimTypes.Role)?.Value;
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
 
-            if (!Guid.TryParse(userId, out Guid parsedUserId) || string.IsNullOrEmpty(role))
-                throw new DomainException(AuthErrors.UserNotAuthenticated);
-            return parsedUserId;
+                var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var roleClaim = principal.FindFirst(ClaimTypes.Role)?.Value;
+
+                return !string.IsNullOrEmpty(userIdClaim) &&
+                       !string.IsNullOrEmpty(roleClaim) &&
+                       Guid.TryParse(userIdClaim, out var parsedUserId)
+                    ? parsedUserId
+                    : Guid.Empty;
+            }
+            catch
+            {
+                return Guid.Empty;
+            }
         }
 
         public async Task<bool> ActivateAccountAsync(Guid userId)
