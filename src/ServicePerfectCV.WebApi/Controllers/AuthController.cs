@@ -29,8 +29,10 @@ namespace ServicePerfectCV.WebApi.Controllers
         public async Task<IActionResult> ActivateAccountAsync([FromQuery] string token)
         {
             Guid userId = authService.VerifyTokenAsync(token);
-            if (await authService.ActivateAccountAsync(userId)) return Redirect(option.Value.SuccessUrl);
-            return Redirect(option.Value.FailUrl);
+
+            if (userId == Guid.Empty || !await authService.ActivateAccountAsync(userId))
+                return Redirect(option.Value.FailUrl);
+            return Redirect(option.Value.SuccessUrl);
         }
         [HttpPost("resend-activation-email")]
         public async Task<IActionResult> ResendActivationEmailAsync([FromBody] ResendEmailRequest resendAEmailRequest)
