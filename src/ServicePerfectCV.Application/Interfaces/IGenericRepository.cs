@@ -10,7 +10,7 @@ namespace ServicePerfectCV.Application.Interfaces
     where TEntity : IEntity<TKey>
     {
         Task<TEntity> CreateAsync(TEntity entity);
-        Task<bool> UpdateAsync(TEntity entity);
+        bool Update(TEntity entity);
         Task<TEntity?> GetByIdAsync(TKey id);
         Task<bool> DeleteAsync(TKey id);
         Task SaveChangesAsync();

@@ -11,7 +11,6 @@ namespace ServicePerfectCV.WebApi.Extensions
         public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
         {
             var redisSettings = configuration.GetSection("RedisSettings").Get<RedisSettings>() ?? throw new InvalidOperationException("Missing RedisSettings");
-            System.Console.WriteLine($"Redis Connection String: {redisSettings.ConnectionString}");
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = redisSettings.ConnectionString;

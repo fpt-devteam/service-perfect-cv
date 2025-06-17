@@ -44,19 +44,20 @@ namespace ServicePerfectCV.WebApi
             WebApplication app = builder.Build();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            using (IServiceScope scope = app.Services.CreateScope())
+            // Chỉ chạy migrations nếu không phải môi trường testing
+            if (!app.Environment.IsEnvironment("Testing"))
             {
-                ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                await dbContext.Database.MigrateAsync();
+                using (IServiceScope scope = app.Services.CreateScope())
+                {
+                    ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    await dbContext.Database.MigrateAsync();
+                }
             }
 
-            await app.Services.SeedDatabaseAsync();
-
+            // await app.Services.SeedDatabaseAsync();
 
             app.UseSwagger();
             app.UseSwaggerUI();
-
-
             app.UseCors("AppCorsPolicy");
             app.UseHttpsRedirection();
             app.UseAuthentication();

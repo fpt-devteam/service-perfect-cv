@@ -24,7 +24,6 @@ namespace ServicePerfectCV.Infrastructure.Services
 
         public (string AccessToken, string RefreshToken) GenerateToken(ClaimsAccessToken claimsAccessToken)
         {
-
             return (GenerateAccessToken(claimsAccessToken), GenerateRefreshToken());
         }
         private static string GenerateRefreshToken()

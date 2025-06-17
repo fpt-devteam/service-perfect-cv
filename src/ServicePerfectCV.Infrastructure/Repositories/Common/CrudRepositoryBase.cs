@@ -6,6 +6,7 @@ using ServicePerfectCV.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Repositories.Common
@@ -48,32 +49,11 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
         {
             await _context.SaveChangesAsync();
         }
-
-        public virtual async Task<bool> UpdateAsync(TEntity entity)
+        
+        public virtual bool Update(TEntity entity)
         {
-            var keyProperty = typeof(TEntity).GetProperty(nameof(IEntity<TKey>.Id));
-            var idValue = keyProperty!.GetValue(entity);
-
-            var oldEntity = await _dbSet
-                            .FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(idValue)
-                            && EF.Property<DateTime?>(e, "DeletedAt") == null);
-
-            if (oldEntity == null) return false;
-
-            foreach (var prop in typeof(TEntity).GetProperties())
-            {
-                if (prop.Name == "Id" || prop.Name == "DeletedAt") continue;
-
-                var newValue = prop.GetValue(entity);
-                if (newValue != null)
-                {
-                    prop.SetValue(oldEntity, newValue);
-                }
-            }
-
-            _dbSet.Update(oldEntity);
+            _dbSet.Update(entity);
             return true;
         }
-
     }
 }

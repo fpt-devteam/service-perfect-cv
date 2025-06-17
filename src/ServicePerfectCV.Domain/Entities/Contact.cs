@@ -1,9 +1,4 @@
 using ServicePerfectCV.Domain.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Domain.Entities
 {
@@ -17,7 +12,8 @@ namespace ServicePerfectCV.Domain.Entities
         public string? LinkedInUrl { get; set; }
         public string? GitHubUrl { get; set; }
         public string? PersonalWebsiteUrl { get; set; }
-        public string? Address { get; set; }
+        public string? Country { get; set; }
+        public string? City { get; set; }
 
         // Navigation property
         public virtual CV Cv { get; set; } = default!;

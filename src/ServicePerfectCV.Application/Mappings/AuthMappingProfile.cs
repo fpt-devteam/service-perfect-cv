@@ -19,7 +19,7 @@ namespace ServicePerfectCV.Application.Mappings
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
             CreateMap<User, RegisterResponse>()
-                .ForMember(dest => dest.Mail, opt => opt.MapFrom(src => src.Email));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
             CreateMap<LoginRequest, User>();
         }
     }
