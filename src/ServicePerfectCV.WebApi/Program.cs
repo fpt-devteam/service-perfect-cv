@@ -33,18 +33,21 @@ namespace ServicePerfectCV.WebApi
 
             builder.Services.AddRedis(builder.Configuration);
             builder.Services.AddConfiguredCors(builder.Configuration);
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options => 
+                {
+                    options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+                });
 
             builder.Services.ConfigureServices();
             builder.Services.AddAuthorizationPolicies(builder.Configuration);
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddConfiguredSwagger();
 
             WebApplication app = builder.Build();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            // Chỉ chạy migrations nếu không phải môi trường testing
             if (!app.Environment.IsEnvironment("Testing"))
             {
                 using (IServiceScope scope = app.Services.CreateScope())
@@ -54,6 +57,7 @@ namespace ServicePerfectCV.WebApi
                 }
             }
 
+            //TODO: uncomment when db schema is ready
             // await app.Services.SeedDatabaseAsync();
 
             app.UseSwagger();
