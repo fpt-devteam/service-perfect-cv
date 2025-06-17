@@ -20,7 +20,7 @@ namespace ServicePerfectCV.IntegrationTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
-            
+
             builder.ConfigureLogging(logging =>
             {
                 logging.ClearProviders();
@@ -28,19 +28,19 @@ namespace ServicePerfectCV.IntegrationTests
                 logging.AddDebug();
                 logging.SetMinimumLevel(LogLevel.Debug);
             });
-            
+
             builder.ConfigureServices(services =>
             {
-                var dbContextOptions = services.Where(s => 
+                var dbContextOptions = services.Where(s =>
                     s.ServiceType.Name.Contains("DbContextOptions") ||
                     (s.ServiceType.IsGenericType && s.ServiceType.GetGenericTypeDefinition() == typeof(DbContextOptions<>)))
                     .ToList();
-                
+
                 foreach (var options in dbContextOptions)
                 {
                     services.Remove(options);
                 }
-                
+
                 var repositories = services.Where(s => s.ServiceType.Name.Contains("Repository")).ToList();
                 foreach (var repo in repositories)
                 {
@@ -53,40 +53,40 @@ namespace ServicePerfectCV.IntegrationTests
                 {
                     services.Remove(redisDescriptor);
                 }
-                
-                services.AddDbContext<ApplicationDbContext>(options => 
+
+                services.AddDbContext<ApplicationDbContext>(options =>
                 {
                     options.UseInMemoryDatabase("InMemoryTestDb");
                     options.EnableSensitiveDataLogging();
                     options.EnableDetailedErrors();
                 });
-                
+
                 services.AddScoped<IUserRepository, UserRepository>();
                 services.AddScoped<ICVRepository, CVRepository>();
                 services.AddScoped<IContactRepository, ContactRepository>();
                 services.AddScoped<ITokenGenerator, TokenGenerator>();
-                
-                services.AddSingleton<ICacheService>(sp => 
+
+                services.AddSingleton<ICacheService>(sp =>
                 {
                     var mock = new Mock<ICacheService>();
                     return mock.Object;
                 });
             });
         }
-        
-        private IServiceProvider _services;
+
+        private IServiceProvider? _services;
         public new IServiceProvider Services => _services ??= Server.Services;
-        
+
         protected override IHost CreateHost(IHostBuilder builder)
         {
             var host = base.CreateHost(builder);
-            
+
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 var db = services.GetRequiredService<ApplicationDbContext>();
                 var logger = services.GetRequiredService<ILogger<CustomWebApplicationFactory>>();
-                
+
                 try
                 {
                     db.Database.EnsureCreated();
@@ -96,7 +96,7 @@ namespace ServicePerfectCV.IntegrationTests
                     logger.LogError(ex, "Error when start: {Message}", ex.Message);
                 }
             }
-            
+
             return host;
         }
     }
