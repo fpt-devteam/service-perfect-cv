@@ -97,7 +97,8 @@ To disable seeding, set Seed.Enabled to false and restart the project.
 
 Build and run the `api` project should also generate `swagger` spec from Micronaut annotations at:
 
-- Swagger https://localhost:8080/swagger/index.html
+- Swagger local http://localhost:8080/swagger/index.html
+- Swagger dev https://perfect-cv-ghd4h9b6f5d3atcq.southeastasia-01.azurewebsites.net/swagger/index.html
 
 ## Code Formatting
 
