@@ -29,14 +29,17 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(x => x.PersonalWebsiteUrl)
             .HasMaxLength(200);
 
-            builder.Property(x => x.Address)
-            .HasMaxLength(500);
+            builder.Property(x => x.Country)
+            .HasMaxLength(50);
+
+            builder.Property(x => x.City)
+            .HasMaxLength(50);
 
             builder.HasOne(x => x.Cv)
             .WithOne(c => c.Contact)
             .HasForeignKey<Contact>(x => x.CVId)
             .IsRequired()
-            .IsRequired().OnDelete(DeleteBehavior.NoAction); ;
+            .IsRequired().OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

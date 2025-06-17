@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServicePerfectCV.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using ServicePerfectCV.Infrastructure.Data;
 namespace ServicePerfectCV.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250616111327_AddCountryAndCityToContact")]
+    partial class AddCountryAndCityToContact
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +58,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CVs", (string)null);
+                    b.ToTable("CVs");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
@@ -88,7 +91,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Certifications", (string)null);
+                    b.ToTable("Certifications");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Contact", b =>
@@ -133,7 +136,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("CVId")
                         .IsUnique();
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
@@ -177,7 +180,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Educations", (string)null);
+                    b.ToTable("Educations");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Experience", b =>
@@ -221,7 +224,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Experiences", (string)null);
+                    b.ToTable("Experiences");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Project", b =>
@@ -266,7 +269,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Skill", b =>
@@ -292,7 +295,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Skills", (string)null);
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Summary", b =>
@@ -314,7 +317,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("CVId")
                         .IsUnique();
 
-                    b.ToTable("Summaries", (string)null);
+                    b.ToTable("Summaries");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.User", b =>
@@ -357,7 +360,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.CV", b =>
@@ -393,7 +396,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                             b1.HasKey("CVId");
 
-                            b1.ToTable("CVs", (string)null);
+                            b1.ToTable("CVs");
 
                             b1.WithOwner()
                                 .HasForeignKey("CVId");

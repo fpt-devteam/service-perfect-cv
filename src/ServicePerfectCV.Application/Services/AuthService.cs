@@ -103,7 +103,7 @@ namespace ServicePerfectCV.Application.Services
                 Id = userId,
                 Status = UserStatus.Active
             };
-            if (!await userRepository.UpdateAsync(mapper.Map<User>(updateUserRequest))) throw new DomainException(UserErrors.NotFound);
+            if (!userRepository.Update(mapper.Map<User>(updateUserRequest))) throw new DomainException(UserErrors.NotFound);
             await userRepository.SaveChangesAsync();
             return true;
         }
