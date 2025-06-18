@@ -22,13 +22,21 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
     {
         HttpResponse response = context.Response;
         response.ContentType = "application/json";
+        
+        string errorMessage = exception.Message;
+        if (exception.InnerException != null)
+        {
+            errorMessage += $" Inner exception: {exception.InnerException.Message}";
+        }
+
+        logger.LogError(exception, "An unhandled exception occurred: {Message}", errorMessage);
 
         Error error = exception switch
         {
             DomainException appEx => appEx.Error,
             _ => new Error(
                 Code: "InternalServerError",
-                Message: "An internal server error occurred.",
+                Message: $"An internal server error occurred: {errorMessage}",
                 HttpStatusCode.InternalServerError)
         };
 
@@ -44,8 +52,6 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
             Code = error.Code,
             Message = error.Message
         }, options);
-
-        logger.LogError(exception, "An error occurred: {Message}", error.Message);
 
         await response.WriteAsync(result);
     }

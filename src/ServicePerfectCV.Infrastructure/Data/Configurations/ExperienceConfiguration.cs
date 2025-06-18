@@ -16,10 +16,18 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.JobTitle)
+                .IsRequired()
                 .HasMaxLength(ExperienceConstraints.JobTitleMaxLength);
-            
+
+            builder.Property(e => e.JobTitleId)
+                .IsRequired(false);
+
             builder.Property(e => e.Company)
+                .IsRequired()
                 .HasMaxLength(ExperienceConstraints.CompanyMaxLength);
+
+            builder.Property(e => e.CompanyId)
+                .IsRequired(false);
 
             builder.Property(e => e.Location)
                 .HasMaxLength(ExperienceConstraints.LocationMaxLength);
@@ -32,7 +40,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(e => e.Description)
                 .HasMaxLength(ExperienceConstraints.DescriptionMaxLength);
-                
+
             builder.Property(e => e.CreatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
@@ -63,16 +71,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.ToTable(t => t.HasCheckConstraint(
-                "CK_Experience_Company", 
-                "[CompanyId] IS NOT NULL OR [Company] IS NOT NULL"
-            ));
-            
-            builder.ToTable(t => t.HasCheckConstraint(
-                "CK_Experience_JobTitle", 
-                "[JobTitleId] IS NOT NULL OR [JobTitle] IS NOT NULL"
-            ));
-            
             builder.HasIndex(e => e.EmploymentTypeId);
             builder.HasIndex(e => e.JobTitleId);
             builder.HasIndex(e => e.CompanyId);

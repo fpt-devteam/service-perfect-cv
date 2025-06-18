@@ -6,7 +6,7 @@ namespace ServicePerfectCV.Domain.Entities
 {
     public class Company : IEntity<Guid>
     {
-        public Guid Id { get; set; }
+        public required Guid Id { get; set; }
         public required string Name { get; set; }
         public string? LogoUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

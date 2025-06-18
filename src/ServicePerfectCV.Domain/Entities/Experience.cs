@@ -8,19 +8,16 @@ namespace ServicePerfectCV.Domain.Entities
 {
     public class Experience : IEntity<Guid>
     {
-        public Guid Id { get; set; }
-        public Guid CVId { get; set; }
+        public required Guid Id { get; set; }
+        public required Guid CVId { get; set; }
         
-        // Job Title
         public Guid? JobTitleId { get; set; }
-        public string? JobTitle { get; set; }
+        public required string JobTitle { get; set; }
         
-        // Employment Type
-        public Guid EmploymentTypeId { get; set; }
+        public required Guid EmploymentTypeId { get; set; }
         
-        // Company
         public Guid? CompanyId { get; set; }
-        public string? Company { get; set; }
+        public required string Company { get; set; }
         
         public string? Location { get; set; }
         public DateOnly StartDate { get; set; }

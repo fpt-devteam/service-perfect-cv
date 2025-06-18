@@ -22,28 +22,32 @@ namespace ServicePerfectCV.WebApi.Extensions
     {
         public static void ConfigureServices(this IServiceCollection services)
         {
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssemblyContaining<ServicePerfectCV.Application.DTOs.Experience.Requests.CreateExperienceRequest>();
             services.AddAutoMapper(typeof(AuthMappingProfile));
             services.AddAutoMapper(typeof(UserMappingProfile));
             services.AddAutoMapper(typeof(CVMappingProfile));
             services.AddAutoMapper(typeof(EducationMappingProfile));
             services.AddAutoMapper(typeof(ContactMappingProfile));
 
-            // register repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICVRepository, CVRepository>();
             services.AddScoped<IEducationRepository, EducationRepository>();
             services.AddScoped<IContactRepository, ContactRepository>();
+            services.AddScoped<IExperienceRepository, ExperienceRepository>();
+            services.AddScoped<IJobTitleRepository, JobTitleRepository>();
+            services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
 
-            // register generic repository
             services.AddScoped(typeof(IGenericRepository<,>), typeof(CrudRepositoryBase<,>));
 
-            // register services
             services.AddScoped<AuthService>();
             services.AddScoped<CVService>();
             services.AddScoped<EducationService>();
             services.AddScoped<ContactService>();
+            services.AddScoped<ExperienceService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICacheService, RedisCacheService>();
