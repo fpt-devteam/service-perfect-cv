@@ -29,7 +29,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(c => c.Relevance)
             .HasMaxLength(500);
 
-            builder.HasOne(c => c.Cv)
+            builder.HasOne(c => c.CV)
             .WithMany(cv => cv.Certifications)
             .HasForeignKey(cv => cv.CVId)
             .IsRequired().OnDelete(DeleteBehavior.NoAction);

@@ -4,9 +4,8 @@ namespace ServicePerfectCV.Domain.Entities
 {
     public class Contact : IEntity<Guid>
     {
-        public Guid Id { get; set; }
-        public Guid CVId { get; set; }
-
+        public required Guid Id { get; set; }
+        public required Guid CVId { get; set; }
         public string? PhoneNumber { get; set; }
         public string? Email { get; set; }
         public string? LinkedInUrl { get; set; }
@@ -16,6 +15,6 @@ namespace ServicePerfectCV.Domain.Entities
         public string? City { get; set; }
 
         // Navigation property
-        public virtual CV Cv { get; set; } = default!;
+        public virtual CV CV { get; set; } = default!;
     }
 }

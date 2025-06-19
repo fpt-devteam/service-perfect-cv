@@ -55,7 +55,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CVs", (string)null);
+                    b.ToTable("CVs");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
@@ -88,7 +88,42 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Certifications", (string)null);
+                    b.ToTable("Certifications");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Company", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[DeletedAt] IS NULL");
+
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Contact", b =>
@@ -133,7 +168,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("CVId")
                         .IsUnique();
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
@@ -177,7 +212,38 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Educations", (string)null);
+                    b.ToTable("Educations");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.EmploymentType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[DeletedAt] IS NULL");
+
+                    b.ToTable("EmploymentTypes");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Experience", b =>
@@ -191,37 +257,90 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.Property<string>("Company")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("CompanyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<DateOnly?>("EndDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("date")
-                        .HasDefaultValueSql("NULL");
+                    b.Property<Guid>("EmploymentTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("JobTitleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Location")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<DateOnly>("StartDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("date")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Experiences", (string)null);
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("EmploymentTypeId");
+
+                    b.HasIndex("JobTitleId");
+
+                    b.ToTable("Experiences");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.JobTitle", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[DeletedAt] IS NULL");
+
+                    b.ToTable("JobTitles");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Project", b =>
@@ -266,7 +385,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Skill", b =>
@@ -292,7 +411,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Skills", (string)null);
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Summary", b =>
@@ -314,7 +433,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("CVId")
                         .IsUnique();
 
-                    b.ToTable("Summaries", (string)null);
+                    b.ToTable("Summaries");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.User", b =>
@@ -357,7 +476,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.CV", b =>
@@ -393,7 +512,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                             b1.HasKey("CVId");
 
-                            b1.ToTable("CVs", (string)null);
+                            b1.ToTable("CVs");
 
                             b1.WithOwner()
                                 .HasForeignKey("CVId");
@@ -406,79 +525,101 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Certifications")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Contact", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithOne("Contact")
                         .HasForeignKey("ServicePerfectCV.Domain.Entities.Contact", "CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Educations")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Experience", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Experiences")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.HasOne("ServicePerfectCV.Domain.Entities.Company", "CompanyNavigation")
+                        .WithMany("Experiences")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ServicePerfectCV.Domain.Entities.EmploymentType", "EmploymentType")
+                        .WithMany("Experiences")
+                        .HasForeignKey("EmploymentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ServicePerfectCV.Domain.Entities.JobTitle", "JobTitleNavigation")
+                        .WithMany("Experiences")
+                        .HasForeignKey("JobTitleId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CV");
+
+                    b.Navigation("CompanyNavigation");
+
+                    b.Navigation("EmploymentType");
+
+                    b.Navigation("JobTitleNavigation");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Projects")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Skill", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Skills")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Summary", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithOne("Summary")
                         .HasForeignKey("ServicePerfectCV.Domain.Entities.Summary", "CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.CV", b =>
@@ -498,6 +639,21 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.Navigation("Summary")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Company", b =>
+                {
+                    b.Navigation("Experiences");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.EmploymentType", b =>
+                {
+                    b.Navigation("Experiences");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.JobTitle", b =>
+                {
+                    b.Navigation("Experiences");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.User", b =>

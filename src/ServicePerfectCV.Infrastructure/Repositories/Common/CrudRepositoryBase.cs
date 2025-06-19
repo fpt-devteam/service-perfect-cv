@@ -41,7 +41,9 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
 
         public virtual async Task<TEntity?> GetByIdAsync(TKey id)
         {
-            return await _dbSet.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id)
+            return await _dbSet
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id)
                         && EF.Property<DateTime?>(e, "DeletedAt") == null);
         }
 

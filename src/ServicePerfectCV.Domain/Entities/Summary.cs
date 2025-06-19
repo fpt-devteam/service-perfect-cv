@@ -8,11 +8,11 @@ namespace ServicePerfectCV.Domain.Entities
 {
     public class Summary : IEntity<Guid>
     {
-        public Guid Id { get; set; }
-        public Guid CVId { get; set; }
+        public required Guid Id { get; set; }
+        public required Guid CVId { get; set; }
         public required string Context { get; set; }
 
         // Navigation property
-        public virtual CV? Cv { get; set; }
+        public virtual CV CV { get; set; } = null!;
     }
 }

@@ -39,7 +39,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .IsRequired(false)
                 .HasDefaultValueSql("NULL");
 
-            builder.HasOne(p => p.Cv)
+            builder.HasOne(p => p.CV)
                 .WithMany(c => c.Projects)
                 .HasForeignKey(p => p.CVId)
                 .OnDelete(DeleteBehavior.NoAction);

@@ -10,11 +10,13 @@ namespace ServicePerfectCV.Application.DTOs.Contact.Requests
         [Required(ErrorMessage = "CV ID is required.")]
         public required Guid CVId { get; init; }
 
-        [StringLength(20, MinimumLength = 10, ErrorMessage = "Phone number must be between 10-20 characters")] public string? PhoneNumber { get; set; }
+        [StringLength(20, MinimumLength = 10, ErrorMessage = "Phone number must be between 10-20 characters")]
+        public string? PhoneNumber { get; set; }
 
         [JsonIgnore]
         public Optional<string?> Phone => PhoneNumber != null ? Optional<string?>.From(PhoneNumber) : Optional<string?>.None();
 
+        [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email address format.")]
         public string? Email { get; set; }
 

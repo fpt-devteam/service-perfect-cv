@@ -20,6 +20,6 @@ namespace ServicePerfectCV.Domain.Entities
             get => JsonSerializer.Deserialize<List<string>>(ItemsJson) ?? [];
             set => ItemsJson = JsonSerializer.Serialize(value);
         }
-        public virtual CV Cv { get; set; } = default!;
+        public virtual CV CV { get; set; } = default!;
     }
 }

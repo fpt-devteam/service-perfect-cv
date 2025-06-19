@@ -22,7 +22,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(1000);
 
-            builder.HasOne(s => s.Cv)
+            builder.HasOne(s => s.CV)
                 .WithMany(c => c.Skills)
                 .HasForeignKey(s => s.CVId)
                 .IsRequired()

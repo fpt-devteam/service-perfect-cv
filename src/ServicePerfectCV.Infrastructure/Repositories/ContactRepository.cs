@@ -18,8 +18,8 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         public async Task<Contact?> GetByUserIdAsync(Guid userId)
         {
             return await _context.Contacts
-                .Include(c => c.Cv)
-                .FirstOrDefaultAsync(c => c.Cv.UserId == userId);
+                .Include(c => c.CV)
+                .FirstOrDefaultAsync(c => c.CV.UserId == userId);
         }
 
         public async Task<Contact?> GetByCVIdAsync(Guid cvId)

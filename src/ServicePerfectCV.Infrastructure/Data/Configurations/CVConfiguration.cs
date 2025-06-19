@@ -34,23 +34,23 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             .OnDelete(DeleteBehavior.NoAction);
 
          builder.HasMany(c => c.Educations)
-            .WithOne(e => e.Cv)
+            .WithOne(e => e.CV)
                .HasForeignKey(e => e.CVId);
 
          builder.HasMany(c => c.Experiences)
-            .WithOne(e => e.Cv)
+            .WithOne(e => e.CV)
             .HasForeignKey(e => e.CVId);
 
          builder.HasMany(c => c.Projects)
-            .WithOne(p => p.Cv)
+            .WithOne(p => p.CV)
             .HasForeignKey(p => p.CVId);
 
          builder.HasMany(c => c.Skills)
-            .WithOne(s => s.Cv)
+            .WithOne(s => s.CV)
             .HasForeignKey(s => s.CVId);
 
          builder.HasMany(c => c.Certifications)
-            .WithOne(ce => ce.Cv)
+            .WithOne(ce => ce.CV)
             .HasForeignKey(ce => ce.CVId);
 
          builder.OwnsOne(c => c.JobDetail, jd =>

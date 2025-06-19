@@ -19,12 +19,12 @@ namespace ServicePerfectCV.Application.Services
     {
         public async Task<CVResponse> CreateAsync(CreateCVRequest request, Guid userId)
         {
-            CV newCv = mapper.Map<CV>(request);
-            newCv.UserId = userId;
+            CV newCV = mapper.Map<CV>(request);
+            newCV.UserId = userId;
 
-            await cvRepository.CreateAsync(newCv);
+            await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();
-            return mapper.Map<CVResponse>(newCv);
+            return mapper.Map<CVResponse>(newCV);
         }
         public async Task<PaginationData<CVResponse>> ListAsync(PaginationRequest paginationRequest, Guid userId)
         {
