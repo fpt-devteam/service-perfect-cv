@@ -1,5 +1,6 @@
 using System;
 using FluentValidation;
+using ServicePerfectCV.Domain.Constraints;
 
 namespace ServicePerfectCV.Application.DTOs.Experience.Requests
 {
@@ -21,18 +22,18 @@ namespace ServicePerfectCV.Application.DTOs.Experience.Requests
             {
                 RuleFor(x => x.JobTitle)
                     .NotEmpty().WithMessage("Job Title is required")
-                    .MaximumLength(100).WithMessage("Job Title cannot exceed 100 characters");
+                    .MaximumLength(JobTitleConstraints.NameMaxLength).WithMessage($"Job Title cannot exceed {JobTitleConstraints.NameMaxLength} characters");
 
                 RuleFor(x => x.EmploymentTypeId)
                     .NotEmpty().WithMessage("Employment Type ID is required");
 
                 RuleFor(x => x.Company)
                     .NotEmpty().WithMessage("Company is required")
-                    .MaximumLength(100).WithMessage("Company name cannot exceed 100 characters");
+                    .MaximumLength(CompanyConstraints.NameMaxLength).WithMessage($"Company name cannot exceed {CompanyConstraints.NameMaxLength} characters");
 
                 RuleFor(x => x.Location)
                     .NotEmpty().WithMessage("Location is required")
-                    .MaximumLength(100).WithMessage("Location cannot exceed 100 characters");
+                    .MaximumLength(ExperienceConstraints.LocationMaxLength).WithMessage($"Location cannot exceed {ExperienceConstraints.LocationMaxLength} characters");
 
                 RuleFor(x => x.StartDate)
                     .NotEmpty().WithMessage("Start date is required");

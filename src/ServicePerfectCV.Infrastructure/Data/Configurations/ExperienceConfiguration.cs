@@ -17,14 +17,14 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(e => e.JobTitle)
                 .IsRequired()
-                .HasMaxLength(ExperienceConstraints.JobTitleMaxLength);
+                .HasMaxLength(JobTitleConstraints.NameMaxLength);
 
             builder.Property(e => e.JobTitleId)
                 .IsRequired(false);
 
             builder.Property(e => e.Company)
                 .IsRequired()
-                .HasMaxLength(ExperienceConstraints.CompanyMaxLength);
+                .HasMaxLength(CompanyConstraints.NameMaxLength);
 
             builder.Property(e => e.CompanyId)
                 .IsRequired(false);
