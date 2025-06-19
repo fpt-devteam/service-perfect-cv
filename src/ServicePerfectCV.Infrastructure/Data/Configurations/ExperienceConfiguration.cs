@@ -48,7 +48,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(e => e.DeletedAt)
                 .IsRequired(false);
 
-            builder.HasOne(e => e.Cv)
+            builder.HasOne(e => e.CV)
                 .WithMany(c => c.Experiences)
                 .HasForeignKey(e => e.CVId)
                 .OnDelete(DeleteBehavior.NoAction);

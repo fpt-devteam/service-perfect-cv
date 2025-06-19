@@ -16,6 +16,6 @@ namespace ServicePerfectCV.Domain.Entities
         public string? Relevance { get; set; }
 
         // Navigation property
-        public virtual CV Cv { get; set; } = default!;
+        public virtual CV CV { get; set; } = default!;
     }
 }

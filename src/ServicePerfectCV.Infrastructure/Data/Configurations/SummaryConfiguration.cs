@@ -17,7 +17,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(s => s.Context)
                 .HasMaxLength(2000).IsRequired();
 
-            builder.HasOne(s => s.Cv)
+            builder.HasOne(s => s.CV)
                 .WithOne(c => c.Summary)
                 .HasForeignKey<Summary>(s => s.CVId)
                 .OnDelete(DeleteBehavior.NoAction);

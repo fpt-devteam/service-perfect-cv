@@ -15,6 +15,6 @@ namespace ServicePerfectCV.Domain.Entities
         public string? City { get; set; }
 
         // Navigation property
-        public virtual CV Cv { get; set; } = default!;
+        public virtual CV CV { get; set; } = default!;
     }
 }

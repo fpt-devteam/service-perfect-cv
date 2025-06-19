@@ -35,7 +35,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(x => x.City)
             .HasMaxLength(50);
 
-            builder.HasOne(x => x.Cv)
+            builder.HasOne(x => x.CV)
             .WithOne(c => c.Contact)
             .HasForeignKey<Contact>(x => x.CVId)
             .IsRequired()

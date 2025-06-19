@@ -37,7 +37,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(e => e.Gpa)
                 .HasColumnType("decimal(3, 2)");
 
-            builder.HasOne(e => e.Cv)
+            builder.HasOne(e => e.CV)
                 .WithMany(c => c.Educations)
                 .HasForeignKey(e => e.CVId)
                 .OnDelete(DeleteBehavior.NoAction);

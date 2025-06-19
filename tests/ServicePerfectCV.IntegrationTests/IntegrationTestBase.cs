@@ -22,7 +22,7 @@ namespace ServicePerfectCV.IntegrationTests
         private readonly IServiceScope _scope;
         protected readonly HttpClient Client;
         protected readonly IUserRepository UserRepository;
-        protected readonly ICVRepository CvRepository;
+        protected readonly ICVRepository CVRepository;
         protected readonly IContactRepository ContactRepository;
         protected readonly IExperienceRepository ExperienceRepository;
         protected readonly IEmploymentTypeRepository EmploymentTypeRepository;
@@ -36,7 +36,7 @@ namespace ServicePerfectCV.IntegrationTests
             Client = factory.CreateClient();
             _scope = factory.Services.CreateScope();
             UserRepository = _scope.ServiceProvider.GetRequiredService<IUserRepository>();
-            CvRepository = _scope.ServiceProvider.GetRequiredService<ICVRepository>();
+            CVRepository = _scope.ServiceProvider.GetRequiredService<ICVRepository>();
             ContactRepository = _scope.ServiceProvider.GetRequiredService<IContactRepository>();
             ExperienceRepository = _scope.ServiceProvider.GetRequiredService<IExperienceRepository>();
             EmploymentTypeRepository = _scope.ServiceProvider.GetRequiredService<IEmploymentTypeRepository>();
@@ -110,8 +110,8 @@ namespace ServicePerfectCV.IntegrationTests
                 UserId = userId,
                 CreatedAt = DateTime.UtcNow
             };
-            await CvRepository.CreateAsync(cv);
-            await CvRepository.SaveChangesAsync();
+            await CVRepository.CreateAsync(cv);
+            await CVRepository.SaveChangesAsync();
             return cv;
         }
 

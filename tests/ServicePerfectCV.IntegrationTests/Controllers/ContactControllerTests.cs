@@ -22,11 +22,11 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
         public async Task UpsertContact_ContactDoesNotExist_CreateNewContact()
         {
             var testUser = await CreateUser();
-            var testCv = await CreateCV(userId: testUser.Id);
+            var testCV = await CreateCV(userId: testUser.Id);
 
             var request = new UpsertContactRequest
             {
-                CVId = testCv.Id,
+                CVId = testCV.Id,
                 Email = "contact@example.com",
                 PhoneNumber = "+1234567890",
                 Country = "United States",
@@ -47,7 +47,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             result.Country.Should().Be(request.Country);
             result.City.Should().Be(request.City);
 
-            var contact = await ContactRepository.GetByCVIdAsync(cvId: testCv.Id);
+            var contact = await ContactRepository.GetByCVIdAsync(cvId: testCV.Id);
             contact.Should().NotBeNull();
             contact!.Email.Should().Be(request.Email);
         }
@@ -56,10 +56,10 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
         public async Task UpsertContact_ProvidingOnlySomeFields_UpdateContact()
         {
             var testUser = await CreateUser();
-            var testCv = await CreateCV(userId: testUser.Id);
+            var testCV = await CreateCV(userId: testUser.Id);
 
             var initialContact = await CreateContact(
-                cvId: testCv.Id,
+                cvId: testCV.Id,
                 email: "initial@example.com",
                 phone: "+0987654321"
                 );
@@ -71,7 +71,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
 
             var updateRequest = new UpsertContactRequest
             {
-                CVId = testCv.Id,
+                CVId = testCV.Id,
                 Email = "updated@example.com",
             };
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
@@ -89,7 +89,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             result.Country.Should().Be(initialContact.Country);
             result.City.Should().Be(initialContact.City);
 
-            var updatedContact = await ContactRepository.GetByCVIdAsync(cvId: testCv.Id);
+            var updatedContact = await ContactRepository.GetByCVIdAsync(cvId: testCV.Id);
             updatedContact.Should().NotBeNull();
             updatedContact!.Email.Should().Be(updateRequest.Email);
             updatedContact.PhoneNumber.Should().Be(initialContact.PhoneNumber);
@@ -101,16 +101,16 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
         public async Task UpsertContact_ContactExists_UpdateContact()
         {
             var testUser = await CreateUser();
-            var testCv = await CreateCV(userId: testUser.Id, title: "Update Test CV");
+            var testCV = await CreateCV(userId: testUser.Id, title: "Update Test CV");
 
             var existingContact = await CreateContact(
-                cvId: testCv.Id,
+                cvId: testCV.Id,
                 email: "existing@example.com",
                 phone: "+1234567890");
 
             var updateRequest = new UpsertContactRequest
             {
-                CVId = testCv.Id,
+                CVId = testCV.Id,
                 Email = "updated@example.com",
             };
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
@@ -120,20 +120,20 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var updatedContact = await ContactRepository.GetByCVIdAsync(cvId: testCv.Id);
+            var updatedContact = await ContactRepository.GetByCVIdAsync(cvId: testCV.Id);
             updatedContact.Should().NotBeNull();
             updatedContact!.Email.Should().Be(updateRequest.Email);
             updatedContact.PhoneNumber.Should().Be(existingContact.PhoneNumber);
         }
 
         [Fact]
-        public async Task GetContactByCvId_ContactExists_ReturnContact()
+        public async Task GetContactByCVId_ContactExists_ReturnContact()
         {
             var testUser = await CreateUser();
-            var testCv = await CreateCV(userId: testUser.Id);
+            var testCV = await CreateCV(userId: testUser.Id);
 
             var initialContact = await CreateContact(
-                cvId: testCv.Id,
+                cvId: testCV.Id,
                 email: "initial@example.com",
                 phone: "+0987654321");
 
@@ -144,7 +144,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
 
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
 
-            var response = await Client.GetAsync(requestUri: $"/api/contacts/cv/{testCv.Id}");
+            var response = await Client.GetAsync(requestUri: $"/api/contacts/cv/{testCV.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var content = await DeserializeResponse<ContactResponse>(response: response);
@@ -155,26 +155,26 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
         }
 
         [Fact]
-        public async Task GetContactByCvId_ContactDoesNotExist_ReturnNotFound()
+        public async Task GetContactByCVId_ContactDoesNotExist_ReturnNotFound()
         {
             var testUser = await CreateUser(email: "no-contact@example.com");
             await CreateCV(userId: testUser.Id, title: "CV Without Contact");
 
-            var nonExistentCvId = Guid.NewGuid();
+            var nonExistentCVId = Guid.NewGuid();
 
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
-            var response = await Client.GetAsync(requestUri: $"/api/contacts/cv/{nonExistentCvId}");
+            var response = await Client.GetAsync(requestUri: $"/api/contacts/cv/{nonExistentCVId}");
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Fact]
-        public async Task UpsertContact_CvDoesNotExist_ReturnNotFound()
+        public async Task UpsertContact_CVDoesNotExist_ReturnNotFound()
         {
-            var nonExistentCvId = Guid.NewGuid();
+            var nonExistentCVId = Guid.NewGuid();
             var request = new UpsertContactRequest
             {
-                CVId = nonExistentCvId,
+                CVId = nonExistentCVId,
                 Email = "test@example.com"
             };
             AttachAccessToken(userId: Guid.Empty);
@@ -192,11 +192,11 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
         public async Task UpsertContact_InvalidDataSubmitted_ReturnBadRequest()
         {
             var testUser = await CreateUser(email: "validation-test@example.com");
-            var testCv = await CreateCV(userId: testUser.Id, title: "Validation Test CV");
+            var testCV = await CreateCV(userId: testUser.Id, title: "Validation Test CV");
 
             var request = new UpsertContactRequest
             {
-                CVId = testCv.Id,
+                CVId = testCV.Id,
                 PhoneNumber = "+098765432100812439840",
             };
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);

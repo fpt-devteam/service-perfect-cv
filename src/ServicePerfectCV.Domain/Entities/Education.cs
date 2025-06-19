@@ -19,6 +19,6 @@ namespace ServicePerfectCV.Domain.Entities
         public decimal? Gpa { get; set; }
         public string? AdditionalInfo { get; set; }
         // Navigation property
-        public virtual CV Cv { get; set; } = default!;
+        public virtual CV CV { get; set; } = default!;
     }
 }

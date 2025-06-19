@@ -20,8 +20,8 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         {
             return await _context.Experiences
                 .AsNoTracking()
-                .Include(e => e.Cv)
-                .Where(e => e.CVId == cvId && e.Cv.UserId == userId &&
+                .Include(e => e.CV)
+                .Where(e => e.CVId == cvId && e.CV.UserId == userId &&
                             e.DeletedAt == null)
                 .ToListAsync();
         }
@@ -30,9 +30,9 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         {
             return await _context.Experiences
                 .AsNoTracking()
-                .Include(e => e.Cv)
+                .Include(e => e.CV)
                 .FirstOrDefaultAsync(e =>
-                    e.CVId == cvId && e.Cv.UserId == userId && e.Id == id && e.DeletedAt == null);
+                    e.CVId == cvId && e.CV.UserId == userId && e.Id == id && e.DeletedAt == null);
         }
     }
 }
