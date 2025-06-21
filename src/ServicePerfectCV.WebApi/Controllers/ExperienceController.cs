@@ -39,23 +39,8 @@ namespace ServicePerfectCV.WebApi.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateExperienceRequest request)
         {
-            try
-            {
-                var result = await _experienceService.CreateAsync(request);
-                return Ok(result);
-            }
-            catch (DomainException dex)
-            {
-                return StatusCode((int)dex.Error.HttpStatusCode, dex.Error);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500,
-                    new
-                    {
-                        Error = ex.Message, StackTrace = ex.StackTrace, InnerException = ex.InnerException?.Message
-                    });
-            }
+            var result = await _experienceService.CreateAsync(request: request);
+            return Ok(result);
         }
 
         /// <summary>
@@ -73,7 +58,7 @@ namespace ServicePerfectCV.WebApi.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> UpdateAsync(Guid experienceId, [FromBody] UpdateExperienceRequest request)
         {
-            var result = await _experienceService.UpdateAsync(experienceId, request);
+            var result = await _experienceService.UpdateAsync(experienceId: experienceId, request: request);
             return Ok(result);
         }
 
@@ -94,7 +79,7 @@ namespace ServicePerfectCV.WebApi.Controllers
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
 
-            var result = await _experienceService.GetByCVIdAsync(cvId, userId);
+            var result = await _experienceService.GetByCVIdAsync(cvId: cvId, userId: userId);
             return Ok(result);
         }
 
@@ -116,7 +101,7 @@ namespace ServicePerfectCV.WebApi.Controllers
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
 
-            var result = await _experienceService.GetByIdAsync(experienceId, cvId, userId);
+            var result = await _experienceService.GetByIdAsync(experienceId: experienceId, cvId: cvId, userId: userId);
             return Ok(result);
         }
 
@@ -136,7 +121,7 @@ namespace ServicePerfectCV.WebApi.Controllers
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
 
-            await _experienceService.DeleteAsync(experienceId, cvId, userId);
+            await _experienceService.DeleteAsync(experienceId: experienceId, cvId: cvId, userId: userId);
             return NoContent();
         }
     }

@@ -16,7 +16,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         {
         }
 
-        public async Task<IEnumerable<Experience>> ListByCVIdAndUserIdAsync(Guid cvId, Guid userId)
+        public async Task<IEnumerable<Experience>> GetByCVIdAndUserIdAsync(Guid cvId, Guid userId)
         {
             return await _context.Experiences
                 .AsNoTracking()

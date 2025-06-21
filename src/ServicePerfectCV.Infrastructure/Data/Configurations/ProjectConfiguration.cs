@@ -1,6 +1,6 @@
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ServicePerfectCV.Domain.Constraints;
 using ServicePerfectCV.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -18,22 +18,18 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(p => p.Title)
                 .IsRequired()
-                .HasMaxLength(200);
+                .HasMaxLength(ProjectConstraints.TitleMaxLength);
 
             builder.Property(p => p.Description)
                 .IsRequired()
-                .HasMaxLength(2000);
+                .HasMaxLength(ProjectConstraints.DescriptionMaxLength);
 
             builder.Property(p => p.Link)
-                .HasMaxLength(200);
-
-            builder.Property(p => p.TechJson)
-                .IsRequired()
-                .HasMaxLength(1000);
+                .IsRequired(false);
 
             builder.Property(p => p.StartDate)
-                .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .IsRequired(false)
+                .HasDefaultValueSql("NULL");
 
             builder.Property(p => p.EndDate)
                 .IsRequired(false)
