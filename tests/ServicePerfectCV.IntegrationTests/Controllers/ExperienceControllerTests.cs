@@ -3,6 +3,7 @@ using ServicePerfectCV.Application.DTOs.Experience.Requests;
 using ServicePerfectCV.Application.DTOs.Experience.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
                 CVId = testCV.Id,
                 JobTitle = "Software Engineer",
                 EmploymentTypeId = employmentType.Id,
-                Company = "Tech Corp",
+                Organization = "Tech Corp",
                 Location = "San Francisco, CA",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6)),
@@ -48,7 +49,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
 
             result.Should().NotBeNull();
             result!.JobTitle.Should().Be(request.JobTitle);
-            result.Company.Should().Be(request.Company);
+            result.Organization.Should().Be(request.Organization);
             result.Location.Should().Be(request.Location);
 
             var getResponse = await Client.GetAsync(requestUri: $"/api/cvs/{testCV.Id}/experiences");
@@ -68,7 +69,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             var nonExistentCVId = Guid.NewGuid();
             var employmentType = await CreateEmploymentType();
             var jobTitle = await CreateJobTitle();
-            var company = await CreateCompany();
+            var organization = await CreateOrganization();
 
             var request = new CreateExperienceRequest
             {
@@ -76,8 +77,8 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
                 JobTitle = jobTitle.Name,
                 EmploymentTypeId = employmentType.Id,
                 JobTitleId = jobTitle.Id,
-                CompanyId = company.Id,
-                Company = "Tech Corp",
+                OrganizationId = organization.Id,
+                Organization = "Tech Corp",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6))
             };
@@ -98,8 +99,8 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             var testUser = await CreateUser();
             var testCV = await CreateCV(userId: testUser.Id);
             var employmentType = await CreateEmploymentType();
-            var jobTitle = await CreateJobTitle("Junior Developer");
-            var company = await CreateCompany("Old Corp");
+            var jobTitle = await CreateJobTitle(name: "Junior Developer");
+            var organization = await CreateOrganization(name: "Old Corp");
 
             var experience = new Experience
             {
@@ -108,8 +109,8 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
                 JobTitle = "Junior Developer",
                 EmploymentTypeId = employmentType.Id,
                 JobTitleId = jobTitle.Id,
-                CompanyId = company.Id,
-                Company = "Old Corp",
+                OrganizationId = organization.Id,
+                Organization = "Old Corp",
                 Location = "Chicago, IL",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-3)),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
@@ -124,11 +125,11 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             {
                 JobTitle = "Senior Developer",
                 EmploymentTypeId = experience.EmploymentTypeId,
-                Company = "New Corp",
+                Organization = "New Corp",
                 Location = "Remote",
                 Description = "Lead developer for enterprise applications",
                 JobTitleId = experience.JobTitleId,
-                CompanyId = experience.CompanyId,
+                OrganizationId = experience.OrganizationId,
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6))
             };
@@ -141,13 +142,13 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
 
             result.Should().NotBeNull();
             result!.JobTitle.Should().Be(updateRequest.JobTitle);
-            result.Company.Should().Be(updateRequest.Company);
+            result.Organization.Should().Be(updateRequest.Organization);
             result.Location.Should().Be("Remote");
 
-            var updatedExperience = await ExperienceRepository.GetByIdAsync(id: experience.Id);
+            var updatedExperience = await ExperienceRepository.GetByIdAsync(experience.Id);
             updatedExperience.Should().NotBeNull();
             updatedExperience!.JobTitle.Should().Be(updateRequest.JobTitle);
-            updatedExperience.Company.Should().Be(updateRequest.Company);
+            updatedExperience.Organization.Should().Be(updateRequest.Organization);
         }
 
         [Fact]
@@ -157,17 +158,17 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             var nonExistentExperienceId = Guid.NewGuid();
             var employmentType = await CreateEmploymentType();
             var jobTitle = await CreateJobTitle();
-            var company = await CreateCompany();
+            var organization = await CreateOrganization();
 
             var updateRequest = new UpdateExperienceRequest
             {
                 JobTitle = "Senior Developer",
-                Company = "New Corp",
+                Organization = "New Corp",
                 Location = "Remote",
                 Description = "Lead developer position",
                 EmploymentTypeId = employmentType.Id,
                 JobTitleId = jobTitle.Id,
-                CompanyId = company.Id,
+                OrganizationId = organization.Id,
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6))
             };
@@ -192,7 +193,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             await CreateExperience(
                 cvId: testCV.Id,
                 jobTitle: "Developer 1",
-                company: "Company 1",
+                organization: "Company 1",
                 startDate: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-5)),
                 endDate: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-3))
             );
@@ -200,7 +201,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             await CreateExperience(
                 cvId: testCV.Id,
                 jobTitle: "Developer 2",
-                company: "Company 2",
+                organization: "Company 2",
                 startDate: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-3)),
                 endDate: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1))
             );
@@ -213,8 +214,8 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
 
             result.Should().NotBeNull();
             result.Should().HaveCount(2);
-            result.Should().Contain(e => e.JobTitle == "Developer 1" && e.Company == "Company 1");
-            result.Should().Contain(e => e.JobTitle == "Developer 2" && e.Company == "Company 2");
+            result.Should().Contain(e => e.JobTitle == "Developer 1" && e.Organization == "Company 1");
+            result.Should().Contain(e => e.JobTitle == "Developer 2" && e.Organization == "Company 2");
         }
 
         [Fact]
@@ -242,7 +243,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             var experience = await CreateExperience(
                 cvId: testCV.Id,
                 jobTitle: "Senior Engineer",
-                company: "Tech Company",
+                organization: "Tech Company",
                 startDate: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-5)),
                 endDate: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2))
             );
@@ -256,7 +257,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             result.Should().NotBeNull();
             result!.Id.Should().Be(experience.Id);
             result.JobTitle.Should().Be(experience.JobTitle);
-            result.Company.Should().Be(experience.Company);
+            result.Organization.Should().Be(experience.Organization);
         }
 
         [Fact]
@@ -287,7 +288,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
                 CVId = testCV.Id,
                 JobTitle = "Test Job Title",
                 EmploymentTypeId = Guid.NewGuid(),
-                Company = "me that exceeds the maximum allowed length",
+                Organization = "me that exceeds the maximum allowed length",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-3))
             };
@@ -314,7 +315,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             {
                 JobTitle = "Senior Developer",
                 EmploymentTypeId = experience.EmploymentTypeId,
-                Company = "New Corp",
+                Organization = "New Corp",
                 StartDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
                 EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)) // End date before start date
             };
@@ -351,7 +352,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             var experience = await CreateExperience(
                 cvId: testCV.Id,
                 jobTitle: "Senior Engineer",
-                company: "Tech Company",
+                organization: "Tech Company",
                 startDate: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-5)),
                 endDate: DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2))
             );
@@ -375,7 +376,7 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             var experience = await CreateExperience(
                 cvId: testCV.Id,
                 jobTitle: "Test Job",
-                company: "Test Company"
+                organization: "Test Company"
             );
 
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);

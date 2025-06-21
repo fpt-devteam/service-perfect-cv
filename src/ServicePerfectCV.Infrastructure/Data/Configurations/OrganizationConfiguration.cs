@@ -5,29 +5,35 @@ using ServicePerfectCV.Domain.Constraints;
 
 namespace ServicePerfectCV.Infrastructure.Data.Configurations
 {
-    public class CompanyConfiguration : IEntityTypeConfiguration<Company>
+    public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
     {
-        public void Configure(EntityTypeBuilder<Company> builder)
+        public void Configure(EntityTypeBuilder<Organization> builder)
         {
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Name)
                 .IsRequired()
-                .HasMaxLength(CompanyConstraints.NameMaxLength);
+                .HasMaxLength(OrganizationConstraints.NameMaxLength);
 
-            builder.HasIndex(e => e.Name)
+            builder.HasIndex(e => new { e.Name, e.OrganizationType })
                 .IsUnique()
                 .HasFilter("[DeletedAt] IS NULL");
 
             builder.Property(e => e.LogoUrl)
-                .HasMaxLength(CompanyConstraints.LogoUrlMaxLength);
+                .HasMaxLength(maxLength: OrganizationConstraints.LogoUrlMaxLength);
+                
+            builder.Property(e => e.Description)
+                .HasMaxLength(maxLength: OrganizationConstraints.DescriptionMaxLength);
+                
+            builder.Property(e => e.OrganizationType)
+                .IsRequired();
 
             builder.Property(e => e.CreatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");
 
             builder.Property(e => e.DeletedAt)
-                .IsRequired(false);
+                .IsRequired(required: false);
         }
     }
 }

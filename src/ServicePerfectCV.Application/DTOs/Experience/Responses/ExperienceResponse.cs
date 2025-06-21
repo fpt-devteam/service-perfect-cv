@@ -10,8 +10,8 @@ namespace ServicePerfectCV.Application.DTOs.Experience.Responses
         public string? JobTitle { get; init; }
         public Guid EmploymentTypeId { get; init; }
         public string? EmploymentTypeName { get; init; }
-        public Guid? CompanyId { get; init; }
-        public string? Company { get; init; }
+        public Guid? OrganizationId { get; init; }
+        public string? Organization { get; init; }
         public string? Location { get; init; }
         public DateOnly StartDate { get; init; }
         public DateOnly EndDate { get; init; }

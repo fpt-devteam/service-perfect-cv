@@ -19,7 +19,7 @@ namespace ServicePerfectCV.Infrastructure.Data
         public DbSet<CV> CVs { get; set; }
         public DbSet<Education> Educations { get; set; }
         public DbSet<Project> Projects { get; set; }
-        public DbSet<Company> Companies { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
         public DbSet<JobTitle> JobTitles { get; set; }
         public DbSet<EmploymentType> EmploymentTypes { get; set; }
         
@@ -36,7 +36,7 @@ namespace ServicePerfectCV.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new CVConfiguration());
             modelBuilder.ApplyConfiguration(new EducationConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectConfiguration());
-            modelBuilder.ApplyConfiguration(new CompanyConfiguration());
+            modelBuilder.ApplyConfiguration(new OrganizationConfiguration());
             modelBuilder.ApplyConfiguration(new JobTitleConfiguration());
             modelBuilder.ApplyConfiguration(new EmploymentTypeConfiguration());
         }

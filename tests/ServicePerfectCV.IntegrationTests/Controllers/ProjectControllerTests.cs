@@ -295,32 +295,32 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             result.Should().BeEmpty();
         }
 
-        // [Fact]
-        // public async Task GetProjectById_ProjectExists_ReturnsProject()
-        // {
-        //     var testUser = await CreateUser();
-        //     var testCV = await CreateCV(userId: testUser.Id);
-        //
-        //     var project = await CreateProject(
-        //         cvId: testCV.Id,
-        //         title: "Sample Project",
-        //         description: "A sample project description",
-        //         link: "https://sample.example.com"
-        //     );
-        //
-        //     AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
-        //     var response = await Client.GetAsync(
-        //         requestUri: $"/api/cvs/{testCV.Id}/projects/{project.Id}");
-        //
-        //     response.StatusCode.Should().Be(HttpStatusCode.OK);
-        //     var result = await DeserializeResponse<ProjectResponse>(response: response);
-        //
-        //     result.Should().NotBeNull();
-        //     result!.Id.Should().Be(project.Id);
-        //     result.Title.Should().Be(project.Title);
-        //     result.Description.Should().Be(project.Description);
-        //     result.Link.Should().Be(project.Link);
-        // }
+        [Fact]
+        public async Task GetProjectById_ProjectExists_ReturnsProject()
+        {
+            var testUser = await CreateUser();
+            var testCV = await CreateCV(userId: testUser.Id);
+        
+            var project = await CreateProject(
+                cvId: testCV.Id,
+                title: "Sample Project",
+                description: "A sample project description",
+                link: "https://sample.example.com"
+            );
+        
+            AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
+            var response = await Client.GetAsync(
+                requestUri: $"/api/cvs/{testCV.Id}/projects/{project.Id}");
+        
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var result = await DeserializeResponse<ProjectResponse>(response: response);
+        
+            result.Should().NotBeNull();
+            result!.Id.Should().Be(project.Id);
+            result.Title.Should().Be(project.Title);
+            result.Description.Should().Be(project.Description);
+            result.Link.Should().Be(project.Link);
+        }
 
         [Fact]
         public async Task GetProjectById_ProjectNotFound_ReturnsNotFound()
@@ -396,19 +396,26 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
         {
             var testUser = await CreateUser();
             var testCV = await CreateCV(userId: testUser.Id);
-
+            
             var project = await CreateProject(
                 cvId: testCV.Id,
                 title: "Project to Delete",
                 description: "This project will be deleted"
             );
-
+            
+            // First verify the project exists
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
+            var verifyResponse = await Client.GetAsync(
+                requestUri: $"/api/cvs/{testCV.Id}/projects/{project.Id}");
+            verifyResponse.EnsureSuccessStatusCode(); // Make sure project exists before we try to delete it
+            
+            // Now proceed with deletion
             var response = await Client.DeleteAsync(
                 requestUri: $"/api/cvs/{testCV.Id}/projects/{project.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
+            // Verify it was actually deleted
             var getResponse = await Client.GetAsync(
                 requestUri: $"/api/cvs/{testCV.Id}/projects/{project.Id}");
             getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);

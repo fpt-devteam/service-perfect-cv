@@ -10,7 +10,9 @@ namespace ServicePerfectCV.Application.Mappings
         public ExperienceMappingProfile()
         {
             CreateMap<Experience, ExperienceResponse>()
-                .ForMember(dest => dest.EmploymentTypeName, opt => opt.MapFrom(src => src.EmploymentType != null ? src.EmploymentType.Name : null));
+                .ForMember(
+                    dest => dest.EmploymentTypeName, 
+                    opt => opt.MapFrom(src => src.EmploymentType != null ? src.EmploymentType.Name : null));
 
             CreateMap<CreateExperienceRequest, Experience>();
         }

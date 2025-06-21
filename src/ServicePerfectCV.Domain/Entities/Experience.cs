@@ -16,8 +16,8 @@ namespace ServicePerfectCV.Domain.Entities
         
         public required Guid EmploymentTypeId { get; set; }
         
-        public Guid? CompanyId { get; set; }
-        public required string Company { get; set; }
+        public Guid? OrganizationId { get; set; }
+        public required string Organization { get; set; }
         
         public string? Location { get; set; }
         public DateOnly StartDate { get; set; }
@@ -27,10 +27,9 @@ namespace ServicePerfectCV.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        // Navigation properties
         public virtual CV CV { get; set; } = default!;
         public virtual JobTitle? JobTitleNavigation { get; set; }
         public virtual EmploymentType EmploymentType { get; set; } = default!;
-        public virtual Company? CompanyNavigation { get; set; }
+        public virtual Organization? OrganizationNavigation { get; set; }
     }
 }

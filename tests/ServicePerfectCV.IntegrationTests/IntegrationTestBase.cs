@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.Enums;
 using ServicePerfectCV.Infrastructure.Data;
 using System;
 using System.Net.Http;
@@ -27,7 +28,7 @@ namespace ServicePerfectCV.IntegrationTests
         protected readonly IExperienceRepository ExperienceRepository;
         protected readonly IEmploymentTypeRepository EmploymentTypeRepository;
         protected readonly IJobTitleRepository JobTitleRepository;
-        protected readonly ICompanyRepository CompanyRepository;
+        protected readonly IOrganizationRepository OrganizationRepository;
         protected readonly IProjectRepository ProjectRepository;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly ApplicationDbContext _dbContext;
@@ -42,7 +43,7 @@ namespace ServicePerfectCV.IntegrationTests
             ExperienceRepository = _scope.ServiceProvider.GetRequiredService<IExperienceRepository>();
             EmploymentTypeRepository = _scope.ServiceProvider.GetRequiredService<IEmploymentTypeRepository>();
             JobTitleRepository = _scope.ServiceProvider.GetRequiredService<IJobTitleRepository>();
-            CompanyRepository = _scope.ServiceProvider.GetRequiredService<ICompanyRepository>();
+            OrganizationRepository = _scope.ServiceProvider.GetRequiredService<IOrganizationRepository>();
             ProjectRepository = _scope.ServiceProvider.GetRequiredService<IProjectRepository>();
             _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             _tokenGenerator = _scope.ServiceProvider.GetRequiredService<ITokenGenerator>();
@@ -139,12 +140,13 @@ namespace ServicePerfectCV.IntegrationTests
         protected async Task<Experience> CreateExperience(
             Guid cvId = new(),
             string jobTitle = "Software Developer",
-            string company = "Tech Company",
+            string organization = "Tech Company",
             string location = "San Francisco, CA",
             DateOnly? startDate = null,
             DateOnly? endDate = null,
             string description = "Worked on various projects",
-            Guid? employmentTypeId = null
+            Guid? employmentTypeId = null,
+            Guid? organizationId = null
         )
         {
             var experience = new Experience
@@ -153,7 +155,8 @@ namespace ServicePerfectCV.IntegrationTests
                 CVId = cvId,
                 JobTitle = jobTitle,
                 EmploymentTypeId = employmentTypeId ?? Guid.NewGuid(),
-                Company = company,
+                Organization = organization,
+                OrganizationId = organizationId,
                 Location = location,
                 StartDate = startDate ?? DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-2)),
                 EndDate = endDate ?? DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-1)),
@@ -197,20 +200,26 @@ namespace ServicePerfectCV.IntegrationTests
             return jobTitle;
         }
 
-        protected async Task<Company> CreateCompany(
+        protected async Task<Organization> CreateOrganization(
             string name = "Tech Company",
-            Guid? id = null
-            )
+            Guid? id = null,
+            string? logoUrl = null,
+            string? description = null,
+            OrganizationType organizationType = OrganizationType.Company
+        )
         {
-            var company = new Company
+            var organization = new Organization
             {
                 Id = id ?? Guid.NewGuid(),
-                Name = name
+                Name = name,
+                LogoUrl = logoUrl,
+                Description = description,
+                OrganizationType = organizationType
             };
 
-            await CompanyRepository.CreateAsync(entity: company);
-            await CompanyRepository.SaveChangesAsync();
-            return company;
+            await OrganizationRepository.CreateAsync(organization);
+            await OrganizationRepository.SaveChangesAsync();
+            return organization;
         }
 
         protected async Task<Project> CreateProject(
@@ -254,7 +263,7 @@ namespace ServicePerfectCV.IntegrationTests
                 var certifications = await _dbContext.Certifications.ToListAsync();
                 var educations = await _dbContext.Educations.ToListAsync();
                 var projects = await _dbContext.Projects.ToListAsync();
-                var companies = await _dbContext.Companies.ToListAsync();
+                var organizations = await _dbContext.Organizations.ToListAsync();
                 var jobTitles = await _dbContext.JobTitles.ToListAsync();
                 var employmentTypes = await _dbContext.EmploymentTypes.ToListAsync();
 
@@ -276,8 +285,8 @@ namespace ServicePerfectCV.IntegrationTests
                 if (cvs.Any())
                     _dbContext.CVs.RemoveRange(cvs);
                 
-                if (companies.Any())
-                    _dbContext.Companies.RemoveRange(companies);
+                if (organizations.Any())
+                    _dbContext.Organizations.RemoveRange(organizations);
                 if (jobTitles.Any())
                     _dbContext.JobTitles.RemoveRange(jobTitles);
                 if (employmentTypes.Any())

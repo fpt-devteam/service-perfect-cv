@@ -54,9 +54,11 @@ namespace ServicePerfectCV.IntegrationTests
                     services.Remove(redisDescriptor);
                 }
 
+                var dbName = $"InMemoryTestDb_{Guid.NewGuid()}";
+                
                 services.AddDbContext<ApplicationDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryTestDb");
+                    options.UseInMemoryDatabase(dbName);
                     options.EnableSensitiveDataLogging();
                     options.EnableDetailedErrors();
                 });
@@ -67,7 +69,7 @@ namespace ServicePerfectCV.IntegrationTests
                 services.AddScoped<IExperienceRepository, ExperienceRepository>();
                 services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
                 services.AddScoped<IJobTitleRepository, JobTitleRepository>();
-                services.AddScoped<ICompanyRepository, CompanyRepository>();
+                services.AddScoped<IOrganizationRepository, OrganizationRepository>();
                 services.AddScoped<IProjectRepository, ProjectRepository>();
                 services.AddScoped<ITokenGenerator, TokenGenerator>();
 

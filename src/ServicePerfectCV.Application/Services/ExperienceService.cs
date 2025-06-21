@@ -1,5 +1,4 @@
 using AutoMapper;
-using ServicePerfectCV.Application.Common;
 using ServicePerfectCV.Application.DTOs.Experience.Requests;
 using ServicePerfectCV.Application.DTOs.Experience.Responses;
 using ServicePerfectCV.Application.Exceptions;
@@ -18,7 +17,7 @@ namespace ServicePerfectCV.Application.Services
         private readonly IMapper _mapper;
         private readonly IJobTitleRepository _jobTitleRepository;
         private readonly IEmploymentTypeRepository _employmentTypeRepository;
-        private readonly ICompanyRepository _companyRepository;
+        private readonly IOrganizationRepository _organizationRepository;
 
         public ExperienceService(
             IExperienceRepository experienceRepository,
@@ -26,14 +25,14 @@ namespace ServicePerfectCV.Application.Services
             IMapper mapper,
             IJobTitleRepository jobTitleRepository,
             IEmploymentTypeRepository employmentTypeRepository,
-            ICompanyRepository companyRepository)
+            IOrganizationRepository organizationRepository)
         {
             _experienceRepository = experienceRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
             _jobTitleRepository = jobTitleRepository;
             _employmentTypeRepository = employmentTypeRepository;
-            _companyRepository = companyRepository;
+            _organizationRepository = organizationRepository;
         }
 
         public async Task<ExperienceResponse> CreateAsync(CreateExperienceRequest request)
@@ -48,10 +47,10 @@ namespace ServicePerfectCV.Application.Services
                     throw new DomainException(JobTitleErrors.NotFound);
             }
 
-            if (request.CompanyId.HasValue)
+            if (request.OrganizationId.HasValue)
             {
-                if (await _companyRepository.GetByIdAsync(request.CompanyId.Value) == null)
-                    throw new DomainException(CompanyErrors.NotFound);
+                if (await _organizationRepository.GetByIdAsync(request.OrganizationId.Value) == null)
+                    throw new DomainException(OrganizationErrors.NotFound);
             }
 
             var employmentType = await _employmentTypeRepository.GetByIdAsync(request.EmploymentTypeId);
@@ -83,18 +82,18 @@ namespace ServicePerfectCV.Application.Services
             if (employmentType == null)
                 throw new DomainException(EmploymentTypeErrors.NotFound);
 
-            if (request.CompanyId.HasValue)
+            if (request.OrganizationId.HasValue)
             {
-                var company = await _companyRepository.GetByIdAsync(request.CompanyId.Value);
-                if (company == null)
-                    throw new DomainException(CompanyErrors.NotFound);
+                var organization = await _organizationRepository.GetByIdAsync(request.OrganizationId.Value);
+                if (organization == null)
+                    throw new DomainException(OrganizationErrors.NotFound);
             }
 
             existingExperience.JobTitle = request.JobTitle;
             existingExperience.JobTitleId = request.JobTitleId;
             existingExperience.EmploymentTypeId = request.EmploymentTypeId;
-            existingExperience.Company = request.Company;
-            existingExperience.CompanyId = request.CompanyId;
+            existingExperience.Organization = request.Organization;
+            existingExperience.OrganizationId = request.OrganizationId;
             existingExperience.Location = request.Location;
             existingExperience.StartDate = request.StartDate;
             existingExperience.EndDate = request.EndDate;

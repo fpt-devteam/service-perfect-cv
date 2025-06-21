@@ -22,12 +22,12 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(e => e.JobTitleId)
                 .IsRequired(false);
 
-            builder.Property(e => e.Company)
+            builder.Property(e => e.Organization)
                 .IsRequired()
-                .HasMaxLength(CompanyConstraints.NameMaxLength);
+                .HasMaxLength(OrganizationConstraints.NameMaxLength);
 
-            builder.Property(e => e.CompanyId)
-                .IsRequired(false);
+            builder.Property(e => e.OrganizationId)
+                .IsRequired(required: false);
 
             builder.Property(e => e.Location)
                 .HasMaxLength(ExperienceConstraints.LocationMaxLength);
@@ -65,15 +65,15 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(e => e.CompanyNavigation)
+            builder.HasOne(e => e.OrganizationNavigation)
                 .WithMany(c => c.Experiences)
-                .HasForeignKey(e => e.CompanyId)
-                .IsRequired(false)
+                .HasForeignKey(e => e.OrganizationId)
+                .IsRequired(required: false)
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasIndex(e => e.EmploymentTypeId);
             builder.HasIndex(e => e.JobTitleId);
-            builder.HasIndex(e => e.CompanyId);
+            builder.HasIndex(e => e.OrganizationId);
             builder.HasIndex(e => e.CVId);
         }
     }

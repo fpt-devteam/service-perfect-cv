@@ -7,9 +7,9 @@ using System;
 
 namespace ServicePerfectCV.Infrastructure.Repositories
 {
-    public class CompanyRepository : CrudRepositoryBase<Company, Guid>, ICompanyRepository
+    public class OrganizationRepository : CrudRepositoryBase<Organization, Guid>, IOrganizationRepository
     {
-        public CompanyRepository(ApplicationDbContext context) : base(context)
+        public OrganizationRepository(ApplicationDbContext context) : base(context)
         {
         }
     }

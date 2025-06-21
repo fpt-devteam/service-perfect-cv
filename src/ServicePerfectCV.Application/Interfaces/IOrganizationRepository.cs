@@ -3,7 +3,7 @@ using System;
 
 namespace ServicePerfectCV.Application.Interfaces
 {
-    public interface ICompanyRepository : IGenericRepository<Company, Guid>
+    public interface IOrganizationRepository : IGenericRepository<Organization, Guid>
     {
     }
 }
