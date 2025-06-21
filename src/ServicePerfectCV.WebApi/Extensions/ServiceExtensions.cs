@@ -29,12 +29,14 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddAutoMapper(typeof(CVMappingProfile));
             services.AddAutoMapper(typeof(EducationMappingProfile));
             services.AddAutoMapper(typeof(ContactMappingProfile));
+            services.AddAutoMapper(typeof(ProjectMappingProfile));
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICVRepository, CVRepository>();
             services.AddScoped<IEducationRepository, EducationRepository>();
             services.AddScoped<IContactRepository, ContactRepository>();
             services.AddScoped<IExperienceRepository, ExperienceRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IJobTitleRepository, JobTitleRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
@@ -48,6 +50,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<EducationService>();
             services.AddScoped<ContactService>();
             services.AddScoped<ExperienceService>();
+            services.AddScoped<ProjectService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICacheService, RedisCacheService>();

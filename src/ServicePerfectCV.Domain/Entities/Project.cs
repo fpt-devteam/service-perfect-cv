@@ -10,22 +10,17 @@ namespace ServicePerfectCV.Domain.Entities
 {
     public class Project : IEntity<Guid>
     {
-        public Guid Id { get; set; }
-        public Guid CVId { get; set; }
+        public required Guid Id { get; set; }
+        public required Guid CVId { get; set; }
         public required string Title { get; set; }
         public required string Description { get; set; }
         public string? Link { get; set; }
-        public DateOnly StartDate { get; set; }
+        public DateOnly? StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
-        public string TechJson { get; set; } = default!;
-        [NotMapped]
-        public List<string> Technologies
-        {
-            get => JsonSerializer.Deserialize<List<string>>(TechJson) ?? [];
-            set => TechJson = JsonSerializer.Serialize(value);
-        }
-
-        // Navigation property
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        
         public virtual CV CV { get; set; } = default!;
     }
 }

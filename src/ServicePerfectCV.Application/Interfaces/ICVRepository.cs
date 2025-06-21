@@ -10,6 +10,6 @@ namespace ServicePerfectCV.Application.Interfaces
 {
     public interface ICVRepository : IGenericRepository<CV, Guid>
     {
-        Task<PaginationData<CV>> ListAsync(PaginationRequest paginationRequest, Guid userId);
+        Task<PaginationData<CV>> ListAsync(PaginationQuery paginationQuery, Guid userId);
     }
 }

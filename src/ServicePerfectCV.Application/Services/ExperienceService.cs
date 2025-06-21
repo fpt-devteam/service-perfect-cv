@@ -122,7 +122,7 @@ namespace ServicePerfectCV.Application.Services
             if (cv == null || cv.UserId != userId)
                 throw new DomainException(ExperienceErrors.NotFound);
 
-            var experiences = await _experienceRepository.ListByCVIdAndUserIdAsync(cvId, userId);
+            var experiences = await _experienceRepository.GetByCVIdAndUserIdAsync(cvId, userId);
             return _mapper.Map<IEnumerable<ExperienceResponse>>(experiences);
         }
 

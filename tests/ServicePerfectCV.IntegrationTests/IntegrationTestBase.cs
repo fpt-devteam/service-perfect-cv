@@ -28,6 +28,7 @@ namespace ServicePerfectCV.IntegrationTests
         protected readonly IEmploymentTypeRepository EmploymentTypeRepository;
         protected readonly IJobTitleRepository JobTitleRepository;
         protected readonly ICompanyRepository CompanyRepository;
+        protected readonly IProjectRepository ProjectRepository;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly ApplicationDbContext _dbContext;
 
@@ -42,6 +43,7 @@ namespace ServicePerfectCV.IntegrationTests
             EmploymentTypeRepository = _scope.ServiceProvider.GetRequiredService<IEmploymentTypeRepository>();
             JobTitleRepository = _scope.ServiceProvider.GetRequiredService<IJobTitleRepository>();
             CompanyRepository = _scope.ServiceProvider.GetRequiredService<ICompanyRepository>();
+            ProjectRepository = _scope.ServiceProvider.GetRequiredService<IProjectRepository>();
             _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             _tokenGenerator = _scope.ServiceProvider.GetRequiredService<ITokenGenerator>();
         }
@@ -84,14 +86,14 @@ namespace ServicePerfectCV.IntegrationTests
         }
 
         protected async Task<User> CreateUser(
-            Guid id = default,
+            Guid id = new(),
             string email = "user@example.com",
             string password = "P@ssword1"
         )
         {
             var user = new User
             {
-                Id = id == Guid.Empty ? Guid.NewGuid() : id,
+                Id = id,
                 Email = email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
                 CreatedAt = DateTime.UtcNow
@@ -102,7 +104,7 @@ namespace ServicePerfectCV.IntegrationTests
             return user;
         }
 
-        protected async Task<CV> CreateCV(Guid userId = default, string title = "Test CV")
+        protected async Task<CV> CreateCV(Guid userId = new(), string title = "Test CV")
         {
             var cv = new CV
             {
@@ -116,7 +118,7 @@ namespace ServicePerfectCV.IntegrationTests
         }
 
         protected async Task<Contact> CreateContact(
-            Guid cvId = default,
+            Guid cvId = new(),
             string email = "contact@example.com",
             string phone = "+1234567890"
         )
@@ -135,7 +137,7 @@ namespace ServicePerfectCV.IntegrationTests
         }
 
         protected async Task<Experience> CreateExperience(
-            Guid cvId = default,
+            Guid cvId = new(),
             string jobTitle = "Software Developer",
             string company = "Tech Company",
             string location = "San Francisco, CA",
@@ -206,9 +208,35 @@ namespace ServicePerfectCV.IntegrationTests
                 Name = name
             };
 
-            await CompanyRepository.CreateAsync(company);
+            await CompanyRepository.CreateAsync(entity: company);
             await CompanyRepository.SaveChangesAsync();
             return company;
+        }
+
+        protected async Task<Project> CreateProject(
+            Guid cvId = new(),
+            string title = "Test Project",
+            string description = "This is a test project",
+            string link = "https://example.com/project",
+            DateOnly? startDate = null,
+            DateOnly? endDate = null
+        )
+        {
+            var project = new Project
+            {
+                Id = Guid.NewGuid(),
+                CVId = cvId,
+                Title = title,
+                Description = description,
+                Link = link,
+                StartDate = startDate ?? DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6)),
+                EndDate = endDate ?? DateOnly.FromDateTime(DateTime.UtcNow),
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await ProjectRepository.CreateAsync(entity: project);
+            await ProjectRepository.SaveChangesAsync();
+            return project;
         }
 
         private async Task CleanTestDataAsync()
@@ -221,16 +249,39 @@ namespace ServicePerfectCV.IntegrationTests
                 var contacts = await _dbContext.Contacts.ToListAsync();
                 var cvs = await _dbContext.CVs.ToListAsync();
                 var users = await _dbContext.Users.ToListAsync();
+                var skills = await _dbContext.Skills.ToListAsync();
+                var summaries = await _dbContext.Summaries.ToListAsync();
+                var certifications = await _dbContext.Certifications.ToListAsync();
+                var educations = await _dbContext.Educations.ToListAsync();
+                var projects = await _dbContext.Projects.ToListAsync();
+                var companies = await _dbContext.Companies.ToListAsync();
+                var jobTitles = await _dbContext.JobTitles.ToListAsync();
+                var employmentTypes = await _dbContext.EmploymentTypes.ToListAsync();
 
+                if (projects.Any())
+                    _dbContext.Projects.RemoveRange(projects);
                 if (experiences.Any())
                     _dbContext.Experiences.RemoveRange(experiences);
-
                 if (contacts.Any())
                     _dbContext.Contacts.RemoveRange(contacts);
-
+                if (skills.Any())
+                    _dbContext.Skills.RemoveRange(skills);
+                if (summaries.Any())
+                    _dbContext.Summaries.RemoveRange(summaries);
+                if (certifications.Any())
+                    _dbContext.Certifications.RemoveRange(certifications);
+                if (educations.Any())
+                    _dbContext.Educations.RemoveRange(educations);
+                
                 if (cvs.Any())
                     _dbContext.CVs.RemoveRange(cvs);
-
+                
+                if (companies.Any())
+                    _dbContext.Companies.RemoveRange(companies);
+                if (jobTitles.Any())
+                    _dbContext.JobTitles.RemoveRange(jobTitles);
+                if (employmentTypes.Any())
+                    _dbContext.EmploymentTypes.RemoveRange(employmentTypes);
                 if (users.Any())
                     _dbContext.Users.RemoveRange(users);
 

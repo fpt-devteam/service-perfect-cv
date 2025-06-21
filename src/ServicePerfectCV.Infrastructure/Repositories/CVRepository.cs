@@ -14,13 +14,13 @@ namespace ServicePerfectCV.Infrastructure.Repositories
 {
     public class CVRepository(ApplicationDbContext context) : CrudRepositoryBase<CV, Guid>(context), ICVRepository
     {
-        public async Task<PaginationData<CV>> ListAsync(PaginationRequest paginationRequest, Guid userId)
+        public async Task<PaginationData<CV>> ListAsync(PaginationQuery paginationQuery, Guid userId)
         {
             var query = _context.CVs.Where(cv => cv.UserId == userId).Include(cv => cv.Educations);
             var totalCount = await query.CountAsync();
             var items = await query
-                .Skip(paginationRequest.Offset)
-                .Take(paginationRequest.Limit)
+                .Skip(paginationQuery.Offset)
+                .Take(paginationQuery.Limit)
                 .ToListAsync();
             return new PaginationData<CV>
             {

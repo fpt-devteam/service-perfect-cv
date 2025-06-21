@@ -7,7 +7,7 @@ namespace ServicePerfectCV.Application.Interfaces
 {
     public interface IExperienceRepository : IGenericRepository<Experience, Guid>
     {
-        Task<IEnumerable<Experience>> ListByCVIdAndUserIdAsync(Guid cvId, Guid userId);
+        Task<IEnumerable<Experience>> GetByCVIdAndUserIdAsync(Guid cvId, Guid userId);
         Task<Experience?> GetByIdAndCVIdAndUserIdAsync(Guid id, Guid cvId, Guid userId);
     }
 }

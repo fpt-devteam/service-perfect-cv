@@ -26,9 +26,9 @@ namespace ServicePerfectCV.Application.Services
             await cvRepository.SaveChangesAsync();
             return mapper.Map<CVResponse>(newCV);
         }
-        public async Task<PaginationData<CVResponse>> ListAsync(PaginationRequest paginationRequest, Guid userId)
+        public async Task<PaginationData<CVResponse>> ListAsync(PaginationQuery paginationQuery, Guid userId)
         {
-            var cvs = await cvRepository.ListAsync(paginationRequest, userId);
+            var cvs = await cvRepository.ListAsync(paginationQuery, userId);
             return new PaginationData<CVResponse>
             {
                 Items = [.. cvs.Items.Select(cv => mapper.Map<CVResponse>(cv))],

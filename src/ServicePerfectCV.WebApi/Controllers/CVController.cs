@@ -14,7 +14,7 @@ namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Route("api/cvs")]
-    public class CVController(CVService cVService) : ControllerBase
+    public class CVController(CVService cvService) : ControllerBase
     {
         [Authorize]
         [HttpPost]
@@ -23,18 +23,18 @@ namespace ServicePerfectCV.WebApi.Controllers
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
-            var result = await cVService.CreateAsync(request, userId);
+            var result = await cvService.CreateAsync(request, userId);
             return Ok(result);
         }
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> ListAsync([FromQuery] PaginationRequest paginationRequest)
+        public async Task<IActionResult> ListAsync([FromQuery] PaginationQuery paginationQuery)
         {
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
-            var result = await cVService.ListAsync(paginationRequest, userId);
+            var result = await cvService.ListAsync(paginationQuery, userId);
             return Ok(result);
         }
     }

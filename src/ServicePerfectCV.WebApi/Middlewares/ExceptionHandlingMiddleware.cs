@@ -22,14 +22,14 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
     {
         HttpResponse response = context.Response;
         response.ContentType = "application/json";
-        
+
         string errorMessage = exception.Message;
         if (exception.InnerException != null)
         {
             errorMessage += $" Inner exception: {exception.InnerException.Message}";
         }
 
-        logger.LogError(exception, "An unhandled exception occurred: {Message}", errorMessage);
+        logger.LogError(exception, "Exception occurred: {Message}", errorMessage);
 
         Error error = exception switch
         {
@@ -46,7 +46,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
-        
+
         string result = JsonSerializer.Serialize(new
         {
             Code = error.Code,
