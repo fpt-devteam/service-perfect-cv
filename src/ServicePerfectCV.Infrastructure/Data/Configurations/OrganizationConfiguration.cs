@@ -21,10 +21,10 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(e => e.LogoUrl)
                 .HasMaxLength(maxLength: OrganizationConstraints.LogoUrlMaxLength);
-                
+
             builder.Property(e => e.Description)
                 .HasMaxLength(maxLength: OrganizationConstraints.DescriptionMaxLength);
-                
+
             builder.Property(e => e.OrganizationType)
                 .IsRequired();
 
@@ -34,6 +34,14 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(e => e.DeletedAt)
                 .IsRequired(required: false);
+
+            builder.HasMany(o => o.Educations)
+                .WithOne(e => e.OrganizationNavigation)
+                .HasForeignKey(o => o.OrganizationId);
+
+            builder.HasMany(o => o.Experiences)
+                .WithOne(e => e.OrganizationNavigation)
+                .HasForeignKey(o => o.OrganizationId);
         }
     }
 }

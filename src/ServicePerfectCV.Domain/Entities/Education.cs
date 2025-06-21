@@ -1,8 +1,5 @@
 using ServicePerfectCV.Domain.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Domain.Entities
 {
@@ -11,14 +8,23 @@ namespace ServicePerfectCV.Domain.Entities
         public Guid Id { get; set; }
         public Guid CVId { get; set; }
 
+        public Guid? DegreeId { get; set; }
         public required string Degree { get; set; }
-        public required string Institution { get; set; }
-        public string? Location { get; set; }
-        public int? YearObtained { get; set; }
-        public string? Minor { get; set; }
+
+        public Guid? OrganizationId { get; set; }
+        public required string Organization { get; set; }
+
+        public string? FieldOfStudy { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
+        public string? Description { get; set; }
         public decimal? Gpa { get; set; }
-        public string? AdditionalInfo { get; set; }
-        // Navigation property
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        
         public virtual CV CV { get; set; } = default!;
+        public virtual Degree? DegreeNavigation { get; set; }
+        public virtual Organization? OrganizationNavigation { get; set; }
     }
 }

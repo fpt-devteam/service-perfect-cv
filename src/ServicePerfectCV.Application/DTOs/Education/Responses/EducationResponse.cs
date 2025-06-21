@@ -7,12 +7,12 @@ namespace ServicePerfectCV.Application.DTOs.Education.Responses
 {
     public class EducationResponse
     {
-        public required string Institution { get; init; }
+        public required string Organization { get; init; }
         public required string Degree { get; init; }
-        public string? Location { get; init; }
-        public int? YearObtained { get; init; }
-        public string? Minor { get; init; }
+        public string? FieldOfStudy { get; init; }
+        public DateOnly? StartDate { get; init; }
+        public DateOnly? EndDate { get; init; }
+        public string? Description { get; init; }
         public decimal? Gpa { get; init; }
-        public string? AdditionalInfo { get; init; }
     }
 }

@@ -13,23 +13,25 @@ namespace ServicePerfectCV.Application.Mappings
         public EducationMappingProfile()
         {
             CreateMap<Education, EducationResponse>()
-                .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.Institution))
+                .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization))
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.Degree))
-                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location))
-                .ForMember(dest => dest.YearObtained, opt => opt.MapFrom(src => src.YearObtained))
-                .ForMember(dest => dest.Minor, opt => opt.MapFrom(src => src.Minor))
-                .ForMember(dest => dest.Gpa, opt => opt.MapFrom(src => src.Gpa))
-                .ForMember(dest => dest.AdditionalInfo, opt => opt.MapFrom(src => src.AdditionalInfo));
+                .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.FieldOfStudy))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Gpa, opt => opt.MapFrom(src => src.Gpa));
 
             CreateMap<CreateEducationRequest, Education>()
                 .ForMember(dest => dest.CVId, opt => opt.MapFrom(src => src.CVId))
-                .ForMember(dest => dest.Institution, opt => opt.MapFrom(src => src.Institution))
+                .ForMember(dest => dest.DegreeId, opt => opt.MapFrom(src => src.DegreeId))
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.Degree))
-                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location))
-                .ForMember(dest => dest.YearObtained, opt => opt.MapFrom(src => src.YearObtained))
-                .ForMember(dest => dest.Minor, opt => opt.MapFrom(src => src.Minor))
-                .ForMember(dest => dest.Gpa, opt => opt.MapFrom(src => src.Gpa))
-                .ForMember(dest => dest.AdditionalInfo, opt => opt.MapFrom(src => src.AdditionalInfo));
+                .ForMember(dest => dest.OrganizationId, opt => opt.MapFrom(src => src.OrganizationId))
+                .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization))
+                .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.FieldOfStudy))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Gpa, opt => opt.MapFrom(src => src.Gpa));
         }
     }
 }

@@ -13,7 +13,6 @@ using Xunit;
 
 namespace ServicePerfectCV.IntegrationTests.Controllers
 {
-    [Collection("IntegrationTests")]
     public class ProjectControllerTests : IntegrationTestBase
     {
         public ProjectControllerTests(CustomWebApplicationFactory factory)
@@ -251,7 +250,6 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
 
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
 
-            // Test ascending sort
             var ascResponse = await Client.GetAsync(
                 requestUri: $"/api/cvs/{testCV.Id}/projects?sort.startDate=0");
 
@@ -264,7 +262,6 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             ascList[0].Title.Should().Be("Earliest Project");
             ascList[2].Title.Should().Be("Latest Project");
 
-            // Test descending sort
             var descResponse = await Client.GetAsync(
                 requestUri: $"/api/cvs/{testCV.Id}/projects?sort.startDate=1");
 
@@ -300,21 +297,21 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
         {
             var testUser = await CreateUser();
             var testCV = await CreateCV(userId: testUser.Id);
-        
+
             var project = await CreateProject(
                 cvId: testCV.Id,
                 title: "Sample Project",
                 description: "A sample project description",
                 link: "https://sample.example.com"
             );
-        
+
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
             var response = await Client.GetAsync(
                 requestUri: $"/api/cvs/{testCV.Id}/projects/{project.Id}");
-        
+
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var result = await DeserializeResponse<ProjectResponse>(response: response);
-        
+
             result.Should().NotBeNull();
             result!.Id.Should().Be(project.Id);
             result.Title.Should().Be(project.Title);
@@ -396,19 +393,19 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
         {
             var testUser = await CreateUser();
             var testCV = await CreateCV(userId: testUser.Id);
-            
+
             var project = await CreateProject(
                 cvId: testCV.Id,
                 title: "Project to Delete",
                 description: "This project will be deleted"
             );
-            
+
             // First verify the project exists
             AttachAccessToken(userId: testUser.Id, userRole: testUser.Role);
             var verifyResponse = await Client.GetAsync(
                 requestUri: $"/api/cvs/{testCV.Id}/projects/{project.Id}");
             verifyResponse.EnsureSuccessStatusCode(); // Make sure project exists before we try to delete it
-            
+
             // Now proceed with deletion
             var response = await Client.DeleteAsync(
                 requestUri: $"/api/cvs/{testCV.Id}/projects/{project.Id}");

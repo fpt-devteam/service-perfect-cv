@@ -1,33 +1,62 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using FluentValidation;
+using ServicePerfectCV.Domain.Constraints;
 
 namespace ServicePerfectCV.Application.DTOs.Education.Requests
 {
     public class CreateEducationRequest
     {
-        [Required(ErrorMessage = "CVId is required")]
         public required Guid CVId { get; init; }
 
-        [Required(ErrorMessage = "Degree is required")]
-        [MaxLength(100, ErrorMessage = "Degree cannot exceed 100 characters")]
+        public Guid? DegreeId { get; init; }
         public required string Degree { get; init; }
 
-        [Required(ErrorMessage = "Institution is required")]
-        [MaxLength(200, ErrorMessage = "Institution cannot exceed 200 characters")]
-        public required string Institution { get; init; }
-        
-        [MaxLength(100, ErrorMessage = "Location cannot exceed 100 characters")]
-        public string? Location { get; init; }
+        public Guid? OrganizationId { get; init; }
+        public required string Organization { get; init; }
 
-        public int? YearObtained { get; init; }
-
-        public string? Minor { get; init; }
-
+        public string? FieldOfStudy { get; init; }
+        public DateOnly? StartDate { get; init; }
+        public DateOnly? EndDate { get; init; }
+        public string? Description { get; init; }
         public decimal? Gpa { get; init; }
 
-        public string? AdditionalInfo { get; init; }
+        public class Validator : AbstractValidator<CreateEducationRequest>
+        {
+            public Validator()
+            {
+                RuleFor(x => x.CVId)
+                    .NotEmpty().WithMessage("CV ID is required");
+
+                RuleFor(x => x.Degree)
+                    .NotEmpty().WithMessage("Degree is required")
+                    .MaximumLength(EducationConstraints.DegreeMaxLength)
+                    .WithMessage($"Degree cannot exceed {EducationConstraints.DegreeMaxLength} characters");
+
+                RuleFor(x => x.Organization)
+                    .NotEmpty().WithMessage("Organization is required")
+                    .MaximumLength(EducationConstraints.OrganizationMaxLength)
+                    .WithMessage($"Organization cannot exceed {EducationConstraints.OrganizationMaxLength} characters");
+
+                RuleFor(x => x.FieldOfStudy)
+                    .MaximumLength(EducationConstraints.FieldOfStudyMaxLength)
+                    .When(x => !string.IsNullOrEmpty(x.FieldOfStudy))
+                    .WithMessage($"Field of study cannot exceed {EducationConstraints.FieldOfStudyMaxLength} characters");
+
+                RuleFor(x => x.Description)
+                    .MaximumLength(EducationConstraints.DescriptionMaxLength)
+                    .When(x => !string.IsNullOrEmpty(x.Description))
+                    .WithMessage($"Description cannot exceed {EducationConstraints.DescriptionMaxLength} characters");
+
+                RuleFor(x => x.EndDate)
+                    .GreaterThanOrEqualTo(x => x.StartDate)
+                    .When(x => x.StartDate.HasValue && x.EndDate.HasValue)
+                    .WithMessage("End date must be greater than or equal to Start date");
+
+                RuleFor(x => x.Gpa)
+                    .InclusiveBetween(0, 4)
+                    .When(x => x.Gpa.HasValue)
+                    .WithMessage("GPA must be between 0 and 4");
+            }
+        }
     }
 }

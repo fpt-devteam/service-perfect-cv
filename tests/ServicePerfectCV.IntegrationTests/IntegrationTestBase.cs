@@ -30,6 +30,8 @@ namespace ServicePerfectCV.IntegrationTests
         protected readonly IJobTitleRepository JobTitleRepository;
         protected readonly IOrganizationRepository OrganizationRepository;
         protected readonly IProjectRepository ProjectRepository;
+        protected readonly IEducationRepository EducationRepository;
+        protected readonly IDegreeRepository DegreeRepository;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly ApplicationDbContext _dbContext;
 
@@ -45,6 +47,8 @@ namespace ServicePerfectCV.IntegrationTests
             JobTitleRepository = _scope.ServiceProvider.GetRequiredService<IJobTitleRepository>();
             OrganizationRepository = _scope.ServiceProvider.GetRequiredService<IOrganizationRepository>();
             ProjectRepository = _scope.ServiceProvider.GetRequiredService<IProjectRepository>();
+            EducationRepository = _scope.ServiceProvider.GetRequiredService<IEducationRepository>();
+            DegreeRepository = _scope.ServiceProvider.GetRequiredService<IDegreeRepository>();
             _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             _tokenGenerator = _scope.ServiceProvider.GetRequiredService<ITokenGenerator>();
         }
@@ -87,14 +91,14 @@ namespace ServicePerfectCV.IntegrationTests
         }
 
         protected async Task<User> CreateUser(
-            Guid id = new(),
+            Guid? id = null,
             string email = "user@example.com",
             string password = "P@ssword1"
         )
         {
             var user = new User
             {
-                Id = id,
+                Id = id ?? Guid.NewGuid(),
                 Email = email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
                 CreatedAt = DateTime.UtcNow
@@ -105,12 +109,12 @@ namespace ServicePerfectCV.IntegrationTests
             return user;
         }
 
-        protected async Task<CV> CreateCV(Guid userId = new(), string title = "Test CV")
+        protected async Task<CV> CreateCV(Guid? userId = null, string title = "Test CV")
         {
             var cv = new CV
             {
                 Title = title,
-                UserId = userId,
+                UserId = userId ?? Guid.NewGuid(),
                 CreatedAt = DateTime.UtcNow
             };
             await CVRepository.CreateAsync(cv);
@@ -119,7 +123,7 @@ namespace ServicePerfectCV.IntegrationTests
         }
 
         protected async Task<Contact> CreateContact(
-            Guid cvId = new(),
+            Guid? cvId = null,
             string email = "contact@example.com",
             string phone = "+1234567890"
         )
@@ -127,7 +131,7 @@ namespace ServicePerfectCV.IntegrationTests
             var contact = new Contact
             {
                 Id = Guid.NewGuid(),
-                CVId = cvId,
+                CVId = cvId ?? Guid.NewGuid(),
                 Email = email,
                 PhoneNumber = phone,
             };
@@ -138,7 +142,7 @@ namespace ServicePerfectCV.IntegrationTests
         }
 
         protected async Task<Experience> CreateExperience(
-            Guid cvId = new(),
+            Guid? cvId = null,
             string jobTitle = "Software Developer",
             string organization = "Tech Company",
             string location = "San Francisco, CA",
@@ -152,7 +156,7 @@ namespace ServicePerfectCV.IntegrationTests
             var experience = new Experience
             {
                 Id = Guid.NewGuid(),
-                CVId = cvId,
+                CVId = cvId ?? Guid.NewGuid(),
                 JobTitle = jobTitle,
                 EmploymentTypeId = employmentTypeId ?? Guid.NewGuid(),
                 Organization = organization,
@@ -223,7 +227,7 @@ namespace ServicePerfectCV.IntegrationTests
         }
 
         protected async Task<Project> CreateProject(
-            Guid cvId = new(),
+            Guid? cvId = null,
             string title = "Test Project",
             string description = "This is a test project",
             string link = "https://example.com/project",
@@ -234,7 +238,7 @@ namespace ServicePerfectCV.IntegrationTests
             var project = new Project
             {
                 Id = Guid.NewGuid(),
-                CVId = cvId,
+                CVId = cvId ?? Guid.NewGuid(),
                 Title = title,
                 Description = description,
                 Link = link,
@@ -246,6 +250,58 @@ namespace ServicePerfectCV.IntegrationTests
             await ProjectRepository.CreateAsync(entity: project);
             await ProjectRepository.SaveChangesAsync();
             return project;
+        }
+
+                protected async Task<Degree> CreateDegree(
+            string name = "Bachelor of Science",
+            string code = "BS",
+            Guid? id = null
+            )
+        {
+            var degree = new Degree
+            {
+                Id = id ?? Guid.NewGuid(),
+                Name = name,
+                Code = code
+            };
+
+            await DegreeRepository.CreateAsync(degree);
+            await DegreeRepository.SaveChangesAsync();
+            return degree;
+        }
+
+        protected async Task<Education> CreateEducation(
+            Guid? cvId = null,
+            string degreeName = "Bachelor of Science",
+            string organizationName = "University of Example",
+            Guid? degreeId = null,
+            Guid? organizationId = null,
+            string? fieldOfStudy = "Computer Science",
+            DateOnly? startDate = null,
+            DateOnly? endDate = null,
+            string? description = "Studied various CS topics.",
+            decimal? gpa = 3.8m
+        )
+        {
+            var education = new Education
+            {
+                Id = Guid.NewGuid(),
+                CVId = cvId ?? Guid.NewGuid(),
+                Degree = degreeName,
+                DegreeId = degreeId,
+                Organization = organizationName,
+                OrganizationId = organizationId,
+                FieldOfStudy = fieldOfStudy,
+                StartDate = startDate ?? DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-4)),
+                EndDate = endDate ?? DateOnly.FromDateTime(DateTime.UtcNow),
+                Description = description,
+                Gpa = gpa,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await EducationRepository.CreateAsync(education);
+            await EducationRepository.SaveChangesAsync();
+            return education;
         }
 
         private async Task CleanTestDataAsync()
@@ -266,6 +322,7 @@ namespace ServicePerfectCV.IntegrationTests
                 var organizations = await _dbContext.Organizations.ToListAsync();
                 var jobTitles = await _dbContext.JobTitles.ToListAsync();
                 var employmentTypes = await _dbContext.EmploymentTypes.ToListAsync();
+                var degrees = await _dbContext.Degrees.ToListAsync();
 
                 if (projects.Any())
                     _dbContext.Projects.RemoveRange(projects);
@@ -281,6 +338,9 @@ namespace ServicePerfectCV.IntegrationTests
                     _dbContext.Certifications.RemoveRange(certifications);
                 if (educations.Any())
                     _dbContext.Educations.RemoveRange(educations);
+
+                if (degrees.Any())
+                    _dbContext.Degrees.RemoveRange(degrees);
                 
                 if (cvs.Any())
                     _dbContext.CVs.RemoveRange(cvs);

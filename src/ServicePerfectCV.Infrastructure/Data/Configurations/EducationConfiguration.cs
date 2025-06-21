@@ -1,10 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ServicePerfectCV.Domain.Constraints;
 using ServicePerfectCV.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Data.Configurations
 {
@@ -12,35 +9,41 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Education> builder)
         {
-            builder.HasKey(e => e.Id);
+            builder.HasKey(property => property.Id);
 
-            builder.Property(e => e.Degree)
+            builder.Property(property => property.Degree)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(maxLength: EducationConstraints.DegreeMaxLength);
 
-            builder.Property(e => e.Institution)
+            builder.Property(property => property.Organization)
                 .IsRequired()
-                .HasMaxLength(200);
+                .HasMaxLength(maxLength: EducationConstraints.OrganizationMaxLength);
 
-            builder.Property(e => e.Location)
-                .HasMaxLength(100);
+            builder.Property(property => property.FieldOfStudy)
+                .HasMaxLength(maxLength: EducationConstraints.FieldOfStudyMaxLength);
 
-            builder.Property(e => e.YearObtained)
-                .IsRequired(false);
+            builder.Property(property => property.Description)
+                .HasMaxLength(maxLength: EducationConstraints.DescriptionMaxLength);
 
-            builder.Property(e => e.Minor)
-                .HasMaxLength(100);
-
-            builder.Property(e => e.AdditionalInfo)
-                .HasMaxLength(500);
-
-            builder.Property(e => e.Gpa)
-                .HasColumnType("decimal(3, 2)");
+            builder.Property(property => property.Gpa)
+                .HasColumnType(typeName: "decimal(3, 2)");
 
             builder.HasOne(e => e.CV)
-                .WithMany(c => c.Educations)
+                .WithMany(cv => cv.Educations)
                 .HasForeignKey(e => e.CVId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(deleteBehavior: DeleteBehavior.NoAction);
+
+            builder.HasOne(e => e.DegreeNavigation)
+                .WithMany(degree => degree.Educations)
+                .HasForeignKey(e => e.DegreeId)
+                .IsRequired(required: false)
+                .OnDelete(deleteBehavior: DeleteBehavior.SetNull);
+
+            builder.HasOne(e => e.OrganizationNavigation)
+                .WithMany(o => o.Educations)
+                .HasForeignKey(e => e.OrganizationId)
+                .IsRequired(required: false)
+                .OnDelete(deleteBehavior: DeleteBehavior.SetNull);
         }
     }
 }

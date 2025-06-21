@@ -19,6 +19,7 @@ namespace ServicePerfectCV.Infrastructure.Data
         public DbSet<CV> CVs { get; set; }
         public DbSet<Education> Educations { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<Degree> Degrees { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<JobTitle> JobTitles { get; set; }
         public DbSet<EmploymentType> EmploymentTypes { get; set; }

@@ -39,6 +39,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IJobTitleRepository, JobTitleRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+            services.AddScoped<IDegreeRepository, DegreeRepository>();
             services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
