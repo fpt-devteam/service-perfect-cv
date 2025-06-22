@@ -42,6 +42,10 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.HasMany(o => o.Experiences)
                 .WithOne(e => e.OrganizationNavigation)
                 .HasForeignKey(o => o.OrganizationId);
+
+            builder.HasMany(o => o.Certifications)
+                .WithOne(c => c.OrganizationNavigation)
+                .HasForeignKey(o => o.OrganizationId);
         }
     }
 }

@@ -5,8 +5,8 @@ namespace ServicePerfectCV.Domain.Entities
 {
     public class Education : IEntity<Guid>
     {
-        public Guid Id { get; set; }
-        public Guid CVId { get; set; }
+        public required Guid Id { get; set; }
+        public required Guid CVId { get; set; }
 
         public Guid? DegreeId { get; set; }
         public required string Degree { get; set; }

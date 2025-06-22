@@ -73,6 +73,7 @@ namespace ServicePerfectCV.IntegrationTests
                 services.AddScoped<IProjectRepository, ProjectRepository>();
                 services.AddScoped<IEducationRepository, EducationRepository>();
                 services.AddScoped<IDegreeRepository, DegreeRepository>();
+                services.AddScoped<ICertificationRepository, CertificationRepository>();
                 services.AddScoped<ITokenGenerator, TokenGenerator>();
 
                 services.AddSingleton<ICacheService>(sp =>

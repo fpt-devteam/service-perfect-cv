@@ -32,6 +32,7 @@ namespace ServicePerfectCV.IntegrationTests
         protected readonly IProjectRepository ProjectRepository;
         protected readonly IEducationRepository EducationRepository;
         protected readonly IDegreeRepository DegreeRepository;
+        protected readonly ICertificationRepository CertificationRepository;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly ApplicationDbContext _dbContext;
 
@@ -49,6 +50,7 @@ namespace ServicePerfectCV.IntegrationTests
             ProjectRepository = _scope.ServiceProvider.GetRequiredService<IProjectRepository>();
             EducationRepository = _scope.ServiceProvider.GetRequiredService<IEducationRepository>();
             DegreeRepository = _scope.ServiceProvider.GetRequiredService<IDegreeRepository>();
+            CertificationRepository = _scope.ServiceProvider.GetRequiredService<ICertificationRepository>();
             _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             _tokenGenerator = _scope.ServiceProvider.GetRequiredService<ITokenGenerator>();
         }
@@ -252,11 +254,11 @@ namespace ServicePerfectCV.IntegrationTests
             return project;
         }
 
-                protected async Task<Degree> CreateDegree(
-            string name = "Bachelor of Science",
-            string code = "BS",
-            Guid? id = null
-            )
+        protected async Task<Degree> CreateDegree(
+    string name = "Bachelor of Science",
+    string code = "BS",
+    Guid? id = null
+    )
         {
             var degree = new Degree
             {
@@ -304,6 +306,32 @@ namespace ServicePerfectCV.IntegrationTests
             return education;
         }
 
+        protected async Task<Certification> CreateCertification(
+            Guid? cvId = null,
+            string name = "AWS Certified Solutions Architect",
+            string organization = "Amazon Web Services",
+            Guid? organizationId = null,
+            DateOnly? issuedDate = null,
+            string? description = "Professional level certification for AWS architecture"
+        )
+        {
+            var certification = new Certification
+            {
+                Id = Guid.NewGuid(),
+                CVId = cvId ?? Guid.NewGuid(),
+                Name = name,
+                Organization = organization,
+                OrganizationId = organizationId,
+                IssuedDate = issuedDate ?? DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6)),
+                Description = description,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await CertificationRepository.CreateAsync(certification);
+            await CertificationRepository.SaveChangesAsync();
+            return certification;
+        }
+
         private async Task CleanTestDataAsync()
         {
             try
@@ -341,10 +369,10 @@ namespace ServicePerfectCV.IntegrationTests
 
                 if (degrees.Any())
                     _dbContext.Degrees.RemoveRange(degrees);
-                
+
                 if (cvs.Any())
                     _dbContext.CVs.RemoveRange(cvs);
-                
+
                 if (organizations.Any())
                     _dbContext.Organizations.RemoveRange(organizations);
                 if (jobTitles.Any())

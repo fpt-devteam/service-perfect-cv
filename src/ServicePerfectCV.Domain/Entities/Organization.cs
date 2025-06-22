@@ -18,5 +18,6 @@ namespace ServicePerfectCV.Domain.Entities
 
         public virtual ICollection<Experience> Experiences { get; set; } = [];
         public virtual ICollection<Education> Educations { get; set; } = [];
+        public virtual ICollection<Certification> Certifications { get; set; } = [];
     }
 }

@@ -7,6 +7,8 @@ using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using Xunit;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
+using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
 using Xunit.Abstractions;
@@ -51,6 +53,37 @@ namespace ServicePerfectCV.IntegrationTests.Controllers
             var createdEducation = await DeserializeResponse<EducationResponse>(response);
             Assert.NotNull(createdEducation);
             Assert.Equal(request.Degree, createdEducation.Degree);
+        }
+        
+        [Fact]
+        public async Task CreateEducation_DegreeNotFound_ReturnsDegreeNotFound()
+        {
+            // Arrange
+            var user = await CreateUser();
+            var cv = await CreateCV(user.Id);
+            AttachAccessToken(user.Id);
+
+            var request = new CreateEducationRequest
+            {
+                CVId = cv.Id,
+                Degree = "Master of Science",
+                DegreeId = Guid.NewGuid(), 
+                Organization = "Tech University",
+                FieldOfStudy = "Computer Engineering",
+                StartDate = new System.DateOnly(2020, 9, 1),
+                EndDate = new System.DateOnly(2022, 6, 1),
+                Description = "Focused on AI and ML.",
+                Gpa = 3.9m
+            };
+
+            // Act
+            var response = await Client.PostAsync($"/api/cvs/{cv.Id}/educations", CreateJsonContent(request));
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            var error = await DeserializeResponse<Error>(response: response);
+
+            error.Should().NotBeNull();
+            error!.Code.Should().Be(EducationErrors.DegreeNotFound.Code);
         }
 
         [Fact]

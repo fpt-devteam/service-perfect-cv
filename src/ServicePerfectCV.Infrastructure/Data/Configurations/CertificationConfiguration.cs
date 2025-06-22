@@ -19,20 +19,25 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             .IsRequired()
             .HasMaxLength(100);
 
-            builder.Property(c => c.Issuer)
+            builder.Property(c => c.Organization)
             .IsRequired()
             .HasMaxLength(100);
 
-            builder.Property(c => c.YearObtained)
+            builder.Property(c => c.IssuedDate)
             .IsRequired(false);
 
-            builder.Property(c => c.Relevance)
+            builder.Property(c => c.Description)
             .HasMaxLength(500);
 
             builder.HasOne(c => c.CV)
             .WithMany(cv => cv.Certifications)
             .HasForeignKey(cv => cv.CVId)
             .IsRequired().OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(c => c.OrganizationNavigation)
+            .WithMany(org => org.Certifications)
+            .HasForeignKey(org => org.OrganizationId)
+            .IsRequired(false).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }
