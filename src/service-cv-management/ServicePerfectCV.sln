@@ -11,15 +11,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Infrastruc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.WebApi", "ServicePerfectCV.WebApi\ServicePerfectCV.WebApi.csproj", "{3CBF79C3-D493-4B59-9454-ED0817489467}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CA13B030-A1CF-4812-BF72-360E8D8D8B28}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "service-cv-management", "{CA13B030-A1CF-4812-BF72-360E8D8D8B28}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "..\tools", "{DE2BEB24-BA83-4977-BB13-360218228307}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "..\..\tools", "{DE2BEB24-BA83-4977-BB13-360218228307}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Seeder", "..\tools\ServicePerfectCV.Seeder\ServicePerfectCV.Seeder.csproj", "{8B8E3AF9-DA32-4D81-BCFA-0E429A53F4AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Seeder", "..\..\tools\ServicePerfectCV.Seeder\ServicePerfectCV.Seeder.csproj", "{8B8E3AF9-DA32-4D81-BCFA-0E429A53F4AD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "..\tests", "{34BA0730-A48B-4D92-B1FB-9BE2A2BFBC6B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "..\..\tests", "{34BA0730-A48B-4D92-B1FB-9BE2A2BFBC6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.IntegrationTests", "..\tests\ServicePerfectCV.IntegrationTests\ServicePerfectCV.IntegrationTests.csproj", "{5FC97053-245A-4B1A-B9BB-525D39837A6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.IntegrationTests", "..\..\tests\ServicePerfectCV.IntegrationTests\ServicePerfectCV.IntegrationTests.csproj", "{5FC97053-245A-4B1A-B9BB-525D39837A6A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

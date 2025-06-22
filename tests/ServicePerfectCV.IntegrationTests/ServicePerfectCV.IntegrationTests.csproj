@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ServicePerfectCV.WebApi\ServicePerfectCV.WebApi.csproj" />
+    <ProjectReference Include="..\..\src\service-cv-management\ServicePerfectCV.WebApi\ServicePerfectCV.WebApi.csproj" />
   </ItemGroup>
 
 </Project>
