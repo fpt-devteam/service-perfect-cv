@@ -7,8 +7,7 @@ namespace ServicePerfectCV.Domain.Constants
 {
     public enum UserStatus
     {
-        Undefined = 0,
-        Active = 1,
-        Inactive = 2,
+        Active = 0,
+        Inactive = 1,
     }
 }

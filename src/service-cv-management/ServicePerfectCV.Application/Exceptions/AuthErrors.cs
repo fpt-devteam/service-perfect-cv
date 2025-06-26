@@ -24,8 +24,13 @@ namespace ServicePerfectCV.Application.Exceptions
             HttpStatusCode.Unauthorized);
 
         public static readonly Error Forbidden = new(
-        Code: "Forbidden",
-        Message: "You do not have permission to access this resource.",
-        HttpStatusCode.Forbidden);
+            Code: "Forbidden",
+            Message: "You do not have permission to access this resource.",
+            HttpStatusCode.Forbidden);
+        
+        public static readonly Error InvalidActivationToken = new(
+            Code: "InvalidToken",
+            Message: "The activation token is invalid or expired.",
+            HttpStatusCode.Forbidden);
     }
 }

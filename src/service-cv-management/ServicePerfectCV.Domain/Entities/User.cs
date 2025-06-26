@@ -15,7 +15,7 @@ namespace ServicePerfectCV.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public UserStatus Status { get; set; } = UserStatus.Undefined;
+        public UserStatus Status { get; set; } = UserStatus.Inactive;
         public UserRole Role { get; set; } = UserRole.User;
 
         public ICollection<CV> CVs { get; set; } = [];

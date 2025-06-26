@@ -42,7 +42,6 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
         public virtual async Task<TEntity?> GetByIdAsync(TKey id)
         {
             return await _dbSet
-                .AsNoTracking()
                 .FirstOrDefaultAsync(e => EF.Property<object>(e, "Id").Equals(id)
                         && EF.Property<DateTime?>(e, "DeletedAt") == null);
         }
@@ -51,7 +50,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
         {
             await _context.SaveChangesAsync();
         }
-        
+
         public virtual bool Update(TEntity entity)
         {
             _dbSet.Update(entity);

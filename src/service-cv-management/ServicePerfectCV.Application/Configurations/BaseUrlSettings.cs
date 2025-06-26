@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Configurations
 {
-    public class BaseUrlSettings
+    public class UrlSettings
     {
-        public string ActivationAccountUrl { get; set; } = string.Empty;
-        public string SuccessUrl { get; set; } = string.Empty;
-        public string FailUrl { get; set; } = string.Empty;
-        public string ActivationAccountApi { get; set; } = string.Empty;
+        public required string FrontendBase { get; set; }
+        public required string ActivationPath { get; set; }
     }
 }

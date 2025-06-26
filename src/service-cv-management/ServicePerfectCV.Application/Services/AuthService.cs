@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Services
 {
-    public class AuthService(IOptions<BaseUrlSettings> options,
+    public class AuthService(IOptions<UrlSettings> options,
                              IOptions<JwtSettings> jwtSettings,
                              IEmailTemplateHelper helper,
                              IEmailService emailSender,
@@ -37,15 +37,19 @@ namespace ServicePerfectCV.Application.Services
 
         public async Task<RegisterResponse> RegisterAsync(RegisterRequest registerRequest)
         {
-            if (await userRepository.GetByEmailAsync(registerRequest.Email) != null)
+            User? existingUser = await userRepository.GetByEmailAsync(registerRequest.Email);
+            if (existingUser != null)
             {
+                if (existingUser.Status == UserStatus.Inactive)
+                    throw new DomainException(UserErrors.AccountNotActivated);
                 throw new DomainException(UserErrors.EmailAlreadyExists);
             }
             User newUser = mapper.Map<User>(registerRequest);
             newUser.PasswordHash = passwordHasher.HashPassword(registerRequest.Password);
             await userRepository.CreateAsync(newUser);
             await userRepository.SaveChangesAsync();
-            await SendActivationEmailAsync(newUser.Email);
+            //TODO: implement job queue for sending emails
+            SendActivationEmailAsync(newUser.Email);
             var response = mapper.Map<RegisterResponse>(newUser);
             return response;
         }
@@ -53,6 +57,10 @@ namespace ServicePerfectCV.Application.Services
         public async Task<string> SendActivationEmailAsync(string email)
         {
             User user = await userRepository.GetByEmailAsync(email) ?? throw new DomainException(UserErrors.NotFound);
+            if (user.Status == UserStatus.Active)
+            {
+                throw new DomainException(UserErrors.AccountAlreadyActivated);
+            }
             var filePath = Path.Combine(AppContext.BaseDirectory, "Templates", "ActivationAccount.html");
             var token = tokenGenerator.GenerateAccessToken(new ClaimsAccessToken
             {
@@ -66,7 +74,7 @@ namespace ServicePerfectCV.Application.Services
                 body: await helper.RenderEmailTemplateAsync(filePath, new Dictionary<string, string>
                 {
                     { "UserName", user.Email },
-                    { "ActivationLink", $"{options.Value.ActivationAccountApi}?token={token}" }
+                    { "ActivationLink", $"{options.Value.FrontendBase}/{options.Value.ActivationPath}/{token}" }
                 })
             );
             return token;
@@ -98,22 +106,22 @@ namespace ServicePerfectCV.Application.Services
                        !string.IsNullOrEmpty(roleClaim) &&
                        Guid.TryParse(userIdClaim, out var parsedUserId)
                     ? parsedUserId
-                    : Guid.Empty;
+                    : throw new DomainException(AuthErrors.InvalidActivationToken);
             }
             catch
             {
-                return Guid.Empty;
+                throw new DomainException(AuthErrors.InvalidActivationToken);
             }
         }
 
         public async Task<bool> ActivateAccountAsync(Guid userId)
         {
-            UpdateUserRequest updateUserRequest = new()
+            User user = await userRepository.GetByIdAsync(userId) ?? throw new DomainException(UserErrors.NotFound);
+            if (user.Status == UserStatus.Active)
             {
-                Id = userId,
-                Status = UserStatus.Active
-            };
-            if (!userRepository.Update(mapper.Map<User>(updateUserRequest))) throw new DomainException(UserErrors.NotFound);
+                throw new DomainException(UserErrors.AccountAlreadyActivated);
+            }
+            user.Status = UserStatus.Active;
             await userRepository.SaveChangesAsync();
             return true;
         }

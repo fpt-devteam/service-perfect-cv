@@ -16,7 +16,7 @@ namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Route("api/auth")]
-    public class AuthController(AuthService authService, IOptions<BaseUrlSettings> option) : ControllerBase
+    public class AuthController(AuthService authService, IOptions<UrlSettings> option) : ControllerBase
     {
 
         [HttpPost("register")]
@@ -25,14 +25,11 @@ namespace ServicePerfectCV.WebApi.Controllers
             var response = await authService.RegisterAsync(registerRequest);
             return Ok(response);
         }
-        [HttpGet("activation-account")]
-        public async Task<IActionResult> ActivateAccountAsync([FromQuery] string token)
+        [HttpPut("activation-account/{token}")]
+        public async Task<IActionResult> ActivateAccountAsync([FromRoute] string token)
         {
             Guid userId = authService.VerifyTokenAsync(token);
-
-            if (userId == Guid.Empty || !await authService.ActivateAccountAsync(userId))
-                return Redirect(option.Value.FailUrl);
-            return Redirect(option.Value.SuccessUrl);
+            return Ok(await authService.ActivateAccountAsync(userId));
         }
         [HttpPost("resend-activation-email")]
         public async Task<IActionResult> ResendActivationEmailAsync([FromBody] ResendEmailRequest resendAEmailRequest)

@@ -18,7 +18,11 @@ namespace ServicePerfectCV.Application.Exceptions
             HttpStatusCode.Conflict);
         public static readonly Error AccountNotActivated = new(
             Code: "AccountNotActivated",
-            Message: "Account is not activated.",
+            Message: "Account is existed but not activated.",
+            HttpStatusCode.Forbidden);
+        public static readonly Error AccountAlreadyActivated = new(
+            Code: "AccountAlreadyActivated",
+            Message: "Account is already activated.",
             HttpStatusCode.Forbidden);
     }
 }
