@@ -61,6 +61,12 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             services.AddScoped<JwtSecurityTokenHandler>();
+            
+            // Add HttpClient for external API calls
+            services.AddHttpClient();
+            
+            // Add OAuth services
+            services.AddScoped<IOAuthService, GoogleOAuthService>();
         }
     }
 }

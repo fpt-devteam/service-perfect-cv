@@ -17,9 +17,12 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Services
@@ -33,7 +36,8 @@ namespace ServicePerfectCV.Application.Services
                              ITokenGenerator tokenGenerator,
                              JwtSecurityTokenHandler tokenHandler,
                              IMapper mapper,
-                             IRefreshTokenService refreshTokenService)
+                             IRefreshTokenService refreshTokenService,
+                             IOAuthService oauthService)
     {
 
         public async Task<RegisterResponse> RegisterAsync(RegisterRequest registerRequest)
@@ -50,7 +54,7 @@ namespace ServicePerfectCV.Application.Services
             await userRepository.CreateAsync(newUser);
             await userRepository.SaveChangesAsync();
             //TODO: implement job queue for sending emails
-            SendActivationEmailAsync(newUser.Email);
+            await SendActivationEmailAsync(newUser.Email);
             var response = mapper.Map<RegisterResponse>(newUser);
             return response;
         }
@@ -174,6 +178,11 @@ namespace ServicePerfectCV.Application.Services
                 throw new DomainException(AuthErrors.RefreshTokenInvalid);
             }
             await refreshTokenService.RevokeAsync(refreshToken);
+        }
+
+        public async Task<LoginResponse> ExchangeCodeAsync(OauthExchangeCodeRequest request)
+        {
+            return await oauthService.HandleOAuthAsync(request);
         }
     }
 }

@@ -27,10 +27,30 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "Forbidden",
             Message: "You do not have permission to access this resource.",
             HttpStatusCode.Forbidden);
-        
+
         public static readonly Error InvalidActivationToken = new(
             Code: "InvalidToken",
             Message: "The activation token is invalid or expired.",
             HttpStatusCode.Forbidden);
+
+        public static readonly Error OAuthTokenExchangeFailed = new(
+            Code: "OAuthTokenExchangeFailed",
+            Message: "Failed to exchange OAuth code for access token.",
+            HttpStatusCode.BadRequest);
+
+        public static readonly Error OAuthUserInfoFailed = new(
+            Code: "OAuthUserInfoFailed",
+            Message: "Failed to retrieve user information from OAuth provider.",
+            HttpStatusCode.BadRequest);
+
+        public static readonly Error GoogleOAuthConfigurationMissing = new(
+            Code: "GoogleOAuthConfigurationMissing",
+            Message: "Google OAuth configuration is missing or invalid.",
+            HttpStatusCode.InternalServerError);
+        public static readonly Error NotSupportedException = new(
+            Code: "NotSupportedException",
+            Message: "OAuth provider is not supported.",
+            HttpStatusCode.BadRequest);
+
     }
 }

@@ -11,14 +11,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using ServicePerfectCV.Domain.Enums;
 
 namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Route("api/auth")]
-    public class AuthController(AuthService authService, IOptions<UrlSettings> option) : ControllerBase
+    public class AuthController(AuthService authService, IOptions<GoogleSettings> googleSettings) : ControllerBase
     {
-
+        private readonly GoogleSettings googleSettings = googleSettings.Value;
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
@@ -60,6 +63,24 @@ namespace ServicePerfectCV.WebApi.Controllers
                 throw new DomainException(UserErrors.NotFound);
             await authService.LogoutAsync(refreshToken: logoutRequest.RefreshToken, userId: userId);
             return NoContent();
+        }
+
+        [HttpGet("google-login-link")]
+        public IActionResult LoginGoogle([FromQuery] string? returnUrl = null)
+        {
+            var redirectUrl = Uri.EscapeDataString(googleSettings.RedirectUri);
+            var scopes = Uri.EscapeDataString(googleSettings.Scopes);
+            var state = string.IsNullOrEmpty(returnUrl) ? "" : $"?returnUrl={Uri.EscapeDataString(returnUrl)}";
+            return Ok($"https://accounts.google.com/o/oauth2/v2/auth?client_id={googleSettings.ClientId}&redirect_uri={redirectUrl}&response_type=code&scope={scopes}&state={state}");
+        }
+
+        [HttpPost("signin")]
+        public async Task<IActionResult> ExchangeCodeAsync([FromBody] OauthExchangeCodeRequest request)
+        {
+
+
+            var response = await authService.ExchangeCodeAsync(request);
+            return Ok(response);
         }
     }
 }
