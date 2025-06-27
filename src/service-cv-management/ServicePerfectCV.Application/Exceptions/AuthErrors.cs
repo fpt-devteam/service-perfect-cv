@@ -8,9 +8,9 @@ namespace ServicePerfectCV.Application.Exceptions
 {
     public static class AuthErrors
     {
-        public static readonly Error PasswordInvalid = new(
-            Code: "PasswordInvalid",
-            Message: "Invalid password.",
+        public static readonly Error InvalidCredential = new(
+            Code: "InvalidCredential",
+            Message: "Invalid credential.",
             HttpStatusCode.BadRequest);
 
         public static readonly Error RefreshTokenInvalid = new(

@@ -8,6 +8,7 @@ using ServicePerfectCV.Application.DTOs.Authentication;
 using ServicePerfectCV.Application.DTOs.Authentication.Requests;
 using ServicePerfectCV.Application.DTOs.Authentication.Responses;
 using ServicePerfectCV.Application.DTOs.User.Requests;
+using ServicePerfectCV.Application.DTOs.User.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Constants;
@@ -129,11 +130,11 @@ namespace ServicePerfectCV.Application.Services
         public async Task<LoginResponse> LoginAsync(LoginRequest loginRequest)
         {
             User user = await userRepository.GetByEmailAsync(loginRequest.Email)
-                ?? throw new DomainException(UserErrors.NotFound);
+                ?? throw new DomainException(AuthErrors.InvalidCredential);
             if (user.Status != UserStatus.Active)
                 throw new DomainException(UserErrors.AccountNotActivated);
             if (!passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
-                throw new DomainException(AuthErrors.PasswordInvalid);
+                throw new DomainException(AuthErrors.InvalidCredential);
             (string AccessToken, string RefreshToken) tokens = tokenGenerator.GenerateToken(new ClaimsAccessToken
             {
                 UserId = user.Id.ToString(),

@@ -13,9 +13,6 @@ namespace ServicePerfectCV.Application.DTOs.Authentication.Requests
         public required string Email { get; init; }
 
         [Required(ErrorMessage = "Password is required.")]
-        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
-        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]+$",
-            ErrorMessage = "Password must contain at least one letter, one number, and one special character.")]
         public required string Password { get; init; }
 
     }

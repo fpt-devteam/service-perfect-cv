@@ -58,7 +58,7 @@ namespace ServicePerfectCV.WebApi.Controllers
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
-            await authService.LogoutAsync(logoutRequest.RefreshToken, userId);
+            await authService.LogoutAsync(refreshToken: logoutRequest.RefreshToken, userId: userId);
             return NoContent();
         }
     }

@@ -49,6 +49,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped(typeof(IGenericRepository<,>), typeof(CrudRepositoryBase<,>));
 
             services.AddScoped<AuthService>();
+            services.AddScoped<UserService>();
             services.AddScoped<CVService>();
             services.AddScoped<EducationService>();
             services.AddScoped<ContactService>();
