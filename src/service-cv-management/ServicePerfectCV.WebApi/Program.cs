@@ -27,6 +27,7 @@ namespace ServicePerfectCV.WebApi
             builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("ConnectionStrings"));
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
             builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
+            builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -34,13 +35,14 @@ namespace ServicePerfectCV.WebApi
             builder.Services.AddRedis(builder.Configuration);
             builder.Services.AddConfiguredCors(builder.Configuration);
             builder.Services.AddControllers()
-                .AddJsonOptions(options => 
+                .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
                 });
 
             builder.Services.ConfigureServices();
             builder.Services.AddAuthorizationPolicies(builder.Configuration);
+            builder.Services.AddAuthentication(builder.Configuration);
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddConfiguredSwagger();
