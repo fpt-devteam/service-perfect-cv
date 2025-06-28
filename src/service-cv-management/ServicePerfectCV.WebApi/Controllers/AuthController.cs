@@ -22,18 +22,21 @@ namespace ServicePerfectCV.WebApi.Controllers
     public class AuthController(AuthService authService, IOptions<GoogleSettings> googleSettings) : ControllerBase
     {
         private readonly GoogleSettings googleSettings = googleSettings.Value;
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
             var response = await authService.RegisterAsync(registerRequest);
             return Ok(response);
         }
+
         [HttpPut("activation-account/{token}")]
         public async Task<IActionResult> ActivateAccountAsync([FromRoute] string token)
         {
             Guid userId = authService.VerifyTokenAsync(token);
             return Ok(await authService.ActivateAccountAsync(userId));
         }
+
         [HttpPost("resend-activation-email")]
         public async Task<IActionResult> ResendActivationEmailAsync([FromBody] ResendEmailRequest resendAEmailRequest)
         {
@@ -47,13 +50,14 @@ namespace ServicePerfectCV.WebApi.Controllers
             var response = await authService.LoginAsync(loginRequest);
             return Ok(response);
         }
+
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] RefreshToken refreshTokenRequest)
         {
             RefreshTokenResponse response = await authService.RefreshTokenAsync(refreshTokenRequest.RefreshTokenHash);
             return Ok(response);
-
         }
+
         [Authorize]
         [HttpPost("logout")]
         public async Task<IActionResult> LogoutAsync([FromBody] LogoutRequest logoutRequest)
@@ -65,20 +69,26 @@ namespace ServicePerfectCV.WebApi.Controllers
             return NoContent();
         }
 
-        [HttpGet("google-login-link")]
-        public IActionResult LoginGoogle([FromQuery] string? returnUrl = null)
+        [HttpGet("login-link/{provider}")]
+        public IActionResult GetLoginLink([FromRoute] string provider)
         {
+            if (!provider.Equals(nameof(OAuthProvider.Google), StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest("Unsupported provider");
+            }
+
             var redirectUrl = Uri.EscapeDataString(googleSettings.RedirectUri);
             var scopes = Uri.EscapeDataString(googleSettings.Scopes);
-            var state = string.IsNullOrEmpty(returnUrl) ? "" : $"?returnUrl={Uri.EscapeDataString(returnUrl)}";
-            return Ok($"https://accounts.google.com/o/oauth2/v2/auth?client_id={googleSettings.ClientId}&redirect_uri={redirectUrl}&response_type=code&scope={scopes}&state={state}");
+            return Ok(
+                $"https://accounts.google.com/o/oauth2/v2/auth?client_id={googleSettings.ClientId}&redirect_uri={redirectUrl}&response_type=code&scope={scopes}");
         }
 
-        [HttpPost("signin")]
-        public async Task<IActionResult> ExchangeCodeAsync([FromBody] OauthExchangeCodeRequest request)
+        [HttpPost("login/{provider}")]
+        public async Task<IActionResult> ExchangeCodeAsync(
+            [FromRoute] string provider,
+            [FromBody] OauthExchangeCodeRequest request
+        )
         {
-
-
             var response = await authService.ExchangeCodeAsync(request);
             return Ok(response);
         }
