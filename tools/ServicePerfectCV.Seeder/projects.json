@@ -1,0 +1,46 @@
+[
+  {
+    "Id": "b49c233b-1e23-4bc0-81c5-51284afac4c1",
+    "CVId": "e128e3c0-35cf-4b4a-92ad-1d91e83a1f01",
+    "Title": "AI Resume Analyzer",
+    "Description": "A web platform that analyzes and scores resumes using GPT models. Provides improvement suggestions and generates reports.",
+    "Link": "https://perfectcv.vn/project/ai-resume-analyzer",
+    "StartDate": "2024-05-01",
+    "EndDate": "2024-07-01",
+    "CreatedAt": "2024-05-01T08:00:00Z",
+    "UpdatedAt": "2024-07-01T08:00:00Z"
+  },
+  {
+    "Id": "03d8a0e6-5f57-4476-83a3-d162564c0c22",
+    "CVId": "e128e3c0-35cf-4b4a-92ad-1d91e83a1f01",
+    "Title": "E-commerce Order Tracking System",
+    "Description": "Built a microservice order tracking system for an e-commerce platform using .NET Core and RabbitMQ.",
+    "Link": null,
+    "StartDate": "2023-09-01",
+    "EndDate": "2023-12-01",
+    "CreatedAt": "2023-09-01T08:00:00Z",
+    "UpdatedAt": "2023-12-01T08:00:00Z"
+  },
+  {
+    "Id": "55b5c594-0b10-47e2-8f91-90fae37b2f05",
+    "CVId": "b84542cf-1a68-4a5b-b087-d40dfbb35e2e",
+    "Title": "Smart Coffee Shop POS",
+    "Description": "Developed a smart POS system with real-time inventory and sales analytics for a local coffee shop chain.",
+    "Link": "https://github.com/your-username/smart-pos",
+    "StartDate": "2022-11-01",
+    "EndDate": "2023-03-01",
+    "CreatedAt": "2022-11-01T08:00:00Z",
+    "UpdatedAt": "2023-03-01T08:00:00Z"
+  },
+  {
+    "Id": "a8e6d815-b9d8-480b-9875-dfb70e6cd8e8",
+    "CVId": "b84542cf-1a68-4a5b-b087-d40dfbb35e2e",
+    "Title": "Online Course Registration Platform",
+    "Description": "Built a registration and schedule management website for online education, using React and ASP.NET Core Web API.",
+    "Link": "https://demo-courseplatform.com",
+    "StartDate": "2024-01-10",
+    "EndDate": "2024-04-20",
+    "CreatedAt": "2024-01-10T08:00:00Z",
+    "UpdatedAt": "2024-04-20T08:00:00Z"
+  }
+]

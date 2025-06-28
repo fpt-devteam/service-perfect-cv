@@ -18,6 +18,10 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             .IsRequired()
             .HasMaxLength(200);
 
+         builder.Property(c => c.FullContent)
+            .HasColumnType("nvarchar(max)")
+            .IsRequired(false);
+
          builder.Property(c => c.CreatedAt)
                .IsRequired()
                .HasDefaultValueSql("GETUTCDATE()");

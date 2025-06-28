@@ -29,12 +29,12 @@ namespace ServicePerfectCV.WebApi.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> ListAsync([FromQuery] PaginationQuery paginationQuery)
+        public async Task<IActionResult> ListAsync([FromQuery] CVQuery query)
         {
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
-            var result = await cvService.ListAsync(paginationQuery, userId);
+            var result = await cvService.ListAsync(query, userId);
             return Ok(result);
         }
     }

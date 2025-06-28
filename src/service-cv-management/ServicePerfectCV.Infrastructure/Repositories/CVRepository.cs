@@ -1,12 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using ServicePerfectCV.Application.DTOs.CV.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Repositories.Common;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,19 +17,27 @@ namespace ServicePerfectCV.Infrastructure.Repositories
 {
     public class CVRepository(ApplicationDbContext context) : CrudRepositoryBase<CV, Guid>(context), ICVRepository
     {
-        public async Task<PaginationData<CV>> ListAsync(PaginationQuery paginationQuery, Guid userId)
+        public async Task<IEnumerable<CV>> GetByUserIdAsync(CVQuery query, Guid userId)
         {
-            var query = _context.CVs.Where(cv => cv.UserId == userId).Include(cv => cv.Educations);
-            var totalCount = await query.CountAsync();
-            var items = await query
-                .Skip(paginationQuery.Offset)
-                .Take(paginationQuery.Limit)
-                .ToListAsync();
-            return new PaginationData<CV>
-            {
-                Items = items,
-                Total = totalCount
-            };
+            var queryable = _context.CVs
+                .AsNoTracking()
+                .Where(cv => cv.UserId == userId);
+            queryable = query.Sort != null ? ApplySort(queryable, query.Sort) : queryable;
+            queryable = queryable.Skip(query.Offset).Take(query.Limit);
+            return await queryable.ToListAsync();
+
+
         }
-    }
+        private static IQueryable<CV> ApplySort(IQueryable<CV> query, CVSort sort)
+        {
+            if (sort.StartDate.HasValue)
+            {
+                return sort.StartDate.Value == SortOrder.Ascending
+                    ? query.OrderBy(keySelector: cv => cv.CreatedAt)
+                    : query.OrderByDescending(keySelector: cv => cv.CreatedAt);
+            }
+
+            return query;
+        }
+    } 
 }

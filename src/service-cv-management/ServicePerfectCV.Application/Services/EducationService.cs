@@ -17,19 +17,22 @@ namespace ServicePerfectCV.Application.Services
         private readonly IMapper _mapper;
         private readonly IDegreeRepository _degreeRepository;
         private readonly IOrganizationRepository _organizationRepository;
+        private readonly ICVSnapshotService _cvSnapshotService;
 
         public EducationService(
             IEducationRepository educationRepository,
             ICVRepository cvRepository,
             IMapper mapper,
             IDegreeRepository degreeRepository,
-            IOrganizationRepository organizationRepository)
+            IOrganizationRepository organizationRepository,
+            ICVSnapshotService cvSnapshotService)
         {
             _educationRepository = educationRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
             _degreeRepository = degreeRepository;
             _organizationRepository = organizationRepository;
+            _cvSnapshotService = cvSnapshotService;
         }
 
         public async Task<EducationResponse> CreateAsync(CreateEducationRequest request)
@@ -48,6 +51,10 @@ namespace ServicePerfectCV.Application.Services
 
             await _educationRepository.CreateAsync(newEducation);
             await _educationRepository.SaveChangesAsync();
+
+            // Update CV snapshot after creating education
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
+
             return _mapper.Map<EducationResponse>(newEducation);
         }
 
@@ -76,6 +83,9 @@ namespace ServicePerfectCV.Application.Services
 
             _educationRepository.Update(existingEducation);
             await _educationRepository.SaveChangesAsync();
+
+            // Update CV snapshot after updating education
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingEducation.CVId);
 
             return _mapper.Map<EducationResponse>(existingEducation);
         }
@@ -108,6 +118,9 @@ namespace ServicePerfectCV.Application.Services
             education.DeletedAt = DateTime.UtcNow;
             _educationRepository.Update(education);
             await _educationRepository.SaveChangesAsync();
+
+            // Update CV snapshot after deleting education
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(education.CVId);
         }
     }
 }

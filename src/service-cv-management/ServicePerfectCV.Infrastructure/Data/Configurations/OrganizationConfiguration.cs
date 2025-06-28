@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Constraints;
+using ServicePerfectCV.Domain.Enums;
 
 namespace ServicePerfectCV.Infrastructure.Data.Configurations
 {
@@ -26,7 +27,10 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasMaxLength(maxLength: OrganizationConstraints.DescriptionMaxLength);
 
             builder.Property(e => e.OrganizationType)
-                .IsRequired();
+                .IsRequired()
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (OrganizationType)Enum.Parse(typeof(OrganizationType), v));
 
             builder.Property(e => e.CreatedAt)
                 .IsRequired()

@@ -17,15 +17,18 @@ namespace ServicePerfectCV.Application.Services
         private readonly IProjectRepository _projectRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
+        private readonly ICVSnapshotService _cvSnapshotService;
 
         public ProjectService(
             IProjectRepository projectRepository,
             ICVRepository cvRepository,
-            IMapper mapper)
+            IMapper mapper,
+            ICVSnapshotService cvSnapshotService)
         {
             _projectRepository = projectRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
+            _cvSnapshotService = cvSnapshotService;
         }
 
         public async Task<ProjectResponse> CreateAsync(CreateProjectRequest request)
@@ -38,6 +41,9 @@ namespace ServicePerfectCV.Application.Services
 
             await _projectRepository.CreateAsync(newProject);
             await _projectRepository.SaveChangesAsync();
+
+            // Update CV snapshot after creating project
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
             return _mapper.Map<ProjectResponse>(newProject);
         }
@@ -57,6 +63,9 @@ namespace ServicePerfectCV.Application.Services
 
             _projectRepository.Update(existingProject);
             await _projectRepository.SaveChangesAsync();
+
+            // Update CV snapshot after updating project
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingProject.CVId);
 
             return _mapper.Map<ProjectResponse>(existingProject);
         }
@@ -85,6 +94,9 @@ namespace ServicePerfectCV.Application.Services
             project.DeletedAt = DateTime.UtcNow;
             _projectRepository.Update(project);
             await _projectRepository.SaveChangesAsync();
+
+            // Update CV snapshot after deleting project
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(project.CVId);
         }
     }
 }

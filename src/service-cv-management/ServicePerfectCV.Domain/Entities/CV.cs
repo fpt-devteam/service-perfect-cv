@@ -3,6 +3,7 @@ using ServicePerfectCV.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Domain.Entities
@@ -13,6 +14,7 @@ namespace ServicePerfectCV.Domain.Entities
         public Guid UserId { get; set; }
         public JobDetail? JobDetail { get; set; }
         public string Title { get; set; } = default!;
+        public string? FullContent { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
