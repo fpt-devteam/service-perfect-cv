@@ -13,6 +13,6 @@ namespace ServicePerfectCV.Application.DTOs.CV.Requests
     }
     public class CVSort
     {
-         public SortOrder? StartDate { get; set; } = null;
+        public SortOrder? UpdatedAt { get; set; } = null;
     }
 }

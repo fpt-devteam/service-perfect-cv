@@ -25,14 +25,12 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             queryable = query.Sort != null ? ApplySort(queryable, query.Sort) : queryable;
             queryable = queryable.Skip(query.Offset).Take(query.Limit);
             return await queryable.ToListAsync();
-
-
         }
         private static IQueryable<CV> ApplySort(IQueryable<CV> query, CVSort sort)
         {
-            if (sort.StartDate.HasValue)
+            if (sort.UpdatedAt.HasValue)
             {
-                return sort.StartDate.Value == SortOrder.Ascending
+                return sort.UpdatedAt.Value == SortOrder.Ascending
                     ? query.OrderBy(keySelector: cv => cv.CreatedAt)
                     : query.OrderByDescending(keySelector: cv => cv.CreatedAt);
             }

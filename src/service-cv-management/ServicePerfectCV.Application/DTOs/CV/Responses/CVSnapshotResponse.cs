@@ -15,7 +15,7 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
         public Guid UserId { get; init; }
         public string Title { get; init; } = default!;
         public JobDetailDto? JobDetail { get; init; }
-        public ContactResponse Contacts { get; init; } = null!;
+        public ContactResponse? Contacts { get; init; }
         //TODO: SummaryResponse and SkillsResponse
         public IEnumerable<EducationResponse> Educations { get; init; } = null!;
         public IEnumerable<CertificationResponse> Certifications { get; init; } = null!;

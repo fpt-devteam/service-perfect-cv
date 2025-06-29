@@ -59,20 +59,28 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<ICVSnapshotService, CVSnapshotService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
-            services.AddScoped<ICacheService, RedisCacheService>();            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            services.AddScoped<ICacheService, RedisCacheService>();
+            services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             services.AddScoped<JwtSecurityTokenHandler>();
-            services.AddHttpClient();
 
-            // OAuth services
             services.AddScoped<GoogleOAuthService>();
             services.AddScoped<LinkedInOAuthService>();
-            services.AddScoped<OAuthServiceFactory>();
-            services.AddScoped<IOAuthService>(provider => 
-            {
-                // Default to Google OAuth service, but you can implement logic to choose based on configuration
-                return provider.GetRequiredService<GoogleOAuthService>();
-            });
+            services.AddSingleton<OAuthServiceFactory>();
+            services.AddScoped<IOAuthService, GoogleOAuthService>();
 
-            }
+            // Add HttpClient for external API calls
+            services.AddHttpClient();
+
+            // // OAuth services
+            // services.AddScoped<GoogleOAuthService>();
+            // services.AddScoped<LinkedInOAuthService>();
+            // services.AddScoped<OAuthServiceFactory>();
+            // services.AddScoped<IOAuthService>(provider => 
+            // {
+            //     // Default to Google OAuth service, but you can implement logic to choose based on configuration
+            //     return provider.GetRequiredService<GoogleOAuthService>();
+            // });
+
+        }
     }
 }

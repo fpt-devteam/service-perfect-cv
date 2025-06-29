@@ -11,12 +11,16 @@ namespace ServicePerfectCV.Seeder
 {
     public class DevDataSeeder(ApplicationDbContext dbContext)
     {
+        private List<Guid> _cvIds = new List<Guid>(); // Lưu trữ CV IDs để sử dụng cho seeding khác
+        private List<Guid> _jobTitleIds = new List<Guid>(); // Lưu trữ Job Title IDs
+
         public async Task RunAsync(CancellationToken ct)
         {
             await dbContext.Database.MigrateAsync(ct);
             await SeedUsersAsync(ct);
             await SeedEmploymentTypesAsync(ct);
             await SeedOrganizationsAsync(ct);
+            await SeedJobsTitleAsync(ct);
             await SeedCVsAsync(ct);
             await SeedExperiencesAsync(ct);
             await SeedProjectsAsync(ct);
@@ -50,32 +54,78 @@ namespace ServicePerfectCV.Seeder
                 Console.WriteLine($"Inserted {(i + 1) * batchSize}/{total}");
             }
         }
-        private async Task SeedCVsAsync(CancellationToken ct)
+        private async Task SeedJobsTitleAsync(CancellationToken ct)
         {
-            if (await dbContext.CVs.AnyAsync(ct))
+            if (await dbContext.JobTitles.AnyAsync(ct))
             {
-                Console.WriteLine("CVs already seeded.");
+                Console.WriteLine("Job Titles already seeded.");
                 return;
             }
 
-            string path = "cvs.json";
+            string path = "jobtitles.json";
             if (!File.Exists(path))
             {
-                Console.WriteLine("CV seed file not found: " + path);
+                Console.WriteLine("Job titles seed file not found: " + path);
                 return;
             }
 
-            string json = await File.ReadAllTextAsync(path, ct);
+            var json = await File.ReadAllTextAsync(path, ct);
+            var jobTitleNames = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
 
-            List<CV> cvs = JsonSerializer.Deserialize<List<CV>>(json, new JsonSerializerOptions
+            var jobTitleEntities = new List<JobTitle>();
+            jobTitleNames.ForEach(name =>
             {
-                PropertyNameCaseInsensitive = true
-            }) ?? new List<CV>();
+                var id = Guid.NewGuid();
+                _jobTitleIds.Add(id);
+                jobTitleEntities.Add(new JobTitle
+                {
+                    Id = id,
+                    Name = name
+                });
+            });
+
+            dbContext.JobTitles.AddRange(jobTitleEntities);
+            await dbContext.SaveChangesAsync(ct);
+
+            Console.WriteLine($"Seeded Job Titles: {jobTitleEntities.Count}");
+            Console.WriteLine($"Job Title IDs generated: {string.Join(", ", _jobTitleIds)}");
+        }
+        private async Task SeedCVsAsync(CancellationToken ct)
+        {
+            // if (await dbContext.CVs.AnyAsync(ct))
+            // {
+            //     Console.WriteLine("CVs already seeded.");
+            //     return;
+            // }
+
+            var userId = new Guid("e339abe7-d435-4986-947f-1b3b403ea56d");
+
+            var cvFaker = new Faker<CV>()
+                .RuleFor(cv => cv.Id, f =>
+                {
+                    var id = Guid.NewGuid();
+                    _cvIds.Add(id);
+                    return id;
+                })
+                .RuleFor(cv => cv.UserId, f => userId)
+                .RuleFor(cv => cv.Title, f => f.Lorem.Sentence(3, 5))
+                .RuleFor(cv => cv.JobDetail, f => new ServicePerfectCV.Domain.ValueObjects.JobDetail(
+                    f.Name.JobTitle(),
+                    f.Company.CompanyName(),
+                    f.Lorem.Paragraph()
+                ))
+                .RuleFor(cv => cv.CreatedAt, f => f.Date.Past(1))
+                .RuleFor(cv => cv.UpdatedAt, f => DateTime.UtcNow)
+                .RuleFor(cv => cv.DeletedAt, f => null)
+                .RuleFor(cv => cv.FullContent, f => null);
+
+            var cvs = cvFaker.Generate(20);
 
             dbContext.CVs.AddRange(cvs);
             await dbContext.SaveChangesAsync(ct);
 
-            Console.WriteLine("Seeded CVs: " + cvs.Count);
+            Console.WriteLine($"Seeded CVs: {cvs.Count}");
+            Console.WriteLine($"CV IDs generated: {string.Join(", ", _cvIds)}");
         }
 
         private async Task SeedExperiencesAsync(CancellationToken ct)

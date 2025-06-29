@@ -26,7 +26,6 @@ namespace ServicePerfectCV.Application.Services
             await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();
 
-            // Update CV snapshot after creating CV
             await cvSnapshotService.UpdateCVSnapshotIfChangedAsync(newCV.Id);
 
             return mapper.Map<CVResponse>(newCV);

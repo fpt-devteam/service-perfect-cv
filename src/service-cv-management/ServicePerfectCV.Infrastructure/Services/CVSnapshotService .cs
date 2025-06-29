@@ -25,10 +25,22 @@ namespace ServicePerfectCV.Infrastructure.Services
     {
         public async Task UpdateCVSnapshotIfChangedAsync(Guid cvId)
         {
-            var newDto = await context.CVs
-            .Where(cv => cv.Id == cvId)
-            .AsNoTracking()
-            .Select(cv => new CVSnapshotResponse
+            // Load the CV with all related data using Include
+            var cv = await context.CVs
+                .Where(c => c.Id == cvId)
+                .Include(c => c.Contact)
+                .Include(c => c.Educations)
+                .Include(c => c.Experiences)
+                    .ThenInclude(e => e.EmploymentType)
+                .Include(c => c.Projects)
+                .Include(c => c.Certifications)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (cv == null) return;
+
+            // Create the snapshot response in memory
+            var newDto = new CVSnapshotResponse
             {
                 UserId = cv.UserId,
                 Title = cv.Title,
@@ -38,7 +50,7 @@ namespace ServicePerfectCV.Infrastructure.Services
                     CompanyName = cv.JobDetail.CompanyName,
                     Description = cv.JobDetail.Description
                 } : null,
-                Contacts = new ContactResponse
+                Contacts = cv.Contact != null ? new ContactResponse
                 {
                     Id = cv.Contact.Id,
                     CVId = cv.Contact.CVId,
@@ -49,7 +61,7 @@ namespace ServicePerfectCV.Infrastructure.Services
                     PersonalWebsiteUrl = cv.Contact.PersonalWebsiteUrl,
                     Country = cv.Contact.Country,
                     City = cv.Contact.City
-                },
+                } : null,
                 Educations = cv.Educations.Select(e => new EducationResponse
                 {
                     Organization = e.Organization,
@@ -67,7 +79,7 @@ namespace ServicePerfectCV.Infrastructure.Services
                     JobTitleId = e.JobTitleId,
                     JobTitle = e.JobTitle,
                     EmploymentTypeId = e.EmploymentTypeId,
-                    EmploymentTypeName = e.EmploymentType.Name,
+                    EmploymentTypeName = e.EmploymentType?.Name,
                     OrganizationId = e.OrganizationId,
                     Organization = e.Organization,
                     Location = e.Location,
@@ -99,27 +111,24 @@ namespace ServicePerfectCV.Infrastructure.Services
                     IssuedDate = c.IssuedDate,
                     Description = c.Description
                 })
-            })
-            .FirstOrDefaultAsync(); if (newDto == null) return;
+            };
 
             var newJson = JsonSerializer.Serialize(newDto);
-
-            // Get the CV entity to check if content has changed
-            var cv = await context.CVs.FindAsync(cvId);
-            if (cv == null) return;
 
             // Compare with existing content
             var isChanged = cv.FullContent != newJson;
 
             if (isChanged)
             {
-                // Update the FullContent field
-                cv.FullContent = newJson;
-                cv.UpdatedAt = DateTime.UtcNow;
+                // Update only the FullContent field using a separate query to avoid tracking conflicts
+                await context.CVs
+                    .Where(c => c.Id == cvId)
+                    .ExecuteUpdateAsync(c => c
+                        .SetProperty(cv => cv.FullContent, newJson)
+                        .SetProperty(cv => cv.UpdatedAt, DateTime.UtcNow));
 
-                // Save to cache and database
+                // Save to cache
                 await cacheService.SetAsync($"cv:{cvId}", newJson, TimeSpan.FromHours(1));
-                await context.SaveChangesAsync();
             }
         }
     }
