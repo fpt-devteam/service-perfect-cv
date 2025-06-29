@@ -41,7 +41,5 @@ namespace ServicePerfectCV.Infrastructure.Services
             mailMessage.To.Add(email);
             await smptClient.SendMailAsync(mailMessage);
         }
-
-
     }
 }

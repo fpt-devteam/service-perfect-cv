@@ -26,7 +26,7 @@ namespace ServicePerfectCV.WebApi
             builder.Services.Configure<RedisSettings>(builder.Configuration.GetSection("RedisSettings"));
             builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("ConnectionStrings"));
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-            builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection(" UrlSettings"));
+            builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
             builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
