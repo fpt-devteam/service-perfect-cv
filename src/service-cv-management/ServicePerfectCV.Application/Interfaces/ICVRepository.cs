@@ -1,3 +1,4 @@
+using ServicePerfectCV.Application.DTOs.CV.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Domain.Entities;
@@ -10,6 +11,6 @@ namespace ServicePerfectCV.Application.Interfaces
 {
     public interface ICVRepository : IGenericRepository<CV, Guid>
     {
-        Task<PaginationData<CV>> ListAsync(PaginationQuery paginationQuery, Guid userId);
+        Task<IEnumerable<CV>> GetByUserIdAsync(CVQuery cvQuery, Guid userId);
     }
 }

@@ -15,7 +15,7 @@ namespace ServicePerfectCV.Application.Mappings
         public CVMappingProfile()
         {
             CreateMap<JobDetail, JobDetailDto>();
-            CreateMap<CV, CVResponse>()
+            CreateMap<CV, CVSnapshotResponse>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.JobDetail, opt => opt.MapFrom(src => src.JobDetail))
@@ -24,6 +24,10 @@ namespace ServicePerfectCV.Application.Mappings
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.JobDetail, opt => opt.MapFrom(src => src.JobDetail))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+            CreateMap<CV, CVResponse>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+                .ForMember(dest => dest.CvFullContent, opt => opt.MapFrom(src => src.FullContent));
 
         }
     }

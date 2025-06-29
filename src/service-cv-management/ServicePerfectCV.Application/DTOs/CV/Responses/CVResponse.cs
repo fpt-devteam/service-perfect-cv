@@ -1,4 +1,3 @@
-using ServicePerfectCV.Application.DTOs.Education.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +9,6 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
     {
         public Guid UserId { get; init; }
         public string Title { get; init; } = default!;
-        public JobDetailDto? JobDetail { get; init; }
-        public IEnumerable<EducationResponse> Educations { get; init; } = null!;
-
+        public string CvFullContent { get; init; } = default!;
     }
 }

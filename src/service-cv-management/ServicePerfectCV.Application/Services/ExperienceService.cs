@@ -18,6 +18,7 @@ namespace ServicePerfectCV.Application.Services
         private readonly IJobTitleRepository _jobTitleRepository;
         private readonly IEmploymentTypeRepository _employmentTypeRepository;
         private readonly IOrganizationRepository _organizationRepository;
+        private readonly ICVSnapshotService _cvSnapshotService;
 
         public ExperienceService(
             IExperienceRepository experienceRepository,
@@ -25,7 +26,8 @@ namespace ServicePerfectCV.Application.Services
             IMapper mapper,
             IJobTitleRepository jobTitleRepository,
             IEmploymentTypeRepository employmentTypeRepository,
-            IOrganizationRepository organizationRepository)
+            IOrganizationRepository organizationRepository,
+            ICVSnapshotService cvSnapshotService)
         {
             _experienceRepository = experienceRepository;
             _cvRepository = cvRepository;
@@ -33,6 +35,7 @@ namespace ServicePerfectCV.Application.Services
             _jobTitleRepository = jobTitleRepository;
             _employmentTypeRepository = employmentTypeRepository;
             _organizationRepository = organizationRepository;
+            _cvSnapshotService = cvSnapshotService;
         }
 
         public async Task<ExperienceResponse> CreateAsync(CreateExperienceRequest request)
@@ -61,6 +64,9 @@ namespace ServicePerfectCV.Application.Services
 
             await _experienceRepository.CreateAsync(newExperience);
             await _experienceRepository.SaveChangesAsync();
+
+            // Update CV snapshot after creating experience
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
             return _mapper.Map<ExperienceResponse>(newExperience);
         }
@@ -103,6 +109,9 @@ namespace ServicePerfectCV.Application.Services
             _experienceRepository.Update(existingExperience);
             await _experienceRepository.SaveChangesAsync();
 
+            // Update CV snapshot after updating experience
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingExperience.CVId);
+
             return _mapper.Map<ExperienceResponse>(existingExperience);
         }
 
@@ -134,6 +143,9 @@ namespace ServicePerfectCV.Application.Services
             experience.DeletedAt = DateTime.UtcNow;
             _experienceRepository.Update(experience);
             await _experienceRepository.SaveChangesAsync();
+
+            // Update CV snapshot after deleting experience
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(experience.CVId);
         }
     }
 }

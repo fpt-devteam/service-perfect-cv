@@ -15,15 +15,18 @@ namespace ServicePerfectCV.Application.Services
         private readonly IContactRepository _contactRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
+        private readonly ICVSnapshotService _cvSnapshotService;
 
         public ContactService(
             IContactRepository contactRepository,
             ICVRepository cvRepository,
-            IMapper mapper)
+            IMapper mapper,
+            ICVSnapshotService cvSnapshotService)
         {
             _contactRepository = contactRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
+            _cvSnapshotService = cvSnapshotService;
         }
 
         public async Task<ContactResponse> UpsertAsync(UpsertContactRequest request)
@@ -41,6 +44,9 @@ namespace ServicePerfectCV.Application.Services
                 await _contactRepository.CreateAsync(newContact);
                 await _contactRepository.SaveChangesAsync();
 
+                // Update CV snapshot after creating contact
+                await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
+
                 return _mapper.Map<ContactResponse>(newContact);
             }
 
@@ -55,6 +61,9 @@ namespace ServicePerfectCV.Application.Services
 
             _contactRepository.Update(existingContact);
             await _contactRepository.SaveChangesAsync();
+
+            // Update CV snapshot after updating contact
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
             return _mapper.Map<ContactResponse>(existingContact);
         }

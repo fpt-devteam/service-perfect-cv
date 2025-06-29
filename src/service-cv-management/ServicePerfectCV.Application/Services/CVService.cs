@@ -14,7 +14,8 @@ namespace ServicePerfectCV.Application.Services
 {
     public class CVService(
         ICVRepository cvRepository,
-        IMapper mapper
+        IMapper mapper,
+        ICVSnapshotService cvSnapshotService
     )
     {
         public async Task<CVResponse> CreateAsync(CreateCVRequest request, Guid userId)
@@ -24,16 +25,16 @@ namespace ServicePerfectCV.Application.Services
 
             await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();
+
+            await cvSnapshotService.UpdateCVSnapshotIfChangedAsync(newCV.Id);
+
             return mapper.Map<CVResponse>(newCV);
         }
-        public async Task<PaginationData<CVResponse>> ListAsync(PaginationQuery paginationQuery, Guid userId)
+        public async Task<IEnumerable<CVResponse>> ListAsync(CVQuery query, Guid userId)
         {
-            var cvs = await cvRepository.ListAsync(paginationQuery, userId);
-            return new PaginationData<CVResponse>
-            {
-                Items = [.. cvs.Items.Select(cv => mapper.Map<CVResponse>(cv))],
-                Total = cvs.Total
-            };
+            var cvs = await cvRepository.GetByUserIdAsync(
+                query, userId);
+            return [.. cvs.Select(cv => mapper.Map<CVResponse>(cv))];
         }
 
     }

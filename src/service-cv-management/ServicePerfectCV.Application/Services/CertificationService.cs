@@ -16,17 +16,20 @@ namespace ServicePerfectCV.Application.Services
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
         private readonly IOrganizationRepository _organizationRepository;
+        private readonly ICVSnapshotService _cvSnapshotService;
 
         public CertificationService(
             ICertificationRepository certificationRepository,
             ICVRepository cvRepository,
             IMapper mapper,
-            IOrganizationRepository organizationRepository)
+            IOrganizationRepository organizationRepository,
+            ICVSnapshotService cvSnapshotService)
         {
             _certificationRepository = certificationRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
             _organizationRepository = organizationRepository;
+            _cvSnapshotService = cvSnapshotService;
         }
 
         public async Task<CertificationResponse> CreateAsync(CreateCertificationRequest request)
@@ -43,6 +46,10 @@ namespace ServicePerfectCV.Application.Services
 
             await _certificationRepository.CreateAsync(entity: newCertification);
             await _certificationRepository.SaveChangesAsync();
+
+            // Update CV snapshot after creating certification
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
+
             return _mapper.Map<CertificationResponse>(source: newCertification);
         }
 
@@ -65,16 +72,19 @@ namespace ServicePerfectCV.Application.Services
             _certificationRepository.Update(entity: existingCertification);
             await _certificationRepository.SaveChangesAsync();
 
+            // Update CV snapshot after updating certification
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingCertification.CVId);
+
             return _mapper.Map<CertificationResponse>(source: existingCertification);
         }
 
         public async Task<CertificationResponse> GetByIdAsync(Guid certificationId, Guid cvId, Guid userId)
         {
             var certification = await _certificationRepository.GetByIdAndCVIdAndUserIdAsync(
-                certificationId: certificationId, 
-                cvId: cvId, 
+                certificationId: certificationId,
+                cvId: cvId,
                 userId: userId);
-                
+
             if (certification == null)
                 throw new DomainException(CertificationErrors.NotFound);
 
@@ -88,26 +98,29 @@ namespace ServicePerfectCV.Application.Services
                 throw new DomainException(CertificationErrors.CVNotFound);
 
             var certifications = await _certificationRepository.GetByCVIdAndUserIdAsync(
-                cvId: cvId, 
-                userId: userId, 
+                cvId: cvId,
+                userId: userId,
                 query: query);
-                
+
             return _mapper.Map<IEnumerable<CertificationResponse>>(source: certifications);
         }
 
         public async Task DeleteAsync(Guid certificationId, Guid cvId, Guid userId)
         {
             var certification = await _certificationRepository.GetByIdAndCVIdAndUserIdAsync(
-                certificationId: certificationId, 
-                cvId: cvId, 
+                certificationId: certificationId,
+                cvId: cvId,
                 userId: userId);
-                
+
             if (certification == null)
                 throw new DomainException(CertificationErrors.NotFound);
 
             certification.DeletedAt = DateTime.UtcNow;
             _certificationRepository.Update(entity: certification);
             await _certificationRepository.SaveChangesAsync();
+
+            // Update CV snapshot after deleting certification
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(certification.CVId);
         }
     }
 }

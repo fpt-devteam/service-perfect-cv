@@ -1,0 +1,10 @@
+[
+    { "code": "HS", "name": "High School Diploma" },
+    { "code": "Associate", "name": "Associate Degree" },
+    { "code": "Bachelor", "name": "Bachelor’s Degree" },
+    { "code": "Engineer", "name": "Engineering Degree" },
+    { "code": "Master", "name": "Master’s Degree" },
+    { "code": "MBA", "name": "Master of Business Administration (MBA)" },
+    { "code": "PhD", "name": "Doctor of Philosophy (PhD)" },
+    { "code": "Doctor", "name": "Doctoral Degree" }
+  ]
