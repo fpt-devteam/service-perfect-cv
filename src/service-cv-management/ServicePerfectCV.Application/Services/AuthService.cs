@@ -54,7 +54,7 @@ namespace ServicePerfectCV.Application.Services
             await userRepository.CreateAsync(newUser);
             await userRepository.SaveChangesAsync();
             //TODO: implement job queue for sending emails
-            SendActivationEmailAsync(newUser.Email);
+            await SendActivationEmailAsync(newUser.Email);
             var response = mapper.Map<RegisterResponse>(newUser);
             return response;
         }
