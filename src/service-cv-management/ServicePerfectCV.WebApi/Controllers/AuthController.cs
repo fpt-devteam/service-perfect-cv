@@ -40,7 +40,7 @@ namespace ServicePerfectCV.WebApi.Controllers
         [HttpPost("resend-activation-email")]
         public async Task<IActionResult> ResendActivationEmailAsync([FromBody] ResendEmailRequest resendAEmailRequest)
         {
-            authService.SendActivationEmailAsync(resendAEmailRequest.Email);
+            await authService.SendActivationEmailAsync(resendAEmailRequest.Email);
             return Ok();
         }
 

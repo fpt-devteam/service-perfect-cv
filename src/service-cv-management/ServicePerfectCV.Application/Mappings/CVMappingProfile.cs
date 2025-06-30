@@ -25,10 +25,10 @@ namespace ServicePerfectCV.Application.Mappings
                 .ForMember(dest => dest.JobDetail, opt => opt.MapFrom(src => src.JobDetail))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
             CreateMap<CV, CVResponse>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.CVId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
-                .ForMember(dest => dest.CvFullContent, opt => opt.MapFrom(src => src.FullContent));
-
+                .ForMember(dest => dest.FullContent, opt => opt.MapFrom(src => src.FullContent))
+                .ForMember(dest => dest.LastEditedAt, opt => opt.MapFrom(src => src.UpdatedAt ?? src.CreatedAt));
         }
     }
 }

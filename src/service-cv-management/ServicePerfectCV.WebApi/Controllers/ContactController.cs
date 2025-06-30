@@ -11,7 +11,7 @@ namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/contacts")]
+    [Route("api/cvs/{cvId}/contacts")]
     public class ContactController : ControllerBase
     {
         private readonly ContactService _contactService;
@@ -54,7 +54,7 @@ namespace ServicePerfectCV.WebApi.Controllers
         /// Keep old value if not provided
         /// Set null to remove
         /// </remarks>
-        [HttpGet("cv/{cvId}")]
+        [HttpGet]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(ContactResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]

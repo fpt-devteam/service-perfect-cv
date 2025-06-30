@@ -7,8 +7,9 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
 {
     public class CVResponse
     {
-        public Guid UserId { get; init; }
-        public string Title { get; init; } = default!;
-        public string CvFullContent { get; init; } = default!;
+        public required Guid CVId { get; init; }
+        public required string Title { get; init; } = default!;
+        public string FullContent { get; init; } = default!;
+        public required DateTime LastEditedAt { get; init; }
     }
 }

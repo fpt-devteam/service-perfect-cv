@@ -30,11 +30,15 @@ namespace ServicePerfectCV.Application.Services
 
             return mapper.Map<CVResponse>(newCV);
         }
-        public async Task<IEnumerable<CVResponse>> ListAsync(CVQuery query, Guid userId)
+        public async Task<PaginationData<CVResponse>> ListAsync(CVQuery query, Guid userId)
         {
             var cvs = await cvRepository.GetByUserIdAsync(
                 query, userId);
-            return [.. cvs.Select(cv => mapper.Map<CVResponse>(cv))];
+            return new PaginationData<CVResponse>
+            {
+                Total = cvs.Count,
+                Items = [.. cvs.Items.Select(cv => mapper.Map<CVResponse>(cv))]
+            };
         }
 
     }

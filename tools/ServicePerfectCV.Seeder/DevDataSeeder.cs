@@ -6,6 +6,7 @@ using ServicePerfectCV.Domain.Enums;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Helpers;
 using System.Text.Json;
+using ServicePerfectCV.Domain.ValueObjects;
 
 namespace ServicePerfectCV.Seeder
 {
@@ -17,13 +18,13 @@ namespace ServicePerfectCV.Seeder
         public async Task RunAsync(CancellationToken ct)
         {
             await dbContext.Database.MigrateAsync(ct);
-            await SeedUsersAsync(ct);
-            await SeedEmploymentTypesAsync(ct);
-            await SeedOrganizationsAsync(ct);
-            await SeedJobsTitleAsync(ct);
+            // await SeedUsersAsync(ct);
+            // await SeedEmploymentTypesAsync(ct);
+            // await SeedOrganizationsAsync(ct);
+            // await SeedJobsTitleAsync(ct);
             await SeedCVsAsync(ct);
-            await SeedExperiencesAsync(ct);
-            await SeedProjectsAsync(ct);
+            // await SeedExperiencesAsync(ct);
+            // await SeedProjectsAsync(ct);
             // await SeedDegreeAsync(ct);
         }
 
@@ -98,7 +99,7 @@ namespace ServicePerfectCV.Seeder
             //     return;
             // }
 
-            var userId = new Guid("e339abe7-d435-4986-947f-1b3b403ea56d");
+            var userId = new Guid("AD63B027-62DA-4AF5-8D63-FC9D3C23403A");
 
             var cvFaker = new Faker<CV>()
                 .RuleFor(cv => cv.Id, f =>
@@ -108,14 +109,14 @@ namespace ServicePerfectCV.Seeder
                     return id;
                 })
                 .RuleFor(cv => cv.UserId, f => userId)
-                .RuleFor(cv => cv.Title, f => f.Lorem.Sentence(3, 5))
-                .RuleFor(cv => cv.JobDetail, f => new ServicePerfectCV.Domain.ValueObjects.JobDetail(
+                .RuleFor(cv => cv.Title, f => f.Name.JobTitle())
+                .RuleFor(cv => cv.JobDetail, f => new JobDetail(
                     f.Name.JobTitle(),
                     f.Company.CompanyName(),
-                    f.Lorem.Paragraph()
+                    f.Name.JobDescriptor()
                 ))
                 .RuleFor(cv => cv.CreatedAt, f => f.Date.Past(1))
-                .RuleFor(cv => cv.UpdatedAt, f => DateTime.UtcNow)
+                .RuleFor(cv => cv.UpdatedAt, f => f.Date.Past(1))
                 .RuleFor(cv => cv.DeletedAt, f => null)
                 .RuleFor(cv => cv.FullContent, f => null);
 

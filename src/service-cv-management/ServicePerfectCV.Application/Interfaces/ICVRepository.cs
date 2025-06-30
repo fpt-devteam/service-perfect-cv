@@ -6,11 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ServicePerfectCV.Application.Common;
 
 namespace ServicePerfectCV.Application.Interfaces
 {
     public interface ICVRepository : IGenericRepository<CV, Guid>
     {
-        Task<IEnumerable<CV>> GetByUserIdAsync(CVQuery cvQuery, Guid userId);
+        Task<FilterView<CV>> GetByUserIdAsync(CVQuery cvQuery, Guid userId);
     }
 }
