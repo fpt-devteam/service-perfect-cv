@@ -32,6 +32,7 @@ namespace ServicePerfectCV.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new ExperienceConfiguration());
             modelBuilder.ApplyConfiguration(new SkillConfiguration());
+            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new SummaryConfiguration());
             modelBuilder.ApplyConfiguration(new CertificationConfiguration());
             modelBuilder.ApplyConfiguration(new ContactConfiguration());
@@ -41,6 +42,7 @@ namespace ServicePerfectCV.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new OrganizationConfiguration());
             modelBuilder.ApplyConfiguration(new JobTitleConfiguration());
             modelBuilder.ApplyConfiguration(new EmploymentTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new DegreeConfiguration());
         }
     }
 }

@@ -30,6 +30,9 @@ namespace ServicePerfectCV.Seeder
         private List<Guid> _degreeIds = new List<Guid>();
         private List<Guid> _educationIds = new List<Guid>();
         private List<Guid> _contactIds = new List<Guid>();
+        private List<Guid> _categoryIds = new List<Guid>();
+        private List<Guid> _skillIds = new List<Guid>();
+        private List<Guid> _summaryIds = new List<Guid>();
 
         public async Task RunAsync(CancellationToken ct)
         {
@@ -42,12 +45,15 @@ namespace ServicePerfectCV.Seeder
             await SeedOrganizationsAsync(ct);
             await SeedJobsTitleAsync(ct);
             await SeedDegreesAsync(ct);
+            await SeedCategoriesAsync(ct);
             await SeedCVsAsync(ct);
             await SeedExperiencesAsync(ct);
             await SeedProjectsAsync(ct);
             await SeedCertificationsAsync(ct);
             await SeedEducationsAsync(ct);
             await SeedContactsAsync(ct);
+            await SeedSkillsAsync(ct);
+            await SeedSummariesAsync(ct);
 
             // Update FullContent for all CVs after all related entities are seeded
             await UpdateCVFullContentAsync(ct);
@@ -58,6 +64,8 @@ namespace ServicePerfectCV.Seeder
             if (await dbContext.Users.AnyAsync(ct))
             {
                 Console.WriteLine("Users already seeded.");
+                // Load existing user IDs into the list
+                _userIds = await dbContext.Users.AsNoTracking().Select(u => u.Id).ToListAsync(ct);
                 return;
             }
 
@@ -86,6 +94,7 @@ namespace ServicePerfectCV.Seeder
                 Console.WriteLine($"Inserted {(i + 1) * batchSize}/{total}");
             }
         }
+
         private async Task SeedJobsTitleAsync(CancellationToken ct)
         {
             if (await dbContext.JobTitles.AnyAsync(ct))
@@ -127,6 +136,8 @@ namespace ServicePerfectCV.Seeder
             if (await dbContext.CVs.AnyAsync(ct))
             {
                 Console.WriteLine("CVs already seeded.");
+                // Load existing CV IDs into the list
+                _cvIds = await dbContext.CVs.AsNoTracking().Select(c => c.Id).ToListAsync(ct);
                 return;
             }
 
@@ -391,6 +402,105 @@ namespace ServicePerfectCV.Seeder
             Console.WriteLine($"Seeded Degrees: {degreeEntities.Count}");
         }
 
+        private async Task SeedCategoriesAsync(CancellationToken ct)
+        {
+            if (await dbContext.Categories.AnyAsync(ct))
+            {
+                Console.WriteLine("Categories already seeded.");
+                // Load existing category IDs into the list
+                _categoryIds = await dbContext.Categories.AsNoTracking().Select(c => c.Id).ToListAsync(ct);
+                return;
+            }
+
+            string path = "categories.json";
+            if (!File.Exists(path))
+            {
+                Console.WriteLine("Categories seed file not found: " + path);
+                return;
+            }
+
+            var json = await File.ReadAllTextAsync(path, ct);
+            var categoryNames = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+
+            var categoryEntities = new List<Category>();
+
+            foreach (var categoryName in categoryNames)
+            {
+                var categoryId = Guid.NewGuid();
+                _categoryIds.Add(categoryId);
+
+                categoryEntities.Add(new Category
+                {
+                    Id = categoryId,
+                    Name = categoryName,
+                    CreatedAt = DateTime.UtcNow
+                });
+            }
+
+            dbContext.Categories.AddRange(categoryEntities);
+            await dbContext.SaveChangesAsync(ct);
+
+            Console.WriteLine($"Seeded Categories: {categoryEntities.Count}");
+        }
+
+        private async Task SeedSkillsAsync(CancellationToken ct)
+        {
+            if (await dbContext.Skills.AnyAsync(ct))
+            {
+                Console.WriteLine("Skills already seeded.");
+                return;
+            }
+
+            if (!_categoryIds.Any() || !_cvIds.Any())
+            {
+                Console.WriteLine("Cannot seed skills: Categories or CVs not seeded yet.");
+                return;
+            }
+
+
+            // Load categories from database to get names
+            var categories = await dbContext.Categories.AsNoTracking().ToListAsync(ct);
+            var categoryDict = categories.ToDictionary(c => c.Id, c => c.Name);
+
+            var skills = new Faker<Skill>()
+                .RuleFor(s => s.Id, f =>
+                {
+                    var id = Guid.NewGuid();
+                    _skillIds.Add(id);
+                    return id;
+                })
+                .RuleFor(s => s.CVId, f => f.PickRandom(_cvIds))
+                .RuleFor(s => s.Description, f => f.PickRandom(new[]
+                {
+                    "C#",
+                    "Java",
+                    "Python",
+                    "JavaScript",
+                    "SQL",
+                    "HTML/CSS",
+                    "ReactJS",
+                    "Angular",
+                    "Node.js",
+                    "ASP.NET Core",
+                    "Django",
+                    "Flask",
+                    "Ruby on Rails",
+                    "Swift",
+                    "Kotlin"
+                }))
+                .RuleFor(s => s.CategoryId, f => f.PickRandom(_categoryIds))
+                .RuleFor(s => s.CreatedAt, f => f.Date.Past(1))
+                .RuleFor(s => s.UpdatedAt, f => f.Date.Past(1))
+                .RuleFor(s => s.DeletedAt, f => null);
+
+            var skillEntities = skills.Generate(10);
+
+            dbContext.Skills.AddRange(skillEntities);
+            await dbContext.SaveChangesAsync(ct);
+
+            Console.WriteLine($"Seeded {skillEntities.Count} skills.");
+        }
+
         private class DegreeData
         {
             public string Code { get; set; } = default!;
@@ -631,6 +741,55 @@ namespace ServicePerfectCV.Seeder
             Console.WriteLine($"Seeded {contacts.Count} Contacts");
         }
 
+        private async Task SeedSummariesAsync(CancellationToken ct)
+        {
+            if (await dbContext.Summaries.AnyAsync(ct))
+            {
+                Console.WriteLine("Summaries already seeded.");
+                return;
+            }
+
+            if (!_cvIds.Any())
+            {
+                Console.WriteLine("Cannot seed summaries: CVs not seeded yet.");
+                return;
+            }
+
+            var summaries = new List<Summary>();
+            var faker = new Faker();
+
+            // Create exactly one summary per CV to maintain 1:1 relationship
+            foreach (var cvId in _cvIds)
+            {
+                var summaryId = Guid.NewGuid();
+                _summaryIds.Add(summaryId);
+
+                var summary = new Summary
+                {
+                    Id = summaryId,
+                    CVId = cvId,
+                    Context = faker.PickRandom(new[]
+                    {
+                        "Experienced software developer with strong background in full-stack development, passionate about creating efficient and scalable solutions.",
+                        "Results-driven professional with expertise in cloud technologies and modern development practices, dedicated to continuous learning and innovation.",
+                        "Detail-oriented developer with extensive experience in web applications, database design, and agile methodologies.",
+                        "Creative problem-solver with proven track record in delivering high-quality software solutions and leading development teams.",
+                        "Technology enthusiast with deep knowledge of multiple programming languages and frameworks, committed to best practices and code quality.",
+                        "Versatile software engineer with experience in both frontend and backend development, skilled in modern development tools and methodologies.",
+                        "Passionate developer with strong analytical skills and experience in building robust, maintainable applications using cutting-edge technologies.",
+                        "Dedicated professional with expertise in software architecture, system design, and performance optimization for large-scale applications."
+                    })
+                };
+
+                summaries.Add(summary);
+            }
+
+            dbContext.Summaries.AddRange(summaries);
+            await dbContext.SaveChangesAsync(ct);
+
+            Console.WriteLine($"Seeded {summaries.Count} summaries.");
+        }
+
         private async Task UpdateCVFullContentAsync(CancellationToken ct)
         {
             Console.WriteLine("Updating CV FullContent...");
@@ -780,6 +939,9 @@ namespace ServicePerfectCV.Seeder
             await dbContext.Degrees.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared Degrees");
 
+            await dbContext.Categories.ExecuteDeleteAsync(ct);
+            Console.WriteLine("Cleared Categories");
+
             // Xóa Users cuối cùng
             await dbContext.Users.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared Users");
@@ -796,6 +958,9 @@ namespace ServicePerfectCV.Seeder
             _certificationIds.Clear();
             _educationIds.Clear();
             _contactIds.Clear();
+            _categoryIds.Clear();
+            _skillIds.Clear();
+            _summaryIds.Clear();
 
             Console.WriteLine("All data cleared successfully!");
         }
