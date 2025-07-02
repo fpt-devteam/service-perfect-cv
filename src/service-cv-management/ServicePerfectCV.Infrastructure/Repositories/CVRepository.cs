@@ -44,5 +44,12 @@ namespace ServicePerfectCV.Infrastructure.Repositories
 
             return query;
         }
+
+        public Task<CV?> GetByCVIdAndUserIdAsync(Guid cvId, Guid userId)
+        {
+            return _context.CVs
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cv => cv.Id == cvId && cv.UserId == userId && cv.DeletedAt == null);
+        }
     }
 }

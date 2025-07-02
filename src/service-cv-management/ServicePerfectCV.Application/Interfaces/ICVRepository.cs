@@ -13,5 +13,6 @@ namespace ServicePerfectCV.Application.Interfaces
     public interface ICVRepository : IGenericRepository<CV, Guid>
     {
         Task<FilterView<CV>> GetByUserIdAsync(CVQuery cvQuery, Guid userId);
+        Task<CV?> GetByCVIdAndUserIdAsync(Guid cvId, Guid userId);
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServicePerfectCV.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using ServicePerfectCV.Infrastructure.Data;
 namespace ServicePerfectCV.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250702030119_UpdateSkillEntity")]
+    partial class UpdateSkillEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,30 +62,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CVs");
-                });
-
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Category", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
@@ -495,8 +474,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Property<Guid>("CVId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Category")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -515,8 +495,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CVId");
-
-                    b.HasIndex("CategoryId");
 
                     b.ToTable("Skills");
                 });
@@ -736,15 +714,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("ServicePerfectCV.Domain.Entities.Category", "Category")
-                        .WithMany("Skills")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("CV");
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Summary", b =>
@@ -775,11 +745,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.Navigation("Summary")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Category", b =>
-                {
-                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Degree", b =>

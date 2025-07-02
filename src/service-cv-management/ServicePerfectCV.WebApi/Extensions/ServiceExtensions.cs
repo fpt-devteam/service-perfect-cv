@@ -31,6 +31,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddAutoMapper(typeof(ContactMappingProfile));
             services.AddAutoMapper(typeof(ProjectMappingProfile));
             services.AddAutoMapper(typeof(CertificationMappingProfile));
+            services.AddAutoMapper(typeof(ServicePerfectCV.Application.Mappings.SummaryMappingProfile));
+            services.AddAutoMapper(typeof(ServicePerfectCV.Application.Mappings.SkillMappingProfile));
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICVRepository, CVRepository>();
@@ -43,6 +45,9 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IDegreeRepository, DegreeRepository>();
             services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
             services.AddScoped<ICertificationRepository, CertificationRepository>();
+            services.AddScoped<ISummaryRepository, SummaryRepository>();
+            services.AddScoped<ISkillRepository, SkillRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
 
@@ -56,6 +61,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<ExperienceService>();
             services.AddScoped<ProjectService>();
             services.AddScoped<CertificationService>();
+            services.AddScoped<SummaryService>();
+            services.AddScoped<SkillService>();
             services.AddScoped<ICVSnapshotService, CVSnapshotService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -68,18 +75,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddSingleton<OAuthServiceFactory>();
             services.AddScoped<IOAuthService, GoogleOAuthService>();
 
-            // Add HttpClient for external API calls
             services.AddHttpClient();
 
-            // // OAuth services
-            // services.AddScoped<GoogleOAuthService>();
-            // services.AddScoped<LinkedInOAuthService>();
-            // services.AddScoped<OAuthServiceFactory>();
-            // services.AddScoped<IOAuthService>(provider => 
-            // {
-            //     // Default to Google OAuth service, but you can implement logic to choose based on configuration
-            //     return provider.GetRequiredService<GoogleOAuthService>();
-            // });
 
         }
     }

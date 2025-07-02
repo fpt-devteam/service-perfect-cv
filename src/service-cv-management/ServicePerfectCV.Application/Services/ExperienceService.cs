@@ -65,7 +65,6 @@ namespace ServicePerfectCV.Application.Services
             await _experienceRepository.CreateAsync(newExperience);
             await _experienceRepository.SaveChangesAsync();
 
-            // Update CV snapshot after creating experience
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
             return _mapper.Map<ExperienceResponse>(newExperience);
@@ -109,7 +108,6 @@ namespace ServicePerfectCV.Application.Services
             _experienceRepository.Update(existingExperience);
             await _experienceRepository.SaveChangesAsync();
 
-            // Update CV snapshot after updating experience
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingExperience.CVId);
 
             return _mapper.Map<ExperienceResponse>(existingExperience);

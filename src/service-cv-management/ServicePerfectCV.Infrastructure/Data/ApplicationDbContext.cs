@@ -23,6 +23,7 @@ namespace ServicePerfectCV.Infrastructure.Data
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<JobTitle> JobTitles { get; set; }
         public DbSet<EmploymentType> EmploymentTypes { get; set; }
+        public DbSet<Category> Categories { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

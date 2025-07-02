@@ -12,6 +12,9 @@ using ServicePerfectCV.Application.DTOs.Education.Responses;
 using ServicePerfectCV.Application.DTOs.Experience.Responses;
 using ServicePerfectCV.Application.DTOs.Project.Responses;
 using ServicePerfectCV.Application.DTOs.Certification.Responses;
+using ServicePerfectCV.Application.DTOs.Summary.Responses;
+using ServicePerfectCV.Application.DTOs.Skill.Responses;
+using ServicePerfectCV.Application.DTOs.Category.Responses;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Infrastructure.Data;
@@ -25,10 +28,12 @@ namespace ServicePerfectCV.Infrastructure.Services
     {
         public async Task UpdateCVSnapshotIfChangedAsync(Guid cvId)
         {
-            // Load the CV with all related data using Include
             var cv = await context.CVs
                 .Where(c => c.Id == cvId)
                 .Include(c => c.Contact)
+                .Include(c => c.Summary)
+                .Include(c => c.Skills)
+                    .ThenInclude(s => s.Category)
                 .Include(c => c.Educations)
                 .Include(c => c.Experiences)
                     .ThenInclude(e => e.EmploymentType)
@@ -39,7 +44,6 @@ namespace ServicePerfectCV.Infrastructure.Services
 
             if (cv == null) return;
 
-            // Create the snapshot response in memory
             var newDto = new CVSnapshotResponse
             {
                 UserId = cv.UserId,
@@ -62,6 +66,27 @@ namespace ServicePerfectCV.Infrastructure.Services
                     Country = cv.Contact.Country,
                     City = cv.Contact.City
                 } : null,
+                Summary = cv.Summary != null ? new SummaryResponse
+                {
+                    Id = cv.Summary.Id,
+                    CVId = cv.Summary.CVId,
+                    Context = cv.Summary.Context
+                } : null,
+                Skills = cv.Skills.Select(s => new SkillResponse
+                {
+                    Id = s.Id,
+                    CVId = s.CVId,
+                    Category = new CategoryResponse
+                    {
+                        Id = s.Category.Id,
+                        Name = s.Category.Name,
+                        CreatedAt = s.Category.CreatedAt,
+                        UpdatedAt = s.Category.UpdatedAt
+                    },
+                    Items = s.Items,
+                    CreatedAt = s.CreatedAt,
+                    UpdatedAt = s.UpdatedAt
+                }),
                 Educations = cv.Educations.Select(e => new EducationResponse
                 {
                     Organization = e.Organization,
@@ -115,19 +140,16 @@ namespace ServicePerfectCV.Infrastructure.Services
 
             var newJson = JsonSerializer.Serialize(newDto);
 
-            // Compare with existing content
             var isChanged = cv.FullContent != newJson;
 
             if (isChanged)
             {
-                // Update only the FullContent field using a separate query to avoid tracking conflicts
                 await context.CVs
                     .Where(c => c.Id == cvId)
                     .ExecuteUpdateAsync(c => c
                         .SetProperty(cv => cv.FullContent, newJson)
                         .SetProperty(cv => cv.UpdatedAt, DateTime.UtcNow));
 
-                // Save to cache
                 await cacheService.SetAsync($"cv:{cvId}", newJson, TimeSpan.FromHours(1));
             }
         }

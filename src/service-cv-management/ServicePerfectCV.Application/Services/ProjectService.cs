@@ -42,7 +42,6 @@ namespace ServicePerfectCV.Application.Services
             await _projectRepository.CreateAsync(newProject);
             await _projectRepository.SaveChangesAsync();
 
-            // Update CV snapshot after creating project
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
             return _mapper.Map<ProjectResponse>(newProject);
@@ -50,12 +49,11 @@ namespace ServicePerfectCV.Application.Services
 
         public async Task<ProjectResponse> UpdateAsync(Guid projectId, UpdateProjectRequest request)
         {
-            var existingProject = await _projectRepository.GetByIdAsync(id: projectId);
-            if (existingProject == null)
-                throw new DomainException(ProjectErrors.NotFound);
+            var existingProject = await _projectRepository.GetByIdAsync(id: projectId)
+                ?? throw new DomainException(ProjectErrors.NotFound);
 
-            existingProject.Title = request.Title;
-            existingProject.Description = request.Description;
+            existingProject.Title = request.Title ?? existingProject.Title;
+            existingProject.Description = request.Description ?? existingProject.Description;
             existingProject.Link = request.Link;
             existingProject.StartDate = request.StartDate;
             existingProject.EndDate = request.EndDate;
@@ -64,7 +62,6 @@ namespace ServicePerfectCV.Application.Services
             _projectRepository.Update(existingProject);
             await _projectRepository.SaveChangesAsync();
 
-            // Update CV snapshot after updating project
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingProject.CVId);
 
             return _mapper.Map<ProjectResponse>(existingProject);
@@ -94,8 +91,6 @@ namespace ServicePerfectCV.Application.Services
             project.DeletedAt = DateTime.UtcNow;
             _projectRepository.Update(project);
             await _projectRepository.SaveChangesAsync();
-
-            // Update CV snapshot after deleting project
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(project.CVId);
         }
     }

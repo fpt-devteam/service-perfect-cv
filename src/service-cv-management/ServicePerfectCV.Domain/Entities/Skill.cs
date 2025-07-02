@@ -12,14 +12,20 @@ namespace ServicePerfectCV.Domain.Entities
     {
         public Guid Id { get; set; }
         public Guid CVId { get; set; }
-        public required string Category { get; set; }
-        public required string ItemsJson { get; set; }
+        public Guid CategoryId { get; set; }
+        public required string Description { get; set; }
         [NotMapped]
         public List<string> Items
         {
-            get => JsonSerializer.Deserialize<List<string>>(ItemsJson) ?? [];
-            set => ItemsJson = JsonSerializer.Serialize(value);
+            get => JsonSerializer.Deserialize<List<string>>(Description) ?? [];
+            set => Description = JsonSerializer.Serialize(value);
         }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
+        // Navigation properties
         public virtual CV CV { get; set; } = default!;
+        public virtual Category Category { get; set; } = default!;
     }
 }
