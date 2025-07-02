@@ -47,7 +47,6 @@ namespace ServicePerfectCV.Application.Services
             await _certificationRepository.CreateAsync(entity: newCertification);
             await _certificationRepository.SaveChangesAsync();
 
-            // Update CV snapshot after creating certification
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
             return _mapper.Map<CertificationResponse>(source: newCertification);
@@ -72,7 +71,6 @@ namespace ServicePerfectCV.Application.Services
             _certificationRepository.Update(entity: existingCertification);
             await _certificationRepository.SaveChangesAsync();
 
-            // Update CV snapshot after updating certification
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingCertification.CVId);
 
             return _mapper.Map<CertificationResponse>(source: existingCertification);
@@ -118,8 +116,6 @@ namespace ServicePerfectCV.Application.Services
             certification.DeletedAt = DateTime.UtcNow;
             _certificationRepository.Update(entity: certification);
             await _certificationRepository.SaveChangesAsync();
-
-            // Update CV snapshot after deleting certification
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(certification.CVId);
         }
     }

@@ -21,7 +21,7 @@ namespace ServicePerfectCV.WebApi.Controllers
     /// This controller provides endpoints for creating, reading, updating, and deleting projects associated with a CV
     /// </remarks>
     [ApiController]
-    // [Authorize]
+    [Authorize]
     [Route("api/cvs/{cvId}/projects")]
     public class ProjectController : ControllerBase
     {

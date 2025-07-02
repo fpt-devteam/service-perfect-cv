@@ -6,8 +6,8 @@ namespace ServicePerfectCV.Application.DTOs.Project.Requests
 {
     public class UpdateProjectRequest
     {
-        public required string Title { get; set; }
-        public required string Description { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
         public string? Link { get; set; }
         public DateOnly? StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
@@ -17,11 +17,9 @@ namespace ServicePerfectCV.Application.DTOs.Project.Requests
             public Validator()
             {
                 RuleFor(x => x.Title)
-                   .NotEmpty().WithMessage("Title is required")
                    .MaximumLength(ProjectConstraints.TitleMaxLength).WithMessage($"Title cannot exceed {ProjectConstraints.TitleMaxLength} characters");
 
                 RuleFor(x => x.Description)
-                   .NotEmpty().WithMessage("Description is required")
                    .MaximumLength(ProjectConstraints.DescriptionMaxLength).WithMessage($"Description cannot exceed {ProjectConstraints.DescriptionMaxLength} characters");
 
                 RuleFor(x => x.Link)

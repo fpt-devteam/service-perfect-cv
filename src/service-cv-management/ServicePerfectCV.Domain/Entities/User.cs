@@ -1,5 +1,6 @@
 using ServicePerfectCV.Domain.Common;
 using ServicePerfectCV.Domain.Constants;
+using ServicePerfectCV.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace ServicePerfectCV.Domain.Entities
         public DateTime? DeletedAt { get; set; }
         public UserStatus Status { get; set; } = UserStatus.Inactive;
         public UserRole Role { get; set; } = UserRole.User;
+        public AuthenticationMethod AuthMethod { get; set; } = AuthenticationMethod.JWT;
 
         public ICollection<CV> CVs { get; set; } = [];
     }

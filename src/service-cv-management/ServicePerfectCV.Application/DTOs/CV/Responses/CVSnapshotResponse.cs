@@ -3,6 +3,8 @@ using ServicePerfectCV.Application.DTOs.Contact.Responses;
 using ServicePerfectCV.Application.DTOs.Education.Responses;
 using ServicePerfectCV.Application.DTOs.Experience.Responses;
 using ServicePerfectCV.Application.DTOs.Project.Responses;
+using ServicePerfectCV.Application.DTOs.Summary.Responses;
+using ServicePerfectCV.Application.DTOs.Skill.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +18,8 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
         public string Title { get; init; } = default!;
         public JobDetailDto? JobDetail { get; init; }
         public ContactResponse? Contacts { get; init; }
-        //TODO: SummaryResponse and SkillsResponse
+        public SummaryResponse? Summary { get; init; }
+        public IEnumerable<SkillResponse> Skills { get; init; } = null!;
         public IEnumerable<EducationResponse> Educations { get; init; } = null!;
         public IEnumerable<CertificationResponse> Certifications { get; init; } = null!;
         public IEnumerable<ExperienceResponse> Experiences { get; init; } = null!;

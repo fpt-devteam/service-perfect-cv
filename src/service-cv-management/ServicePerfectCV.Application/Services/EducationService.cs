@@ -52,7 +52,6 @@ namespace ServicePerfectCV.Application.Services
             await _educationRepository.CreateAsync(newEducation);
             await _educationRepository.SaveChangesAsync();
 
-            // Update CV snapshot after creating education
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
             return _mapper.Map<EducationResponse>(newEducation);
@@ -84,7 +83,6 @@ namespace ServicePerfectCV.Application.Services
             _educationRepository.Update(existingEducation);
             await _educationRepository.SaveChangesAsync();
 
-            // Update CV snapshot after updating education
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingEducation.CVId);
 
             return _mapper.Map<EducationResponse>(existingEducation);
@@ -119,7 +117,6 @@ namespace ServicePerfectCV.Application.Services
             _educationRepository.Update(education);
             await _educationRepository.SaveChangesAsync();
 
-            // Update CV snapshot after deleting education
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(education.CVId);
         }
     }

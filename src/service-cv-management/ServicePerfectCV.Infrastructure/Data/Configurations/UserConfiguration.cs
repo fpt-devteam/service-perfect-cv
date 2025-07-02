@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(u => u.UpdatedAt)
                 .IsRequired(false);
-                
+
             builder.Property(u => u.DeletedAt)
                 .IsRequired(false);
 
@@ -46,6 +47,12 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasConversion(
                     v => v.ToString(),
                     v => (UserRole)Enum.Parse(typeof(UserRole), v));
+
+            builder.Property(u => u.AuthMethod)
+                .IsRequired()
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (AuthenticationMethod)Enum.Parse(typeof(AuthenticationMethod), v));
 
             builder.HasMany(u => u.CVs)
                 .WithOne(c => c.User)

@@ -44,13 +44,11 @@ namespace ServicePerfectCV.Application.Services
                 await _contactRepository.CreateAsync(newContact);
                 await _contactRepository.SaveChangesAsync();
 
-                // Update CV snapshot after creating contact
                 await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
                 return _mapper.Map<ContactResponse>(newContact);
             }
 
-            // Use extension methods for partial update
             existingContact.UpdateIfPresent(e => e.Email, request.EmailAddress);
             existingContact.UpdateIfPresent(e => e.PhoneNumber, request.Phone);
             existingContact.UpdateIfPresent(e => e.LinkedInUrl, request.LinkedIn);
@@ -62,7 +60,6 @@ namespace ServicePerfectCV.Application.Services
             _contactRepository.Update(existingContact);
             await _contactRepository.SaveChangesAsync();
 
-            // Update CV snapshot after updating contact
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
             return _mapper.Map<ContactResponse>(existingContact);
