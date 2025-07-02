@@ -47,10 +47,16 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "GoogleOAuthConfigurationMissing",
             Message: "Google OAuth configuration is missing or invalid.",
             HttpStatusCode.InternalServerError);
+        
         public static readonly Error NotSupportedException = new(
             Code: "NotSupportedException",
             Message: "OAuth provider is not supported.",
             HttpStatusCode.BadRequest);
+
+        public static readonly Error AccountExistsWithDifferentMethod = new(
+            Code: "AccountExistsWithDifferentMethod",
+            Message: "An account with this email already exists using a different authentication method. Please use the original sign-in method.",
+            HttpStatusCode.Conflict);
 
     }
 }

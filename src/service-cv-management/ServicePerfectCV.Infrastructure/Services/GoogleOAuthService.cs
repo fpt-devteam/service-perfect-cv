@@ -38,7 +38,7 @@ namespace ServicePerfectCV.Infrastructure.Services
             var tokenRequestData = CreateGoogleTokenRequestData(authorizationCode);
 
             var tokenRequest = new FormUrlEncodedContent(tokenRequestData);
-            var tokenResponse = await httpClient.PostAsync("https://oauth2.googleapis.com/token", tokenRequest);
+            var tokenResponse = await httpClient.PostAsync($"{googleSettings.Value.TokenEndpoint}", tokenRequest);
 
             if (!tokenResponse.IsSuccessStatusCode)
             {
@@ -53,7 +53,7 @@ namespace ServicePerfectCV.Infrastructure.Services
                 throw new DomainException(AuthErrors.OAuthTokenExchangeFailed);
             }
 
-            using var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, "https://www.googleapis.com/oauth2/v2/userinfo");
+            using var userInfoRequest = new HttpRequestMessage(HttpMethod.Get, $"{googleSettings.Value.UserInfoEndpoint}");
             userInfoRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenData.AccessToken);
 
             var userInfoResponse = await httpClient.SendAsync(userInfoRequest);
@@ -90,7 +90,10 @@ namespace ServicePerfectCV.Infrastructure.Services
         private async Task<LoginResponse> GoogleLoginAsync(GoogleLoginRequest googleLoginRequest)
         {
             User? user = await userRepository.GetByEmailAsync(googleLoginRequest.Email);
-
+            if (user != null && user.AuthMethod != Domain.Enums.AuthenticationMethod.Google)
+            {
+                throw new DomainException(AuthErrors.AccountExistsWithDifferentMethod);
+            }
             if (user == null)
             {
                 user = new User
@@ -98,6 +101,7 @@ namespace ServicePerfectCV.Infrastructure.Services
                     Id = Guid.NewGuid(),
                     Email = googleLoginRequest.Email,
                     Status = UserStatus.Active,
+                    AuthMethod = Domain.Enums.AuthenticationMethod.Google,
                     Role = UserRole.User,
                     PasswordHash = "",
                     CreatedAt = DateTime.UtcNow,

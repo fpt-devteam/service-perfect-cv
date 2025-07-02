@@ -70,6 +70,7 @@ namespace ServicePerfectCV.Seeder
                 })
                 .RuleFor(u => u.Email, f => f.Internet.Email())
                 .RuleFor(u => u.PasswordHash, new PasswordHasher().HashPassword("123456"))
+                .RuleFor(u => u.AuthMethod, AuthenticationMethod.JWT)
                 .RuleFor(u => u.Status, UserStatus.Active)
                 .RuleFor(u => u.Role, UserRole.User);
 

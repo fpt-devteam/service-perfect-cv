@@ -13,6 +13,7 @@ using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -51,6 +52,7 @@ namespace ServicePerfectCV.Application.Services
             }
             User newUser = mapper.Map<User>(registerRequest);
             newUser.PasswordHash = passwordHasher.HashPassword(registerRequest.Password);
+            newUser.AuthMethod = Domain.Enums.AuthenticationMethod.JWT;
             await userRepository.CreateAsync(newUser);
             await userRepository.SaveChangesAsync();
             //TODO: implement job queue for sending emails

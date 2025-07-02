@@ -72,6 +72,7 @@ namespace ServicePerfectCV.WebApi.Controllers
         [HttpGet("login-link/{provider}")]
         public IActionResult GetLoginLink([FromRoute] string provider)
         {
+            // TODO: Implement other providers as linkedIn
             if (!provider.Equals(nameof(OAuthProvider.Google), StringComparison.OrdinalIgnoreCase))
             {
                 return BadRequest("Unsupported provider");
@@ -80,7 +81,7 @@ namespace ServicePerfectCV.WebApi.Controllers
             var redirectUrl = Uri.EscapeDataString(googleSettings.RedirectUri);
             var scopes = Uri.EscapeDataString(googleSettings.Scopes);
             return Ok(
-                $"https://accounts.google.com/o/oauth2/v2/auth?client_id={googleSettings.ClientId}&redirect_uri={redirectUrl}&response_type=code&scope={scopes}");
+                $"{googleSettings.AuthorizationEndpoint}?client_id={googleSettings.ClientId}&redirect_uri={redirectUrl}&response_type=code&scope={scopes}");
         }
 
         [HttpPost("login/{provider}")]
