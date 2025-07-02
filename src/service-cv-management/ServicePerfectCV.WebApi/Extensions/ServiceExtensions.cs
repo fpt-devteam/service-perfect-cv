@@ -34,8 +34,10 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddAutoMapper(typeof(CertificationMappingProfile));
             services.AddAutoMapper(typeof(OrganizationMappingProfile));
             services.AddAutoMapper(typeof(DegreeMappingProfile));
-            services.AddAutoMapper(typeof(ServicePerfectCV.Application.Mappings.SummaryMappingProfile));
-            services.AddAutoMapper(typeof(ServicePerfectCV.Application.Mappings.SkillMappingProfile));
+            services.AddAutoMapper(typeof(CategoryMappingProfile));
+            services.AddAutoMapper(typeof(JobTitleMappingProfile));
+            services.AddAutoMapper(typeof(SummaryMappingProfile));
+            services.AddAutoMapper(typeof(SkillMappingProfile));
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICVRepository, CVRepository>();
@@ -68,6 +70,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<SkillService>();
             services.AddScoped<OrganizationService>();
             services.AddScoped<DegreeService>();
+            services.AddScoped<CategoryService>();
+            services.AddScoped<JobTitleService>();
             services.AddScoped<ICVSnapshotService, CVSnapshotService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
