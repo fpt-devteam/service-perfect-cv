@@ -18,11 +18,77 @@ services:
     image: redis:7-alpine
     container_name: redis
     hostname: redis
+    command: redis-server --appendonly yes --requirepass redis123
     ports:
       - "6379:6379"
     restart: unless-stopped
     volumes:
       - redis-data:/data
+    networks:
+      - fpt-network
+
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: ai-analyzer
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongo-init:/docker-entrypoint-initdb.d
+    networks:
+      - fpt-network
+
+  ai-analyzer-api:
+    build:
+      context: ./src/service-ai-analyzer
+      dockerfile: Dockerfile
+    container_name: ai-analyzer-api
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/ai-analyzer?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redis123
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-6yWFbXOt29xpee18VzXim1jZOEBMQaET}
+      - MISTRAL_MODEL=${MISTRAL_MODEL:-mistral-me}
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - fpt-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ai-analyzer-worker:
+    build:
+      context: ./src/service-ai-analyzer
+      dockerfile: Dockerfile
+    container_name: ai-analyzer-worker
+    restart: unless-stopped
+    command: ["node", "src/workers/aiWorker.js"]
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/ai-analyzer?authSource=admin
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redis123
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-6yWFbXOt29xpee18VzXim1jZOEBMQaET}
+      - MISTRAL_MODEL=${MISTRAL_MODEL:-mistral-medium-latest}
+    depends_on:
+      - mongodb
+      - redis
     networks:
       - fpt-network
 
@@ -33,3 +99,4 @@ networks:
 volumes:
   db-data:
   redis-data:
+  mongodb_data:
