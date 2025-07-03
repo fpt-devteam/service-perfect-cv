@@ -158,6 +158,24 @@ app.get("/api", (req, res) => {
   });
 });
 
+// Catch-all for any /api/* routes that don't match the specific routes above
+app.use("/api/*", (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "API endpoint not found",
+    path: req.originalUrl,
+    method: req.method,
+    error: `The endpoint ${req.method} ${req.originalUrl} does not exist`,
+    availableRoutes: {
+      cv: "/api/cv - CV analysis endpoints",
+      qa: "/api/qa - Q&A chat endpoints",
+      feedback: "/api/feedback - Feedback and analytics endpoints",
+      documentation: "GET /api - View all available endpoints",
+    },
+    suggestion: "Check GET /api for complete API documentation",
+  });
+});
+
 app.get("/", (req, res) => {
   res.json({
     message: "CV AI Microservice is running!",
@@ -176,10 +194,20 @@ app.get("/", (req, res) => {
 app.use("*", (req, res) => {
   res.status(404).json({
     success: false,
-    message: "API endpoint not found",
+    message: "Route not found",
     path: req.originalUrl,
     method: req.method,
-    availableEndpoints: "/api",
+    error: `The route ${req.method} ${req.originalUrl} does not exist`,
+    availableRoutes: {
+      root: "GET / - Service information",
+      health: "GET /health - Service health check",
+      api: "GET /api - API documentation",
+      cv: "/api/cv/* - CV analysis endpoints",
+      qa: "/api/qa/* - Q&A chat endpoints",
+      feedback: "/api/feedback/* - Feedback endpoints",
+    },
+    suggestion:
+      "Visit GET /api for API documentation or GET / for service info",
   });
 });
 
