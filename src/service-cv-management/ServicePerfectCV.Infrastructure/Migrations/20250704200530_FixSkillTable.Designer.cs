@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServicePerfectCV.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using ServicePerfectCV.Infrastructure.Data;
 namespace ServicePerfectCV.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250704200530_FixSkillTable")]
+    partial class FixSkillTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,9 +29,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("AnalysisId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -55,9 +55,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasDefaultValueSql("NULL");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("VersionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");

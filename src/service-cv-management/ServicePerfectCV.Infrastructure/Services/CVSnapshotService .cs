@@ -33,7 +33,7 @@ namespace ServicePerfectCV.Infrastructure.Services
                 .Include(c => c.Contact)
                 .Include(c => c.Summary)
                 .Include(c => c.Skills)
-                    .ThenInclude(s => s.Category)
+                    .ThenInclude(s => s.CategoryNavigation)
                 .Include(c => c.Educations)
                 .Include(c => c.Experiences)
                     .ThenInclude(e => e.EmploymentType)
@@ -46,8 +46,11 @@ namespace ServicePerfectCV.Infrastructure.Services
 
             var newDto = new CVSnapshotResponse
             {
+                CvId = cv.Id,
                 UserId = cv.UserId,
                 Title = cv.Title,
+                VersionId = cv.VersionId,
+                AnalysisId = cv.AnalysisId,
                 JobDetail = cv.JobDetail != null ? new JobDetailDto
                 {
                     JobTitle = cv.JobDetail.JobTitle,
@@ -78,12 +81,10 @@ namespace ServicePerfectCV.Infrastructure.Services
                     CVId = s.CVId,
                     Category = new CategoryResponse
                     {
-                        Id = s.Category.Id,
-                        Name = s.Category.Name,
-                        CreatedAt = s.Category.CreatedAt,
-                        UpdatedAt = s.Category.UpdatedAt
+                        Id = s.CategoryId ?? Guid.Empty,
+                        Name = s.Category
                     },
-                    Items = s.Items,
+                    Description = s.Description,
                     CreatedAt = s.CreatedAt,
                     UpdatedAt = s.UpdatedAt
                 }),
@@ -148,6 +149,7 @@ namespace ServicePerfectCV.Infrastructure.Services
                     .Where(c => c.Id == cvId)
                     .ExecuteUpdateAsync(c => c
                         .SetProperty(cv => cv.FullContent, newJson)
+                        .SetProperty(cv => cv.VersionId, Guid.NewGuid())
                         .SetProperty(cv => cv.UpdatedAt, DateTime.UtcNow));
 
                 await cacheService.SetAsync($"cv:{cvId}", newJson, TimeSpan.FromHours(1));

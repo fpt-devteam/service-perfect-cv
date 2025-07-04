@@ -23,11 +23,10 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             var queryable = _context.Skills
                 .AsNoTracking()
                 .Include(s => s.CV)
-                .Include(s => s.Category)
+                .Include(s => s.CategoryNavigation)
                 .Where(s => s.CVId == cvId && s.CV.UserId == userId &&
                             s.DeletedAt == null);
 
-            queryable = query.Sort != null ? ApplySort(queryable, query.Sort) : queryable;
             queryable = queryable.Skip(query.Offset).Take(query.Limit);
             return await queryable.ToListAsync();
         }
@@ -37,8 +36,8 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             return await _context.Skills
                 .AsNoTracking()
                 .Include(s => s.CV)
-                .Include(s => s.Category)
-                .FirstOrDefaultAsync(s => 
+                .Include(s => s.CategoryNavigation)
+                .FirstOrDefaultAsync(s =>
                     s.CVId == cvId && s.CV.UserId == userId && s.Id == id && s.DeletedAt == null);
         }
 
@@ -47,17 +46,17 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             if (skillSort.Category.HasValue)
             {
                 return skillSort.Category.Value == SortOrder.Ascending
-                    ? query.OrderBy(s => s.Category.Name)
-                    : query.OrderByDescending(s => s.Category.Name);
+                    ? query.OrderBy(s => s.CategoryNavigation.Name)
+                    : query.OrderByDescending(s => s.CategoryNavigation.Name);
             }
 
-            return query.OrderBy(s => s.Category.Name);
+            return query.OrderBy(s => s.CategoryNavigation.Name);
         }
 
         public async Task<Skill?> GetByIdWithCategoryAsync(Guid id)
         {
             return await _context.Skills
-                .Include(s => s.Category)
+                .Include(s => s.CategoryNavigation)
                 .Where(s => s.Id == id && s.DeletedAt == null)
                 .FirstOrDefaultAsync();
         }

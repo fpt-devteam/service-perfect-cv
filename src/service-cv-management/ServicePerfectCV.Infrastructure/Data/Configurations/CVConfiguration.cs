@@ -17,6 +17,10 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
          builder.Property(c => c.Title)
             .IsRequired()
             .HasMaxLength(200);
+         builder.Property(c => c.VersionId)
+            .IsRequired(false);
+         builder.Property(c => c.AnalysisId)
+            .IsRequired(false);
 
          builder.Property(c => c.FullContent)
             .HasColumnType("nvarchar(max)")

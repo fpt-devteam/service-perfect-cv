@@ -32,6 +32,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddAutoMapper(typeof(ProjectMappingProfile));
             services.AddAutoMapper(typeof(CertificationMappingProfile));
             services.AddAutoMapper(typeof(SummaryMappingProfile));
+            services.AddAutoMapper(typeof(SkillMappingProfile));
+            services.AddAutoMapper(typeof(CategoryMappingProfile));
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICVRepository, CVRepository>();
@@ -39,6 +41,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IContactRepository, ContactRepository>();
             services.AddScoped<IExperienceRepository, ExperienceRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<ISkillRepository, SkillRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IJobTitleRepository, JobTitleRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IDegreeRepository, DegreeRepository>();
@@ -57,6 +61,12 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<ContactService>();
             services.AddScoped<ExperienceService>();
             services.AddScoped<ProjectService>();
+            services.AddScoped<SkillService>();
+            services.AddScoped<CategoryService>();
+            services.AddScoped<JobTitleService>();
+            services.AddScoped<OrganizationService>();
+            services.AddScoped<DegreeService>();
+
             services.AddScoped<CertificationService>();
             services.AddScoped<SummaryService>();
             services.AddScoped<EmploymentTypeService>();

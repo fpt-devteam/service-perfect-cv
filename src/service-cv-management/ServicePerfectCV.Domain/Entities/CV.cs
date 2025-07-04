@@ -12,6 +12,8 @@ namespace ServicePerfectCV.Domain.Entities
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
+        public Guid? VersionId { get; set; }
+        public Guid? AnalysisId { get; set; }
         public JobDetail? JobDetail { get; set; }
         public string Title { get; set; } = default!;
         public string? FullContent { get; set; }

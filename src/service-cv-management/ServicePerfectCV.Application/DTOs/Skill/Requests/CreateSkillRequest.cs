@@ -10,8 +10,8 @@ namespace ServicePerfectCV.Application.DTOs.Skill.Requests
         [Required(ErrorMessage = "Category name is required")]
         public required string CategoryName { get; init; }
 
-        [Required(ErrorMessage = "Items are required.")]
-        [MinLength(1, ErrorMessage = "At least one skill item is required.")]
-        public required List<string> Items { get; init; }
+        [Required(ErrorMessage = "Description is required.")]
+        [MinLength(1, ErrorMessage = "At least one skill description is required.")]
+        public required string Description { get; init; }
     }
 }

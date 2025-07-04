@@ -16,6 +16,9 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
     {
         public Guid UserId { get; init; }
         public string Title { get; init; } = default!;
+        public Guid CvId { get; init; }
+        public Guid? VersionId { get; init; }
+        public Guid? AnalysisId { get; init; }
         public JobDetailDto? JobDetail { get; init; }
         public ContactResponse? Contacts { get; init; }
         public SummaryResponse? Summary { get; init; }
