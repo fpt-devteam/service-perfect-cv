@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ServicePerfectCV.Domain.Constraints;
 using ServicePerfectCV.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,11 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
         public void Configure(EntityTypeBuilder<Skill> builder)
         {
             builder.HasKey(s => s.Id);
+            builder.Property(s => s.CategoryId)
+                .IsRequired(false);
+            builder.Property(s => s.Category)
+                .IsRequired()
+                .HasMaxLength(SkillCategoryConstraint.NameMaxLength);
 
             builder.Property(s => s.Description)
                 .IsRequired()
@@ -31,7 +37,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasForeignKey(s => s.CVId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(s => s.Category)
+            builder.HasOne(s => s.CategoryNavigation)
                 .WithMany(c => c.Skills)
                 .HasForeignKey(s => s.CategoryId)
                 .IsRequired()

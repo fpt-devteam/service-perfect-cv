@@ -12,20 +12,22 @@ namespace ServicePerfectCV.Application.Mappings
         public SkillMappingProfile()
         {
             CreateMap<Skill, SkillResponse>()
-                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
-            
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.CategoryNavigation));
+
             CreateMap<CreateSkillRequest, Skill>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-                .ForMember(dest => dest.CVId, opt => opt.Ignore()) 
-                .ForMember(dest => dest.CategoryId, opt => opt.Ignore()) 
-                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
+                .ForMember(dest => dest.CVId, opt => opt.Ignore())
+                .ForMember(dest => dest.CategoryId, opt => opt.Ignore())
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.CategoryName))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
 
             CreateMap<UpdateSkillRequest, Skill>()
-                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.CategoryName))
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CVId, opt => opt.Ignore())
-                .ForMember(dest => dest.CategoryId, opt => opt.Ignore()); 
-            
+                .ForMember(dest => dest.CategoryId, opt => opt.Ignore());
+
             CreateMap<Category, CategoryResponse>();
         }
     }

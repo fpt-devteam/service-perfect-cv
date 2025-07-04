@@ -9,7 +9,7 @@ namespace ServicePerfectCV.Application.DTOs.Skill.Responses
         public Guid Id { get; init; }
         public Guid CVId { get; init; }
         public CategoryResponse Category { get; init; } = default!;
-        public List<string> Items { get; init; } = new();
+        public string Description { get; init; } = default!;
         public DateTime CreatedAt { get; init; }
         public DateTime? UpdatedAt { get; init; }
     }

@@ -3,8 +3,10 @@ using ServicePerfectCV.Application.DTOs.CV.Requests;
 using ServicePerfectCV.Application.DTOs.CV.Responses;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
+using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +41,34 @@ namespace ServicePerfectCV.Application.Services
                 Total = cvs.Count,
                 Items = [.. cvs.Items.Select(cv => mapper.Map<CVResponse>(cv))]
             };
+        }
+        //updateAsync
+        public async Task<CVResponse> UpdateAsync(Guid id, UpdateCVRequest request, Guid userId)
+        {
+            var cv = await cvRepository.GetByCVIdAndUserIdAsync(id, userId) ??
+                throw new DomainException(CVErrors.CVNotFound);
+
+            if (request.Title != null)
+            {
+                cv.Title = request.Title;
+            }
+
+            if (request.JobDetail != null)
+            {
+                cv.JobDetail = mapper.Map<JobDetail>(request.JobDetail);
+            }
+
+            if (request.AnalysisId.HasValue)
+            {
+                cv.AnalysisId = request.AnalysisId.Value;
+            }
+
+            cvRepository.Update(cv);
+            await cvRepository.SaveChangesAsync();
+
+            await cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cv.Id);
+
+            return mapper.Map<CVResponse>(cv);
         }
 
     }

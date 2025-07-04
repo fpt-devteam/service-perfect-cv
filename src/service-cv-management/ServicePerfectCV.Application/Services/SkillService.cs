@@ -38,22 +38,9 @@ namespace ServicePerfectCV.Application.Services
         {
             var cv = await _cvRepository.GetByCVIdAndUserIdAsync(cvId, userId) ??
                 throw new DomainException(SkillErrors.CVNotFound);
-            var category = await _categoryRepository.GetByNameAsync(request.CategoryName);
-            if (category == null)
-            {
-                category = new Category
-                {
-                    Id = Guid.NewGuid(),
-                    Name = request.CategoryName,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _categoryRepository.CreateAsync(category);
-                await _categoryRepository.SaveChangesAsync();
-            }
 
             var newSkill = _mapper.Map<Skill>(request);
             newSkill.CVId = cvId;
-            newSkill.CategoryId = category.Id;
 
             await _skillRepository.CreateAsync(newSkill);
             await _skillRepository.SaveChangesAsync();
@@ -67,27 +54,10 @@ namespace ServicePerfectCV.Application.Services
 
         public async Task<SkillResponse> UpdateAsync(Guid skillId, Guid cvId, Guid userId, UpdateSkillRequest request)
         {
-            var skillExists = await _skillRepository.GetByIdAndCVIdAndUserIdAsync(skillId, cvId, userId)
+            var skillToUpdate = await _skillRepository.GetByIdAndCVIdAndUserIdAsync(skillId, cvId, userId)
                 ?? throw new DomainException(SkillErrors.NotFound);
-
-            var skillToUpdate = await _skillRepository.GetByIdAsync(skillId)
-                ?? throw new DomainException(SkillErrors.NotFound);
-
-            var category = await _categoryRepository.GetByNameAsync(request.CategoryName);
-            if (category == null)
-            {
-                category = new Category
-                {
-                    Id = Guid.NewGuid(),
-                    Name = request.CategoryName,
-                    CreatedAt = DateTime.UtcNow
-                };
-                await _categoryRepository.CreateAsync(category);
-                await _categoryRepository.SaveChangesAsync();
-            }
 
             _mapper.Map(request, skillToUpdate);
-            skillToUpdate.CategoryId = category.Id;
             skillToUpdate.UpdatedAt = DateTime.UtcNow;
 
             _skillRepository.Update(skillToUpdate);
