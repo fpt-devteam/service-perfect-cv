@@ -29,15 +29,9 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddAutoMapper(typeof(CVMappingProfile));
             services.AddAutoMapper(typeof(EducationMappingProfile));
             services.AddAutoMapper(typeof(ContactMappingProfile));
-            services.AddAutoMapper(typeof(ExperienceMappingProfile));
             services.AddAutoMapper(typeof(ProjectMappingProfile));
             services.AddAutoMapper(typeof(CertificationMappingProfile));
-            services.AddAutoMapper(typeof(OrganizationMappingProfile));
-            services.AddAutoMapper(typeof(DegreeMappingProfile));
-            services.AddAutoMapper(typeof(CategoryMappingProfile));
-            services.AddAutoMapper(typeof(JobTitleMappingProfile));
             services.AddAutoMapper(typeof(SummaryMappingProfile));
-            services.AddAutoMapper(typeof(SkillMappingProfile));
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICVRepository, CVRepository>();
@@ -51,8 +45,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
             services.AddScoped<ICertificationRepository, CertificationRepository>();
             services.AddScoped<ISummaryRepository, SummaryRepository>();
-            services.AddScoped<ISkillRepository, SkillRepository>();
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
 
@@ -67,11 +59,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<ProjectService>();
             services.AddScoped<CertificationService>();
             services.AddScoped<SummaryService>();
-            services.AddScoped<SkillService>();
-            services.AddScoped<OrganizationService>();
-            services.AddScoped<DegreeService>();
-            services.AddScoped<CategoryService>();
-            services.AddScoped<JobTitleService>();
+            services.AddScoped<EmploymentTypeService>();
             services.AddScoped<ICVSnapshotService, CVSnapshotService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -85,8 +73,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IOAuthService, GoogleOAuthService>();
 
             services.AddHttpClient();
-
-
         }
     }
 }
