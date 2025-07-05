@@ -23,7 +23,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             var queryable = _context.Skills
                 .AsNoTracking()
                 .Include(s => s.CV)
-                .Include(s => s.CategoryNavigation)
+                // .Include(s => s.CategoryNavigation)
                 .Where(s => s.CVId == cvId && s.CV.UserId == userId &&
                             s.DeletedAt == null);
 
@@ -36,27 +36,15 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             return await _context.Skills
                 .AsNoTracking()
                 .Include(s => s.CV)
-                .Include(s => s.CategoryNavigation)
+                // .Include(s => s.CategoryNavigation)
                 .FirstOrDefaultAsync(s =>
                     s.CVId == cvId && s.CV.UserId == userId && s.Id == id && s.DeletedAt == null);
-        }
-
-        private static IQueryable<Skill> ApplySort(IQueryable<Skill> query, SkillSort skillSort)
-        {
-            if (skillSort.Category.HasValue)
-            {
-                return skillSort.Category.Value == SortOrder.Ascending
-                    ? query.OrderBy(s => s.CategoryNavigation.Name)
-                    : query.OrderByDescending(s => s.CategoryNavigation.Name);
-            }
-
-            return query.OrderBy(s => s.CategoryNavigation.Name);
         }
 
         public async Task<Skill?> GetByIdWithCategoryAsync(Guid id)
         {
             return await _context.Skills
-                .Include(s => s.CategoryNavigation)
+                // .Include(s => s.CategoryNavigation)
                 .Where(s => s.Id == id && s.DeletedAt == null)
                 .FirstOrDefaultAsync();
         }

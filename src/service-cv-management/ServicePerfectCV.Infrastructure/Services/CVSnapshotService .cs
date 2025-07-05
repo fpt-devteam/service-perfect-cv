@@ -78,12 +78,7 @@ namespace ServicePerfectCV.Infrastructure.Services
                 Skills = cv.Skills.Select(s => new SkillResponse
                 {
                     Id = s.Id,
-                    CVId = s.CVId,
-                    Category = new CategoryResponse
-                    {
-                        Id = s.CategoryId ?? Guid.Empty,
-                        Name = s.Category
-                    },
+                    Category = s.Category,
                     Description = s.Description,
                     CreatedAt = s.CreatedAt,
                     UpdatedAt = s.UpdatedAt

@@ -45,11 +45,9 @@ namespace ServicePerfectCV.Application.Services
             await _skillRepository.CreateAsync(newSkill);
             await _skillRepository.SaveChangesAsync();
 
-            var skillWithCategory = await _skillRepository.GetByIdWithCategoryAsync(newSkill.Id);
-
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
-            return _mapper.Map<SkillResponse>(skillWithCategory);
+            return _mapper.Map<SkillResponse>(newSkill);
         }
 
         public async Task<SkillResponse> UpdateAsync(Guid skillId, Guid cvId, Guid userId, UpdateSkillRequest request)
@@ -63,11 +61,9 @@ namespace ServicePerfectCV.Application.Services
             _skillRepository.Update(skillToUpdate);
             await _skillRepository.SaveChangesAsync();
 
-            var updatedSkillWithCategory = await _skillRepository.GetByIdWithCategoryAsync(skillId);
-
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
-            return _mapper.Map<SkillResponse>(updatedSkillWithCategory);
+            return _mapper.Map<SkillResponse>(skillToUpdate);
         }
 
         public async Task<IEnumerable<SkillResponse>> GetByCVIdAsync(Guid cvId, Guid userId, SkillQuery query)
