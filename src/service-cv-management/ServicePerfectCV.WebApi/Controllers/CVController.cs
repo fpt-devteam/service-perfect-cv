@@ -47,5 +47,15 @@ namespace ServicePerfectCV.WebApi.Controllers
             var result = await cvService.UpdateAsync(cvId, request, userId);
             return Ok(result);
         }
+        [Authorize]
+        [HttpGet("{cvId}")]
+        public async Task<IActionResult> GetByIdAndUserIdAsync(Guid cvId)
+        {
+            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(nameIdentifier, out var userId))
+                throw new DomainException(UserErrors.NotFound);
+            var result = await cvService.GetByIdAndUserIdAsync(cvId, userId);
+            return Ok(result);
+        }
     }
 }
