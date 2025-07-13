@@ -16,8 +16,9 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.HasKey(s => s.Id);
             builder.Property(s => s.CategoryId)
                 .IsRequired(false);
+
             builder.Property(s => s.Category)
-                .IsRequired()
+                .IsRequired(true)
                 .HasMaxLength(SkillCategoryConstraint.NameMaxLength);
 
             builder.Property(s => s.Description)
@@ -37,10 +38,11 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasForeignKey(s => s.CVId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.NoAction);
+                
             builder.HasOne(s => s.CategoryNavigation)
                 .WithMany(c => c.Skills)
                 .HasForeignKey(s => s.CategoryId)
-                .IsRequired()
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

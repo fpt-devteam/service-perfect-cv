@@ -765,8 +765,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasOne("ServicePerfectCV.Domain.Entities.Category", "CategoryNavigation")
                         .WithMany("Skills")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("CV");
 

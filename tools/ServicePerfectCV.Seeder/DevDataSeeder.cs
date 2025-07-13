@@ -33,6 +33,7 @@ namespace ServicePerfectCV.Seeder
         private List<Guid> _categoryIds = new List<Guid>();
         private List<Guid> _skillIds = new List<Guid>();
         private List<Guid> _summaryIds = new List<Guid>();
+        private Guid _thangUserId = Guid.NewGuid();
 
         public async Task RunAsync(CancellationToken ct)
         {
@@ -64,35 +65,50 @@ namespace ServicePerfectCV.Seeder
             if (await dbContext.Users.AnyAsync(ct))
             {
                 Console.WriteLine("Users already seeded.");
-                // Load existing user IDs into the list
                 _userIds = await dbContext.Users.AsNoTracking().Select(u => u.Id).ToListAsync(ct);
                 return;
             }
 
-            Faker<User>? userFaker = new Faker<User>()
-                .RuleFor(u => u.Id, f =>
-                {
-                    var id = Guid.NewGuid();
-                    _userIds.Add(id);
-                    return id;
-                })
-                .RuleFor(u => u.Email, f => f.Internet.Email())
-                .RuleFor(u => u.PasswordHash, new PasswordHasher().HashPassword("123456"))
-                .RuleFor(u => u.AuthMethod, AuthenticationMethod.JWT)
-                .RuleFor(u => u.Status, UserStatus.Active)
-                .RuleFor(u => u.Role, UserRole.User);
+            // Faker<User>? userFaker = new Faker<User>()
+            //     .RuleFor(u => u.Id, f =>
+            //     {
+            //         var id = Guid.NewGuid();
+            //         _userIds.Add(id);
+            //         return id;
+            //     })
+            //     .RuleFor(u => u.Email, f => f.Internet.Email())
+            //     .RuleFor(u => u.PasswordHash, new PasswordHasher().HashPassword("123456"))
+            //     .RuleFor(u => u.AuthMethod, AuthenticationMethod.JWT)
+            //     .RuleFor(u => u.Status, UserStatus.Active)
+            //     .RuleFor(u => u.Role, UserRole.User);
 
-            const int total = 20;
-            const int batchSize = 10;
+            // const int total = 20;
+            // const int batchSize = 10;
 
-            for (int i = 0; i < total / batchSize; i++)
+            // for (int i = 0; i < total / batchSize; i++)
+            // {
+            //     List<User>? users = userFaker.Generate(batchSize);
+            //     dbContext.Users.AddRange(users);
+            //     await dbContext.SaveChangesAsync(ct);
+
+            //     Console.WriteLine($"Inserted {(i + 1) * batchSize}/{total}");
+            // }
+
+            User user = new User
             {
-                List<User>? users = userFaker.Generate(batchSize);
-                dbContext.Users.AddRange(users);
-                await dbContext.SaveChangesAsync(ct);
+                Id = _thangUserId,
+                Email = "thang@gmail.com",
+                PasswordHash = new PasswordHasher().HashPassword("Thang2704!"),
+                AuthMethod = AuthenticationMethod.JWT,
+                Status = UserStatus.Active,
+                Role = UserRole.User
+            };
 
-                Console.WriteLine($"Inserted {(i + 1) * batchSize}/{total}");
-            }
+            dbContext.Users.Add(user);
+            await dbContext.SaveChangesAsync(ct);
+            _userIds.Add(_thangUserId);
+
+            Console.WriteLine("Seeded thang User");
         }
 
         private async Task SeedJobsTitleAsync(CancellationToken ct)
@@ -141,8 +157,6 @@ namespace ServicePerfectCV.Seeder
                 return;
             }
 
-            var userId = new Guid("AD63B027-62DA-4AF5-8D63-FC9D3C23403A");
-
             var cvFaker = new Faker<CV>()
                 .RuleFor(cv => cv.Id, f =>
                 {
@@ -150,7 +164,7 @@ namespace ServicePerfectCV.Seeder
                     _cvIds.Add(id);
                     return id;
                 })
-                .RuleFor(cv => cv.UserId, f => f.PickRandom(_userIds))
+                .RuleFor(cv => cv.UserId, f => _thangUserId)
                 .RuleFor(cv => cv.Title, f => f.Name.JobTitle())
                 .RuleFor(cv => cv.JobDetail, f => new JobDetail(
                     f.Name.JobTitle(),
@@ -489,11 +503,12 @@ namespace ServicePerfectCV.Seeder
                     "Kotlin"
                 }))
                 .RuleFor(s => s.CategoryId, f => f.PickRandom(_categoryIds))
+                .RuleFor(s => s.Category, (f, s) => categoryDict[s.CategoryId!.Value])
                 .RuleFor(s => s.CreatedAt, f => f.Date.Past(1))
                 .RuleFor(s => s.UpdatedAt, f => f.Date.Past(1))
                 .RuleFor(s => s.DeletedAt, f => null);
 
-            var skillEntities = skills.Generate(10);
+            var skillEntities = skills.Generate(50);
 
             dbContext.Skills.AddRange(skillEntities);
             await dbContext.SaveChangesAsync(ct);

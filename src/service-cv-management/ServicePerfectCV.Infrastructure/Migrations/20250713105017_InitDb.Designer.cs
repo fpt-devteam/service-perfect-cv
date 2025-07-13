@@ -12,8 +12,8 @@ using ServicePerfectCV.Infrastructure.Data;
 namespace ServicePerfectCV.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250618031134_UpdateExperienceEntityWithRelatedEntities")]
-    partial class UpdateExperienceEntityWithRelatedEntities
+    [Migration("20250713105017_InitDb")]
+    partial class InitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,6 +31,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AnalysisId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -40,6 +43,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("NULL");
+
+                    b.Property<string>("FullContent")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -54,11 +60,43 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("VersionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("CVs");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[DeletedAt] IS NULL");
+
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
@@ -70,63 +108,42 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Property<Guid>("CVId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Issuer")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Relevance")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("YearObtained")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CVId");
-
-                    b.ToTable("Certifications");
-                });
-
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Company", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("LogoUrl")
+                    b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<DateOnly?>("IssuedDate")
+                        .HasColumnType("date");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Organization")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("OrganizationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasFilter("[DeletedAt] IS NULL");
+                    b.HasIndex("CVId");
 
-                    b.ToTable("Companies");
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("Certifications");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Contact", b =>
@@ -174,46 +191,98 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.ToTable("Contacts");
                 });
 
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Degree", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code", "Name")
+                        .IsUnique()
+                        .HasFilter("[DeletedAt] IS NULL");
+
+                    b.ToTable("Degrees");
+                });
+
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AdditionalInfo")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<Guid>("CVId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Degree")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid?>("DegreeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("FieldOfStudy")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<decimal?>("Gpa")
                         .HasColumnType("decimal(3, 2)");
 
-                    b.Property<string>("Institution")
+                    b.Property<string>("Organization")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
-                    b.Property<string>("Location")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<Guid?>("OrganizationId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Minor")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<DateOnly?>("StartDate")
+                        .HasColumnType("date");
 
-                    b.Property<int?>("YearObtained")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CVId");
+
+                    b.HasIndex("DegreeId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Educations");
                 });
@@ -258,13 +327,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Property<Guid>("CVId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Company")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<Guid?>("CompanyId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
@@ -284,8 +346,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("JobTitle")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<Guid?>("JobTitleId")
                         .HasColumnType("uniqueidentifier");
@@ -293,6 +356,14 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Property<string>("Location")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Organization")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid?>("OrganizationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
@@ -304,18 +375,13 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.HasIndex("CompanyId");
-
                     b.HasIndex("EmploymentTypeId");
 
                     b.HasIndex("JobTitleId");
 
-                    b.ToTable("Experiences", t =>
-                        {
-                            t.HasCheckConstraint("CK_Experience_Company", "[CompanyId] IS NOT NULL OR [Company] IS NOT NULL");
+                    b.HasIndex("OrganizationId");
 
-                            t.HasCheckConstraint("CK_Experience_JobTitle", "[JobTitleId] IS NOT NULL OR [JobTitle] IS NOT NULL");
-                        });
+                    b.ToTable("Experiences");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.JobTitle", b =>
@@ -349,6 +415,49 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.ToTable("JobTitles");
                 });
 
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Organization", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OrganizationType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name", "OrganizationType")
+                        .IsUnique()
+                        .HasFilter("[DeletedAt] IS NULL");
+
+                    b.ToTable("Organizations");
+                });
+
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Project", b =>
                 {
                     b.Property<Guid>("Id")
@@ -357,6 +466,12 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.Property<Guid>("CVId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -369,23 +484,20 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasDefaultValueSql("NULL");
 
                     b.Property<string>("Link")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("StartDate")
+                    b.Property<DateOnly?>("StartDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("date")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("TechJson")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasDefaultValueSql("NULL");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -405,17 +517,31 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.Property<string>("Category")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("ItemsJson")
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CVId");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Skills");
                 });
@@ -447,6 +573,10 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AuthMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -531,49 +661,65 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Certifications")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.HasOne("ServicePerfectCV.Domain.Entities.Organization", "OrganizationNavigation")
+                        .WithMany("Certifications")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CV");
+
+                    b.Navigation("OrganizationNavigation");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Contact", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithOne("Contact")
                         .HasForeignKey("ServicePerfectCV.Domain.Entities.Contact", "CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Educations")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.HasOne("ServicePerfectCV.Domain.Entities.Degree", "DegreeNavigation")
+                        .WithMany("Educations")
+                        .HasForeignKey("DegreeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("ServicePerfectCV.Domain.Entities.Organization", "OrganizationNavigation")
+                        .WithMany("Educations")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CV");
+
+                    b.Navigation("DegreeNavigation");
+
+                    b.Navigation("OrganizationNavigation");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Experience", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Experiences")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("ServicePerfectCV.Domain.Entities.Company", "CompanyNavigation")
-                        .WithMany("Experiences")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("ServicePerfectCV.Domain.Entities.EmploymentType", "EmploymentType")
                         .WithMany("Experiences")
@@ -586,46 +732,58 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasForeignKey("JobTitleId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("CompanyNavigation");
+                    b.HasOne("ServicePerfectCV.Domain.Entities.Organization", "OrganizationNavigation")
+                        .WithMany("Experiences")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
 
                     b.Navigation("EmploymentType");
 
                     b.Navigation("JobTitleNavigation");
+
+                    b.Navigation("OrganizationNavigation");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Project", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Projects")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Skill", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithMany("Skills")
                         .HasForeignKey("CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.HasOne("ServicePerfectCV.Domain.Entities.Category", "CategoryNavigation")
+                        .WithMany("Skills")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("CV");
+
+                    b.Navigation("CategoryNavigation");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Summary", b =>
                 {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "Cv")
+                    b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
                         .WithOne("Summary")
                         .HasForeignKey("ServicePerfectCV.Domain.Entities.Summary", "CVId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Cv");
+                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.CV", b =>
@@ -647,9 +805,14 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Company", b =>
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Category", b =>
                 {
-                    b.Navigation("Experiences");
+                    b.Navigation("Skills");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Degree", b =>
+                {
+                    b.Navigation("Educations");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.EmploymentType", b =>
@@ -659,6 +822,15 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.JobTitle", b =>
                 {
+                    b.Navigation("Experiences");
+                });
+
+            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Organization", b =>
+                {
+                    b.Navigation("Certifications");
+
+                    b.Navigation("Educations");
+
                     b.Navigation("Experiences");
                 });
 
