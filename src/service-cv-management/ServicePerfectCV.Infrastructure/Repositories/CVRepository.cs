@@ -23,7 +23,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             var baseQuery = _context.CVs
                 .AsNoTracking()
                 .Where(cv => cv.UserId == userId);
-            var sorted = query.Sort != null ? ApplySort(baseQuery, query.Sort) : baseQuery;
+            var sorted = query.Sort != null ? ApplySort(baseQuery, query.Sort) : baseQuery.OrderBy(cv => cv.UpdatedAt ?? cv.CreatedAt);
             var totalCount = await sorted.CountAsync();
             var paged = sorted.Skip(query.Offset).Take(query.Limit);
 
@@ -50,6 +50,24 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             return _context.CVs
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cv => cv.Id == cvId && cv.UserId == userId && cv.DeletedAt == null);
+        }
+
+        public async Task<CV?> GetFullContentByCVIdAndUserIdAsync(Guid cvId, Guid userId)
+        {
+            return await _context.CVs
+                .Where(c => c.Id == cvId && c.UserId == userId && c.DeletedAt == null)
+                .Include(c => c.Contact)
+                .Include(c => c.Summary)
+                .Include(c => c.Skills.Where(skill => skill.DeletedAt == null))
+                    .ThenInclude(s => s.CategoryNavigation)
+                .Include(c => c.Educations.Where(education => education.DeletedAt == null))
+                .Include(c => c.Experiences.Where(experience => experience.DeletedAt == null))
+                    .ThenInclude(e => e.EmploymentType)
+                .Include(c => c.Projects.Where(project => project.DeletedAt == null))
+                .Include(c => c.Certifications.Where(certification => certification.DeletedAt == null))
+                .AsSplitQuery()
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
         }
     }
 }

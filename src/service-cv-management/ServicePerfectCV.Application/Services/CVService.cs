@@ -78,5 +78,13 @@ namespace ServicePerfectCV.Application.Services
             return mapper.Map<CVResponse>(cv);
 
         }
+
+        public async Task<CVFullContentResponse> GetFullContentAsync(Guid cvId, Guid userId)
+        {
+            var cv = await cvRepository.GetFullContentByCVIdAndUserIdAsync(cvId, userId) ??
+                throw new DomainException(CVErrors.CVNotFound);
+
+            return mapper.Map<CVFullContentResponse>(cv);
+        }
     }
 }

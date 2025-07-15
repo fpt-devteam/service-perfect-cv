@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServicePerfectCV.Application.DTOs.CV.Requests;
+using ServicePerfectCV.Application.DTOs.CV.Responses;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Services;
@@ -55,6 +56,17 @@ namespace ServicePerfectCV.WebApi.Controllers
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
             var result = await cvService.GetByIdAndUserIdAsync(cvId, userId);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpGet("{cvId}/full-content")]
+        public async Task<IActionResult> GetFullContentAsync(Guid cvId)
+        {
+            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(nameIdentifier, out var userId))
+                throw new DomainException(UserErrors.NotFound);
+            var result = await cvService.GetFullContentAsync(cvId, userId);
             return Ok(result);
         }
     }
