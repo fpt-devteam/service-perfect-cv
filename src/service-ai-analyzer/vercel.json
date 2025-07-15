@@ -1,23 +1,9 @@
 {
     "version": 2,
-    "name": "service-ai-analyzer",
-    "builds": [
+    "rewrites": [
         {
-            "src": "api/index.js",
-            "use": "@vercel/node"
+            "source": "/(.*)",
+            "destination": "/api"
         }
-    ],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/api/index.js"
-        }
-    ],
-    "env": {
-        "NODE_ENV": "production"
-    },
-    "regions": ["cle1"],
-    "github": {
-        "silent": true
-    }
+    ]
 }
