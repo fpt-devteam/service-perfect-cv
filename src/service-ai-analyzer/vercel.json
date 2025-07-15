@@ -1,31 +1,14 @@
 {
     "version": 2,
     "name": "service-ai-analyzer",
-    "routes": [
+    "rewrites": [
         {
-            "src": "/health",
-            "dest": "/index.js"
-        },
-        {
-            "src": "/api/(.*)",
-            "dest": "/index.js"
-        },
-        {
-            "src": "/",
-            "dest": "/index.js"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/index.js"
+            "source": "/(.*)",
+            "destination": "/api"
         }
     ],
     "env": {
         "NODE_ENV": "production"
-    },
-    "functions": {
-        "index.js": {
-            "maxDuration": 30
-        }
     },
     "regions": ["cle1"],
     "github": {

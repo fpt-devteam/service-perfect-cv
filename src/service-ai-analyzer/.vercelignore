@@ -42,6 +42,7 @@ dist/
 
 # Local development scripts
 start-local.js
+index.js
 
 # Postman collections (not needed in production)
 postman-collection.json
