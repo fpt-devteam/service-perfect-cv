@@ -13,6 +13,7 @@ namespace ServicePerfectCV.Application.Mappings
         public EducationMappingProfile()
         {
             CreateMap<Education, EducationResponse>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization))
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.Degree))
                 .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.FieldOfStudy))
@@ -22,10 +23,7 @@ namespace ServicePerfectCV.Application.Mappings
                 .ForMember(dest => dest.Gpa, opt => opt.MapFrom(src => src.Gpa));
 
             CreateMap<CreateEducationRequest, Education>()
-                .ForMember(dest => dest.CVId, opt => opt.MapFrom(src => src.CVId))
-                .ForMember(dest => dest.DegreeId, opt => opt.MapFrom(src => src.DegreeId))
                 .ForMember(dest => dest.Degree, opt => opt.MapFrom(src => src.Degree))
-                .ForMember(dest => dest.OrganizationId, opt => opt.MapFrom(src => src.OrganizationId))
                 .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization))
                 .ForMember(dest => dest.FieldOfStudy, opt => opt.MapFrom(src => src.FieldOfStudy))
                 .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))

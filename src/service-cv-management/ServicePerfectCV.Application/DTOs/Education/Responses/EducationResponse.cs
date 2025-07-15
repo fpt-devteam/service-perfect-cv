@@ -7,6 +7,7 @@ namespace ServicePerfectCV.Application.DTOs.Education.Responses
 {
     public class EducationResponse
     {
+        public required Guid Id { get; init; }
         public required string Organization { get; init; }
         public required string Degree { get; init; }
         public string? FieldOfStudy { get; init; }

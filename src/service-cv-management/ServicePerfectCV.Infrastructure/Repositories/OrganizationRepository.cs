@@ -22,10 +22,20 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         {
             var queryable = _context.Organizations
                 .AsNoTracking()
-                .Where(o => o.OrganizationType == query.OrganizationType && o.Name.Contains(query.SearchTerm ?? string.Empty));
-            queryable = query.Sort != null ? ApplySort(queryable, query.Sort) : queryable;
+                .Where(o => o.Name.Contains(query.SearchTerm ?? string.Empty));
+            queryable = ApplyFilter(queryable, query);
+            queryable = ApplySort(queryable, query.Sort);
             queryable = queryable.Skip(query.Offset).Take(query.Limit);
             return await queryable.ToListAsync();
+        }
+
+        private static IQueryable<Organization> ApplyFilter(IQueryable<Organization> query, OrganizationQuery organizationQuery)
+        {
+            if (organizationQuery.OrganizationType.HasValue)
+            {
+                return query.Where(o => o.OrganizationType == organizationQuery.OrganizationType);
+            }
+            return query;
         }
         private static IQueryable<Organization> ApplySort(IQueryable<Organization> query, OrganizationSort organizationSort)
         {
@@ -37,6 +47,11 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             }
             return query;
 
+        }
+
+        public async Task<Organization?> GetByNameAsync(string name)
+        {
+            return await _context.Organizations.FirstOrDefaultAsync(o => o.Name == name);
         }
     }
 }

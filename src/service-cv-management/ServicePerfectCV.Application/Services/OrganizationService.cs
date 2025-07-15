@@ -9,7 +9,6 @@ namespace ServicePerfectCV.Application.Services
 {
     public class OrganizationService(IOrganizationRepository organizationRepository, IMapper mapper)
     {
-
         public async Task<IEnumerable<OrganizationSuggestionResponse>> GetSuggestionsAsync(OrganizationQuery query)
         {
             var organizations = await organizationRepository.SearchByNameAsync(query);

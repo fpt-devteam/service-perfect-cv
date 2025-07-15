@@ -7,9 +7,7 @@ namespace ServicePerfectCV.Application.DTOs.Education.Requests
     public class UpdateEducationRequest
     {
         public required string Degree { get; set; }
-        public Guid? DegreeId { get; set; }
         public required string Organization { get; set; }
-        public Guid? OrganizationId { get; set; }
         public string? Location { get; set; }
         public required string FieldOfStudy { get; set; }
         public required DateOnly StartDate { get; set; }
@@ -42,11 +40,11 @@ namespace ServicePerfectCV.Application.DTOs.Education.Requests
                 RuleFor(x => x.EndDate)
                     .GreaterThanOrEqualTo(x => x.StartDate)
                     .WithMessage("End date must be greater than or equal to Start date");
-                    
+
                 RuleFor(x => x.Description)
                     .MaximumLength(EducationConstraints.DescriptionMaxLength)
                     .WithMessage($"Description cannot exceed {EducationConstraints.DescriptionMaxLength} characters");
-                    
+
                 RuleFor(x => x.Gpa)
                     .InclusiveBetween(0, 4)
                     .WithMessage("GPA must be between 0 and 4")

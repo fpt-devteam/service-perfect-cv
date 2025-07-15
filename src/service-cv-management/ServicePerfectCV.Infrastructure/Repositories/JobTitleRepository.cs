@@ -21,7 +21,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         {
             var queryable = _context.JobTitles.AsNoTracking()
                 .Where(jt => jt.DeletedAt == null && jt.Name.Contains(query.SearchTerm ?? string.Empty));
-            queryable = query.Sort != null ? ApplySort(queryable, query.Sort) : queryable.OrderBy(jt => jt.Name);
+            queryable = ApplySort(queryable, query.Sort);
             queryable = queryable.Skip(query.Offset).Take(query.Limit);
 
             return await queryable.ToListAsync();

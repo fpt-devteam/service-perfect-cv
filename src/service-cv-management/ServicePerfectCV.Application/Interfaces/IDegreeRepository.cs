@@ -10,5 +10,6 @@ namespace ServicePerfectCV.Application.Interfaces
     public interface IDegreeRepository : IGenericRepository<Degree, Guid>
     {
         Task<IEnumerable<Degree>> SearchByNameAsync(DegreeQuery query);
+        Task<Degree?> GetByNameAsync(string name);
     }
 }

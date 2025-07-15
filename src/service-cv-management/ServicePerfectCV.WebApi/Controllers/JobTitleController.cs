@@ -13,7 +13,7 @@ namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/jobTitles")]
+    [Route("api/job-titles")]
     public class JobTitleController : ControllerBase
     {
         private readonly JobTitleService _jobTitleService;

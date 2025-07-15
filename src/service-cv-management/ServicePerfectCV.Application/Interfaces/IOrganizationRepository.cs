@@ -9,5 +9,6 @@ namespace ServicePerfectCV.Application.Interfaces
     public interface IOrganizationRepository : IGenericRepository<Organization, Guid>
     {
         Task<IEnumerable<Organization>> SearchByNameAsync(OrganizationQuery query);
+        Task<Organization?> GetByNameAsync(string name);
     }
 }

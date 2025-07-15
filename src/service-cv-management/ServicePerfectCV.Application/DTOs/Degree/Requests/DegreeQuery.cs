@@ -5,7 +5,7 @@ namespace ServicePerfectCV.Application.DTOs.Degree.Requests
 {
     public class DegreeQuery : PaginationQuery
     {
-        public DegreeSort? Sort { get; set; } = null;
+        public DegreeSort Sort { get; set; } = new DegreeSort { Name = SortOrder.Ascending, Code = SortOrder.Ascending };
         public string? SearchTerm { get; set; } = null;
     }
 

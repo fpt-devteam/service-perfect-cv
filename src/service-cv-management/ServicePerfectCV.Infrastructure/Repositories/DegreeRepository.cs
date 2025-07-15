@@ -45,5 +45,10 @@ namespace ServicePerfectCV.Infrastructure.Repositories
 
             return query;
         }
+
+        public async Task<Degree?> GetByNameAsync(string name)
+        {
+            return await _context.Degrees.FirstOrDefaultAsync(d => d.Name == name);
+        }
     }
 }

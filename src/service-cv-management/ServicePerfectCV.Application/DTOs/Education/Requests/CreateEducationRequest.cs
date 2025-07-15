@@ -6,14 +6,8 @@ namespace ServicePerfectCV.Application.DTOs.Education.Requests
 {
     public class CreateEducationRequest
     {
-        public required Guid CVId { get; init; }
-
-        public Guid? DegreeId { get; init; }
         public required string Degree { get; init; }
-
-        public Guid? OrganizationId { get; init; }
         public required string Organization { get; init; }
-
         public string? FieldOfStudy { get; init; }
         public DateOnly? StartDate { get; init; }
         public DateOnly? EndDate { get; init; }
@@ -24,9 +18,6 @@ namespace ServicePerfectCV.Application.DTOs.Education.Requests
         {
             public Validator()
             {
-                RuleFor(x => x.CVId)
-                    .NotEmpty().WithMessage("CV ID is required");
-
                 RuleFor(x => x.Degree)
                     .NotEmpty().WithMessage("Degree is required")
                     .MaximumLength(EducationConstraints.DegreeMaxLength)

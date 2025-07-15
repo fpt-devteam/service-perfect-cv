@@ -13,7 +13,7 @@ namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/skill/categories")]
+    [Route("api/skills/categories")]
     public class CategoryController : ControllerBase
     {
         private readonly CategoryService _categoryService;

@@ -13,7 +13,7 @@ namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/employmentTypes")]
+    [Route("api/employment-types")]
     public class EmploymentTypeController(EmploymentTypeService employmentTypeService) : ControllerBase
     {
         private readonly EmploymentTypeService _employmentTypeService = employmentTypeService;

@@ -35,24 +35,21 @@ namespace ServicePerfectCV.Application.Services
             _cvSnapshotService = cvSnapshotService;
         }
 
-        public async Task<EducationResponse> CreateAsync(CreateEducationRequest request)
+        public async Task<EducationResponse> CreateAsync(Guid cvId, CreateEducationRequest request)
         {
-            var cv = await _cvRepository.GetByIdAsync(request.CVId);
+            var cv = await _cvRepository.GetByIdAsync(cvId);
             if (cv == null)
                 throw new DomainException(EducationErrors.CVNotFound);
 
-            if (request.DegreeId.HasValue && await _degreeRepository.GetByIdAsync(request.DegreeId.Value) == null)
-                throw new DomainException(EducationErrors.DegreeNotFound);
-
-            if (request.OrganizationId.HasValue && await _organizationRepository.GetByIdAsync(request.OrganizationId.Value) == null)
-                throw new DomainException(EducationErrors.OrganizationNotFound);
-
             var newEducation = _mapper.Map<Education>(request);
+            newEducation.CVId = cvId;
+            newEducation.DegreeId = (await _degreeRepository.GetByNameAsync(request.Degree))?.Id;
+            newEducation.OrganizationId = (await _organizationRepository.GetByNameAsync(request.Organization))?.Id;
 
             await _educationRepository.CreateAsync(newEducation);
             await _educationRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             return _mapper.Map<EducationResponse>(newEducation);
         }
@@ -63,16 +60,13 @@ namespace ServicePerfectCV.Application.Services
             if (existingEducation == null)
                 throw new DomainException(EducationErrors.NotFound);
 
-            if (request.DegreeId.HasValue && await _degreeRepository.GetByIdAsync(request.DegreeId.Value) == null)
-                throw new DomainException(EducationErrors.DegreeNotFound);
-
-            if (request.OrganizationId.HasValue && await _organizationRepository.GetByIdAsync(request.OrganizationId.Value) == null)
-                throw new DomainException(EducationErrors.OrganizationNotFound);
+            var degree = await _degreeRepository.GetByNameAsync(request.Degree);
+            var organization = await _organizationRepository.GetByNameAsync(request.Organization);
 
             existingEducation.Degree = request.Degree;
-            existingEducation.DegreeId = request.DegreeId;
+            existingEducation.DegreeId = degree?.Id;
             existingEducation.Organization = request.Organization;
-            existingEducation.OrganizationId = request.OrganizationId;
+            existingEducation.OrganizationId = organization?.Id;
             existingEducation.FieldOfStudy = request.FieldOfStudy;
             existingEducation.StartDate = request.StartDate;
             existingEducation.EndDate = request.EndDate;

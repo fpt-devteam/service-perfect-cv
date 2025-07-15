@@ -20,12 +20,6 @@ namespace ServicePerfectCV.Application.Services
 
         public async Task<IEnumerable<DegreeSuggestionResponse>> GetSuggestionsAsync(DegreeQuery query)
         {
-            // Set default limit if not provided or invalid
-            if (query.Limit <= 0 || query.Limit > 50)
-            {
-                query.Limit = 10;
-            }
-
             var degrees = await _degreeRepository.SearchByNameAsync(query);
             return _mapper.Map<IEnumerable<DegreeSuggestionResponse>>(degrees);
         }
