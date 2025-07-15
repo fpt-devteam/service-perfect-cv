@@ -6,17 +6,11 @@ namespace ServicePerfectCV.Application.DTOs.Experience.Requests
 {
     public class CreateExperienceRequest
     {
-        public required Guid CVId { get; init; }
-
         public required string JobTitle { get; set; }
-
-        public Guid? JobTitleId { get; set; }
 
         public required Guid EmploymentTypeId { get; set; }
 
         public required string Organization { get; set; }
-
-        public Guid? OrganizationId { get; set; }
 
         public string? Location { get; set; }
 
@@ -40,9 +34,6 @@ namespace ServicePerfectCV.Application.DTOs.Experience.Requests
                 RuleFor(x => x.Organization)
                     .NotEmpty().WithMessage("Organization is required")
                     .MaximumLength(OrganizationConstraints.NameMaxLength).WithMessage($"Organization name cannot exceed {OrganizationConstraints.NameMaxLength} characters");
-
-                RuleFor(x => x.CVId)
-                    .NotEmpty().WithMessage("CV ID is required.");
 
                 RuleFor(x => x.StartDate)
                     .NotEmpty().WithMessage("Start date is required.");

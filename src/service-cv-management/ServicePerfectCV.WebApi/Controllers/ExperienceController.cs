@@ -28,6 +28,7 @@ namespace ServicePerfectCV.WebApi.Controllers
         /// <summary>
         /// Creates a new experience
         /// </summary>
+        /// <param name="cvId">The unique identifier of the CV</param>
         /// <param name="request">The experience information to create</param>
         /// <returns>The newly created experience information</returns>
         [HttpPost]
@@ -37,9 +38,9 @@ namespace ServicePerfectCV.WebApi.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateExperienceRequest request)
+        public async Task<IActionResult> CreateAsync(Guid cvId, [FromBody] CreateExperienceRequest request)
         {
-            var result = await _experienceService.CreateAsync(request: request);
+            var result = await _experienceService.CreateAsync(cvId: cvId, request: request);
             return Ok(result);
         }
 

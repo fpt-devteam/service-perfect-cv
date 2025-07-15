@@ -27,6 +27,11 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             return await queryable.ToListAsync();
         }
 
+        public async Task<JobTitle?> GetByNameAsync(string name)
+        {
+            return await _context.JobTitles.FirstOrDefaultAsync(jt => jt.Name == name);
+        }
+
         private static IQueryable<JobTitle> ApplySort(IQueryable<JobTitle> queryable, JobTitleSort sort)
         {
             if (sort.Name.HasValue)

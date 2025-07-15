@@ -38,34 +38,25 @@ namespace ServicePerfectCV.Application.Services
             _cvSnapshotService = cvSnapshotService;
         }
 
-        public async Task<ExperienceResponse> CreateAsync(CreateExperienceRequest request)
+        public async Task<ExperienceResponse> CreateAsync(Guid cvId, CreateExperienceRequest request)
         {
-            var cv = await _cvRepository.GetByIdAsync(request.CVId);
+            var cv = await _cvRepository.GetByIdAsync(cvId);
             if (cv == null)
                 throw new DomainException(ExperienceErrors.CVNotFound);
-
-            if (request.JobTitleId.HasValue)
-            {
-                if (await _jobTitleRepository.GetByIdAsync(request.JobTitleId.Value) == null)
-                    throw new DomainException(JobTitleErrors.NotFound);
-            }
-
-            if (request.OrganizationId.HasValue)
-            {
-                if (await _organizationRepository.GetByIdAsync(request.OrganizationId.Value) == null)
-                    throw new DomainException(OrganizationErrors.NotFound);
-            }
 
             var employmentType = await _employmentTypeRepository.GetByIdAsync(request.EmploymentTypeId);
             if (employmentType == null)
                 throw new DomainException(EmploymentTypeErrors.NotFound);
 
             var newExperience = _mapper.Map<Experience>(request);
+            newExperience.CVId = cvId;
+            newExperience.JobTitleId = (await _jobTitleRepository.GetByNameAsync(request.JobTitle))?.Id;
+            newExperience.OrganizationId = (await _organizationRepository.GetByNameAsync(request.Organization))?.Id;
 
             await _experienceRepository.CreateAsync(newExperience);
             await _experienceRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             return _mapper.Map<ExperienceResponse>(newExperience);
         }
@@ -76,29 +67,18 @@ namespace ServicePerfectCV.Application.Services
             if (existingExperience == null)
                 throw new DomainException(ExperienceErrors.NotFound);
 
-            if (request.JobTitleId.HasValue)
-            {
-                var jobTitle = await _jobTitleRepository.GetByIdAsync(request.JobTitleId.Value);
-                if (jobTitle == null)
-                    throw new DomainException(JobTitleErrors.NotFound);
-            }
-
             var employmentType = await _employmentTypeRepository.GetByIdAsync(request.EmploymentTypeId);
             if (employmentType == null)
                 throw new DomainException(EmploymentTypeErrors.NotFound);
 
-            if (request.OrganizationId.HasValue)
-            {
-                var organization = await _organizationRepository.GetByIdAsync(request.OrganizationId.Value);
-                if (organization == null)
-                    throw new DomainException(OrganizationErrors.NotFound);
-            }
+            var jobTitle = await _jobTitleRepository.GetByNameAsync(request.JobTitle);
+            var organization = await _organizationRepository.GetByNameAsync(request.Organization);
 
             existingExperience.JobTitle = request.JobTitle;
-            existingExperience.JobTitleId = request.JobTitleId;
-            existingExperience.EmploymentTypeId = request.EmploymentTypeId;
+            existingExperience.JobTitleId = jobTitle?.Id;
+            existingExperience.EmploymentTypeId = employmentType.Id;
             existingExperience.Organization = request.Organization;
-            existingExperience.OrganizationId = request.OrganizationId;
+            existingExperience.OrganizationId = organization?.Id;
             existingExperience.Location = request.Location;
             existingExperience.StartDate = request.StartDate;
             existingExperience.EndDate = request.EndDate;

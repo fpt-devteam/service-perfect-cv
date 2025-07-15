@@ -7,10 +7,8 @@ namespace ServicePerfectCV.Application.DTOs.Experience.Requests
     public class UpdateExperienceRequest
     {
         public required string JobTitle { get; set; }
-        public Guid? JobTitleId { get; set; }
         public required Guid EmploymentTypeId { get; set; }
         public required string Organization { get; set; }
-        public Guid? OrganizationId { get; set; }
         public string? Location { get; set; }
         public required DateOnly StartDate { get; set; }
         public required DateOnly EndDate { get; set; }
