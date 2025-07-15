@@ -24,7 +24,6 @@
     },
     "functions": {
         "index.js": {
-            "runtime": "nodejs18.x",
             "maxDuration": 30
         }
     },
