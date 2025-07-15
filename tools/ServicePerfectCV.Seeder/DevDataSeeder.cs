@@ -849,6 +849,7 @@ namespace ServicePerfectCV.Seeder
                     } : null,
                     Educations = cv.Educations.Select(e => new EducationResponse
                     {
+                        Id = e.Id,
                         Organization = e.Organization,
                         Degree = e.Degree,
                         FieldOfStudy = e.FieldOfStudy,

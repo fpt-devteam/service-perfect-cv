@@ -10,7 +10,6 @@ namespace ServicePerfectCV.Application.DTOs.Contact.Requests
         [Required(ErrorMessage = "CV ID is required.")]
         public required Guid CVId { get; init; }
 
-        [StringLength(20, MinimumLength = 10, ErrorMessage = "Phone number must be between 10-20 characters")]
         public string? PhoneNumber { get; set; }
 
         [JsonIgnore]
