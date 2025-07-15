@@ -1,0 +1,43 @@
+{
+    "version": 2,
+    "name": "service-ai-analyzer",
+    "builds": [
+        {
+            "src": "index.js",
+            "use": "@vercel/node",
+            "config": {
+                "maxLambdaSize": "50mb"
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/health",
+            "dest": "/index.js"
+        },
+        {
+            "src": "/api/(.*)",
+            "dest": "/index.js"
+        },
+        {
+            "src": "/",
+            "dest": "/index.js"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/index.js"
+        }
+    ],
+    "env": {
+        "NODE_ENV": "production"
+    },
+    "functions": {
+        "index.js": {
+            "maxDuration": 30
+        }
+    },
+    "regions": ["cle1"],
+    "github": {
+        "silent": true
+    }
+}
