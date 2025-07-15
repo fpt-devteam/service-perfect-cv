@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
-    // [Authorize]
+    [Authorize]
     [Route("api/cvs/{cvId}/certifications")]
     public class CertificationController : ControllerBase
     {
@@ -32,9 +32,9 @@ namespace ServicePerfectCV.WebApi.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateCertificationRequest request)
+        public async Task<IActionResult> CreateAsync(Guid cvId, [FromBody] CreateCertificationRequest request)
         {
-            var result = await _certificationService.CreateAsync(request: request);
+            var result = await _certificationService.CreateAsync(cvId: cvId, request: request);
             return Ok(result);
         }
 

@@ -32,22 +32,21 @@ namespace ServicePerfectCV.Application.Services
             _cvSnapshotService = cvSnapshotService;
         }
 
-        public async Task<CertificationResponse> CreateAsync(CreateCertificationRequest request)
+        public async Task<CertificationResponse> CreateAsync(Guid cvId, CreateCertificationRequest request)
         {
-            var cv = await _cvRepository.GetByIdAsync(id: request.CVId);
+            var cv = await _cvRepository.GetByIdAsync(id: cvId);
             if (cv == null)
                 throw new DomainException(CertificationErrors.CVNotFound);
 
-            if (request.OrganizationId.HasValue && await _organizationRepository.GetByIdAsync(id: request.OrganizationId.Value) == null)
-                throw new DomainException(CertificationErrors.OrganizationNotFound);
-
             var newCertification = _mapper.Map<Certification>(source: request);
             newCertification.Id = Guid.NewGuid();
+            newCertification.CVId = cvId;
+            newCertification.OrganizationId = (await _organizationRepository.GetByNameAsync(request.Organization))?.Id;
 
             await _certificationRepository.CreateAsync(entity: newCertification);
             await _certificationRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
+            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             return _mapper.Map<CertificationResponse>(source: newCertification);
         }
@@ -58,12 +57,9 @@ namespace ServicePerfectCV.Application.Services
             if (existingCertification == null)
                 throw new DomainException(CertificationErrors.NotFound);
 
-            if (request.OrganizationId.HasValue && await _organizationRepository.GetByIdAsync(id: request.OrganizationId.Value) == null)
-                throw new DomainException(CertificationErrors.OrganizationNotFound);
-
             existingCertification.Name = request.Name;
+            existingCertification.OrganizationId = (await _organizationRepository.GetByNameAsync(request.Organization))?.Id;
             existingCertification.Organization = request.Organization;
-            existingCertification.OrganizationId = request.OrganizationId;
             existingCertification.IssuedDate = request.IssuedDate;
             existingCertification.Description = request.Description;
             existingCertification.UpdatedAt = DateTime.UtcNow;
