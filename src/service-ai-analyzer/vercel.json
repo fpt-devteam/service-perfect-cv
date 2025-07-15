@@ -1,15 +1,6 @@
 {
     "version": 2,
     "name": "service-ai-analyzer",
-    "builds": [
-        {
-            "src": "index.js",
-            "use": "@vercel/node",
-            "config": {
-                "maxLambdaSize": "50mb"
-            }
-        }
-    ],
     "routes": [
         {
             "src": "/health",
@@ -33,6 +24,7 @@
     },
     "functions": {
         "index.js": {
+            "runtime": "nodejs18.x",
             "maxDuration": 30
         }
     },
