@@ -1,0 +1,480 @@
+{
+  "info": {
+    "name": "CV AI Analyzer API - Updated",
+    "description": "Complete API collection for the CV AI Analyzer microservice with proper endpoints and realistic test data",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "cvId",
+      "value": "123e4567-e89b-12d3-a456-426614174000",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "987fcdeb-51a2-43d1-9c40-162516281234",
+      "type": "string"
+    },
+    {
+      "key": "analysisId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sessionId",
+      "value": "session_{{$randomUUID}}",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check service health and dependencies"
+      }
+    },
+    {
+      "name": "CV Analysis",
+      "item": [
+        {
+          "name": "Submit CV for Analysis",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('analysisId', responseJson.data.analysisId);",
+                  "    console.log('Analysis ID saved:', responseJson.data.analysisId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cvId\": \"{{cvId}}\",\n  \"userId\": \"{{userId}}\",\n  \"cvData\": {\n    \"title\": \"Senior Software Engineer\",\n    \"contact\": {\n      \"phoneNumber\": \"+1-555-123-4567\",\n      \"email\": \"john.smith@email.com\",
+      \"linkedInUrl\": \"https://linkedin.com/in/johnsmith\",\n      \"githubUrl\": \"https://github.com/johnsmith\",\n      \"city\": \"San Francisco\",\n      \"country\": \"USA\"\n    },\n    \"summary\": {\n      \"context\": \"Experienced software engineer with 8+ years developing scalable web applications. Proven track record in leading teams and delivering high-quality solutions using modern technologies.\"\n    },\n    \"experience\": [\n      {\n        \"jobTitle\": \"Senior Software Engineer\",\n        \"jobTitleId\": \"senior-swe-001\",\n        \"employmentTypeId\": \"full-time\",\n        \"company\": \"TechCorp Inc.\",\n        \"companyId\": \"techcorp-001\",\n        \"location\": \"San Francisco, CA\",\n        \"startDate\": \"2020-03-01T00:00:00.000Z\",\n        \"endDate\": \"2024-01-01T00:00:00.000Z\",\n        \"description\": \"Led development of microservices architecture serving 10M+ users. Managed team of 5 engineers and improved system performance by 40%. Technologies: React, Node.js, AWS, Docker, Kubernetes.\"\n      },\n      {\n        \"jobTitle\": \"Software Engineer\",\n        \"jobTitleId\": \"swe-002\",\n        \"employmentTypeId\": \"full-time\",\n        \"company\": \"StartupXYZ\",\n        \"companyId\": \"startup-002\",\n        \"location\": \"San Francisco, CA\",\n        \"startDate\": \"2018-06-01T00:00:00.000Z\",\n        \"endDate\": \"2020-02-28T00:00:00.000Z\",\n        \"description\": \"Developed RESTful APIs and responsive web interfaces. Built CI/CD pipelines and automated testing frameworks. Collaborated with product team on feature development.\"\n      }\n    ],\n    \"education\": [\n      {\n        \"degree\": \"Bachelor of Science\",\n        \"degreeId\": \"bs-cs-001\",\n        \"organization\": \"University of California, Berkeley\",\n        \"organizationId\": \"ucb-001\",\n        \"fieldOfStudy\": \"Computer Science\",\n        \"startDate\": \"2014-09-01T00:00:00.000Z\",\n        \"endDate\": \"2018-05-15T00:00:00.000Z\",\n        \"gpa\": 3.7,\n        \"description\": \"Relevant coursework: Data Structures, Algorithms, Software Engineering, Database Systems\"\n      }\n    ],\n    \"projects\": [\n      {\n        \"title\": \"E-commerce Platform\",\n        \"description\": \"Built full-stack e-commerce platform with React, Node.js, and MongoDB. Implemented payment processing, inventory management, and real-time notifications.\",\n        \"link\": \"https://github.com/johnsmith/ecommerce-platform\",\n        \"startDate\": \"2022-01-01T00:00:00.000Z\",\n        \"endDate\": \"2022-06-01T00:00:00.000Z\"\n      },\n      {\n        \"title\": \"Task Management API\",\n        \"description\": \"RESTful API for task management with authentication, real-time updates, and file uploads. Built with Express.js, PostgreSQL, and Socket.io.\",\n        \"link\": \"https://github.com/johnsmith/task-api\",\n        \"startDate\": \"2021-03-01T00:00:00.000Z\",\n        \"endDate\": \"2021-05-01T00:00:00.000Z\"\n      }\n    ],\n    \"skills\": [\n      {\n        \"category\": \"Programming Languages\",\n        \"items\": [\"JavaScript\", \"TypeScript\", \"Python\", \"Java\", \"Go\"]\n      },\n      {\n        \"category\": \"Frontend\",\n        \"items\": [\"React\", \"Vue.js\", \"Angular\", \"HTML5\", \"CSS3\", \"Sass\"]\n      },\n      {\n        \"category\": \"Backend\",\n        \"items\": [\"Node.js\", \"Express.js\", \"Django\", \"Spring Boot\", \"GraphQL\"]\n      },\n      {\n        \"category\": \"Databases\",\n        \"items\": [\"PostgreSQL\", \"MongoDB\", \"Redis\", \"MySQL\", \"DynamoDB\"]\n      },\n      {\n        \"category\": \"Cloud & DevOps\",\n        \"items\": [\"AWS\", \"Docker\", \"Kubernetes\", \"Jenkins\", \"Terraform\"]\n      }\n    ],\n    \"certifications\": [\n      {\n        \"name\": \"AWS Certified Solutions Architect\",\n        \"organization\": \"Amazon Web Services\",\n        \"organizationId\": \"aws-001\",\n        \"issuedDate\": \"2023-03-15T00:00:00.000Z\",\n        \"relevance\": \"Cloud architecture and deployment expertise\"\n      }\n    ]\n  },\n  \"userPreferences\": {\n    \"targetIndustry\": \"Software Technology\",\n    \"targetRole\": \"Senior Software Engineer\",\n    \"experienceLevel\": \"senior\",\n    \"focusAreas\": [\"technical-skills\", \"leadership\", \"achievements\"],\n    \"urgent\": false\n  },\n  \"requestMetadata\": {\n    \"source\": \"main-cv-service\",\n    \"version\": \"1.0\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "analyze"]
+            },
+            "description": "Submit structured CV data for AI analysis"
+          }
+        },
+        {
+          "name": "Submit CV with Force Restart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cvId\": \"{{cvId}}\",\n  \"userId\": \"{{userId}}\",\n  \"forceRestart\": true,\n  \"cvData\": {\n    \"title\": \"Senior Software Engineer\",\n    \"contact\": {\n      \"email\": \"john.smith@email.com\"\n    },\n    \"summary\": {\n      \"context\": \"Updated CV with new experience and skills\"\n    },\n    \"experience\": [\n      {\n        \"jobTitle\": \"Senior Software Engineer\",\n        \"company\": \"TechCorp Inc.\",\n        \"location\": \"San Francisco, CA\",\n        \"startDate\": \"2020-03-01T00:00:00.000Z\",\n        \"description\": \"Updated role description with recent achievements\"\n      }\n    ],\n    \"skills\": [\n      {\n        \"category\": \"Programming\",\n        \"items\": [\"JavaScript\", \"TypeScript\", \"Python\"]\n      }\n    ]\n  },\n  \"userPreferences\": {\n    \"targetIndustry\": \"Software Technology\",\n    \"targetRole\": \"Tech Lead\",\n    \"experienceLevel\": \"senior\",\n    \"urgent\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "analyze"]
+            },
+            "description": "Submit CV analysis with force restart to override existing pending analysis"
+          }
+        },
+        {
+          "name": "Get Analysis Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/analysis/{{analysisId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "analysis", "{{analysisId}}", "status"]
+            },
+            "description": "Get current status and progress of CV analysis"
+          }
+        },
+        {
+          "name": "Get Analysis Feedback",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/{{analysisId}}/feedback",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "{{analysisId}}", "feedback"]
+            },
+            "description": "Get AI feedback results for completed analysis"
+          }
+        },
+        {
+          "name": "Get Analysis Feedback - Specific Version",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/{{analysisId}}/feedback?version=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "{{analysisId}}", "feedback"],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Get specific version of analysis feedback"
+          }
+        },
+        {
+          "name": "Apply Improvement Suggestion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"suggestionId\": \"exp_001\",\n  \"appliedBy\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/analysis/{{analysisId}}/apply-suggestion",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "analysis", "{{analysisId}}", "apply-suggestion"]
+            },
+            "description": "Mark an improvement suggestion as applied"
+          }
+        },
+        {
+          "name": "Reanalyze CV",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"updatedCvData\": {\n    \"title\": \"Senior Software Engineer - Updated\",\n    \"experience\": [\n      {\n        \"jobTitle\": \"Senior Software Engineer\",\n        \"company\": \"TechCorp Inc.\",\n        \"description\": \"Enhanced description with quantified achievements: Led team of 8 engineers, improved system performance by 45%, delivered 15+ features\"\n      }\n    ]\n  },\n  \"userPreferences\": {\n    \"targetIndustry\": \"FinTech\",\n    \"targetRole\": \"Engineering Manager\",\n    \"experienceLevel\": \"senior\",\n    \"urgent\": true\n  },\n  \"reason\": \"Applied improvement suggestions\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/analysis/{{analysisId}}/reanalyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "analysis", "{{analysisId}}", "reanalyze"]
+            },
+            "description": "Reanalyze CV after making improvements"
+          }
+        },
+        {
+          "name": "Force Restart Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Analysis stuck for too long\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/analysis/{{analysisId}}/force-restart",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "analysis", "{{analysisId}}", "force-restart"]
+            },
+            "description": "Force restart a stuck or failed analysis"
+          }
+        },
+        {
+          "name": "Cleanup Stuck Jobs - Dry Run",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/cleanup-stuck-jobs?dryRun=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "cleanup-stuck-jobs"],
+              "query": [
+                {
+                  "key": "dryRun",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Preview stuck jobs cleanup without making changes"
+          }
+        },
+        {
+          "name": "Cleanup Stuck Jobs - Execute",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/cleanup-stuck-jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "cleanup-stuck-jobs"]
+            },
+            "description": "Execute cleanup of all stuck jobs in the system"
+          }
+        },
+        {
+          "name": "Get CV Analysis History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/{{cvId}}/analysis-history?userId={{userId}}&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "{{cvId}}", "analysis-history"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get all analysis history for a specific CV"
+          }
+        },
+        {
+          "name": "Get User Analyses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/user/{{userId}}/analyses?status=completed&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "user", "{{userId}}", "analyses"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "completed"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get all analyses for a specific user with filtering and pagination"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Q&A Interactions",
+      "item": [
+        {
+          "name": "Ask CV-Related Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"sessionId\": \"{{sessionId}}\",\n  \"question\": \"Based on my CV analysis, what specific skills should I focus on developing to become a tech lead?\",\n  \"cvId\": \"{{cvId}}\",\n  \"context\": {\n    \"analysisId\": \"{{analysisId}}\",\n    \"currentRole\": \"Senior Software Engineer\",\n    \"targetRole\": \"Tech Lead\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/qa/ask",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "qa", "ask"]
+            },
+            "description": "Ask a question related to CV analysis results"
+          }
+        },
+        {
+          "name": "Ask General Career Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"sessionId\": \"{{sessionId}}\",\n  \"question\": \"What are the most important trends in software engineering for 2024? How should I prepare for them?\",\n  \"context\": {\n    \"industry\": \"Technology\",\n    \"experienceLevel\": \"senior\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/qa/ask",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "qa", "ask"]
+            },
+            "description": "Ask general career advice questions"
+          }
+        },
+        {
+          "name": "Get Session History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/qa/session/{{sessionId}}/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "qa", "session", "{{sessionId}}", "history"]
+            },
+            "description": "Get conversation history for current session"
+          }
+        },
+        {
+          "name": "Get User Q&A History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/qa/user/{{userId}}/history?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "qa", "user", "{{userId}}", "history"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get all Q&A interactions for user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios",
+      "item": [
+        {
+          "name": "Entry Level Developer CV",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cvId\": \"456e7890-e89b-12d3-a456-426614174001\",\n  \"userId\": \"123fcdeb-51a2-43d1-9c40-162516281235\",\n  \"cvData\": {\n    \"title\": \"Junior Frontend Developer\",\n    \"contact\": {\n      \"email\": \"alex.chen@email.com\",\n      \"linkedInUrl\": \"https://linkedin.com/in/alexchen\",\n      \"githubUrl\": \"https://github.com/alexchen\",\n      \"city\": \"Seattle\",\n      \"country\": \"USA\"\n    },\n    \"summary\": {\n      \"context\": \"Recent Computer Science graduate passionate about frontend development and user experience design. Eager to contribute to innovative projects while growing technical skills.\"\n    },\n    \"education\": [\n      {\n        \"degree\": \"Bachelor of Science\",\n        \"organization\": \"University of Washington\",\n        \"fieldOfStudy\": \"Computer Science\",\n        \"startDate\": \"2020-09-01T00:00:00.000Z\",\n        \"endDate\": \"2024-06-15T00:00:00.000Z\",\n        \"gpa\": 3.6,\n        \"description\": \"Relevant coursework: Web Development, Data Structures, Software Engineering, Human-Computer Interaction\"\n      }\n    ],\n    \"experience\": [\n      {\n        \"jobTitle\": \"Frontend Developer Intern\",\n        \"company\": \"Local Startup Inc.\",\n        \"location\": \"Seattle, WA\",\n        \"startDate\": \"2023-06-01T00:00:00.000Z\",\n        \"endDate\": \"2023-08-31T00:00:00.000Z\",\n        \"description\": \"Developed responsive web components using React and CSS. Collaborated with design team on user interface improvements. Fixed 20+ bugs and implemented 5 new features.\"\n      }\n    ],\n    \"projects\": [\n      {\n        \"title\": \"Personal Portfolio Website\",\n        \"description\": \"Responsive portfolio website built with React, showcasing projects and skills. Implemented dark/light theme toggle and smooth animations.\",\n        \"link\": \"https://alexchen.dev\",\n        \"startDate\": \"2024-01-01T00:00:00.000Z\",\n        \"endDate\": \"2024-03-01T00:00:00.000Z\"\n      },\n      {\n        \"title\": \"Todo List App\",\n        \"description\": \"Full-stack todo application with user authentication, task categories, and due date reminders. Built with React frontend and Node.js backend.\",\n        \"link\": \"https://github.com/alexchen/todo-app\",\n        \"startDate\": \"2023-09-01T00:00:00.000Z\",\n        \"endDate\": \"2023-12-01T00:00:00.000Z\"\n      }\n    ],\n    \"skills\": [\n      {\n        \"category\": \"Frontend\",\n        \"items\": [\"React\", \"JavaScript\", \"HTML5\", \"CSS3\", \"Sass\"]\n      },\n      {\n        \"category\": \"Backend\",\n        \"items\": [\"Node.js\", \"Express.js\", \"MongoDB\"]\n      },\n      {\n        \"category\": \"Tools\",\n        \"items\": [\"Git\", \"VS Code\", \"Figma\", \"Postman\"]\n      }\n    ],\n    \"certifications\": [\n      {\n        \"name\": \"freeCodeCamp Responsive Web Design\",\n        \"organization\": \"freeCodeCamp\",\n        \"issuedDate\": \"2023-05-01T00:00:00.000Z\"\n      }\n    ]\n  },\n  \"userPreferences\": {\n    \"targetIndustry\": \"Technology\",\n    \"targetRole\": \"Frontend Developer\",\n    \"experienceLevel\": \"entry\",\n    \"focusAreas\": [\"technical-skills\", \"projects\", \"education\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "analyze"]
+            },
+            "description": "Test with entry-level developer CV"
+          }
+        },
+        {
+          "name": "Data Scientist CV",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cvId\": \"789e1234-e89b-12d3-a456-426614174002\",\n  \"userId\": \"456fcdeb-51a2-43d1-9c40-162516281236\",\n  \"cvData\": {\n    \"title\": \"Senior Data Scientist\",\n    \"contact\": {\n      \"email\": \"sarah.johnson@email.com\",\n      \"linkedInUrl\": \"https://linkedin.com/in/sarahjohnson\",\n      \"city\": \"New York\",\n      \"country\": \"USA\"\n    },\n    \"summary\": {\n      \"context\": \"Experienced Data Scientist with 6+ years in machine learning, statistical modeling, and data visualization. Proven track record of delivering business impact through data-driven insights and predictive models.\"\n    },\n    \"experience\": [\n      {\n        \"jobTitle\": \"Senior Data Scientist\",\n        \"company\": \"DataTech Solutions\",\n        \"location\": \"New York, NY\",\n        \"startDate\": \"2021-03-01T00:00:00.000Z\",\n        \"description\": \"Led development of customer churn prediction model achieving 94% accuracy. Managed team of 3 junior data scientists. Delivered insights that increased customer retention by 18% and saved $2M annually.\"\n      },\n      {\n        \"jobTitle\": \"Data Scientist\",\n        \"company\": \"Analytics Corp\",\n        \"location\": \"New York, NY\",\n        \"startDate\": \"2019-01-01T00:00:00.000Z\",\n        \"endDate\": \"2021-02-28T00:00:00.000Z\",\n        \"description\": \"Built recommendation engine increasing user engagement by 25%. Developed A/B testing framework used across 15+ product teams. Created automated reporting dashboards serving 100+ stakeholders.\"\n      }\n    ],\n    \"education\": [\n      {\n        \"degree\": \"Master of Science\",\n        \"organization\": \"Columbia University\",\n        \"fieldOfStudy\": \"Data Science\",\n        \"startDate\": \"2017-09-01T00:00:00.000Z\",\n        \"endDate\": \"2019-05-15T00:00:00.000Z\",\n        \"gpa\": 3.8\n      },\n      {\n        \"degree\": \"Bachelor of Science\",\n        \"organization\": \"MIT\",\n        \"fieldOfStudy\": \"Mathematics\",\n        \"startDate\": \"2013-09-01T00:00:00.000Z\",\n        \"endDate\": \"2017-06-15T00:00:00.000Z\",\n        \"gpa\": 3.7\n      }\n    ],\n    \"skills\": [\n      {\n        \"category\": \"Programming\",\n        \"items\": [\"Python\", \"R\", \"SQL\", \"Scala\"]\n      },\n      {\n        \"category\": \"Machine Learning\",\n        \"items\": [\"Scikit-learn\", \"TensorFlow\", \"PyTorch\", \"XGBoost\"]\n      },\n      {\n        \"category\": \"Data Visualization\",\n        \"items\": [\"Tableau\", \"Power BI\", \"matplotlib\", \"Plotly\"]\n      },\n      {\n        \"category\": \"Big Data\",\n        \"items\": [\"Spark\", \"Hadoop\", \"Kafka\", \"Airflow\"]\n      },\n      {\n        \"category\": \"Cloud\",\n        \"items\": [\"AWS\", \"Azure\", \"GCP\", \"Snowflake\"]\n      }\n    ],\n    \"certifications\": [\n      {\n        \"name\": \"AWS Certified Machine Learning - Specialty\",\n        \"organization\": \"Amazon Web Services\",\n        \"issuedDate\": \"2023-01-15T00:00:00.000Z\"\n      },\n      {\n        \"name\": \"Google Cloud Professional Data Engineer\",\n        \"organization\": \"Google Cloud\",\n        \"issuedDate\": \"2022-06-01T00:00:00.000Z\"\n      }\n    ]\n  },\n  \"userPreferences\": {\n    \"targetIndustry\": \"Financial Services\",\n    \"targetRole\": \"Principal Data Scientist\",\n    \"experienceLevel\": \"senior\",\n    \"focusAreas\": [\"technical-skills\", \"leadership\", \"business-impact\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cv/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cv", "analyze"]
+            },
+            "description": "Test with senior data scientist CV"
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "noauth"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-generate session ID if needed",
+          "if (!pm.collectionVariables.get('sessionId') || pm.collectionVariables.get('sessionId').includes('{{')) {",
+          "    pm.collectionVariables.set('sessionId', 'session_' + pm.variables.replaceIn('{{$randomUUID}}'));",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global response logging",
+          "console.log('Request:', pm.request.name);",
+          "console.log('Status:', pm.response.code, pm.response.status);",
+          "console.log('Response Time:', pm.response.responseTime + 'ms');",
+          "",
+          "// Log errors for debugging",
+          "if (pm.response.code >= 400) {",
+          "    console.log('Error Response:');",
+          "    console.log(pm.response.text());",
+          "}"
+        ]
+      }
+    }
+  ]
+}
