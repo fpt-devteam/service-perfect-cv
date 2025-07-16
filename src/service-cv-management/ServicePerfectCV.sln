@@ -17,10 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "..\..\tools", "{DE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Seeder", "..\..\tools\ServicePerfectCV.Seeder\ServicePerfectCV.Seeder.csproj", "{8B8E3AF9-DA32-4D81-BCFA-0E429A53F4AD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "..\..\tests", "{34BA0730-A48B-4D92-B1FB-9BE2A2BFBC6B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.IntegrationTests", "..\..\tests\ServicePerfectCV.IntegrationTests\ServicePerfectCV.IntegrationTests.csproj", "{5FC97053-245A-4B1A-B9BB-525D39837A6A}"
-EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +44,6 @@ Global
 		{8B8E3AF9-DA32-4D81-BCFA-0E429A53F4AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B8E3AF9-DA32-4D81-BCFA-0E429A53F4AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B8E3AF9-DA32-4D81-BCFA-0E429A53F4AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5FC97053-245A-4B1A-B9BB-525D39837A6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5FC97053-245A-4B1A-B9BB-525D39837A6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5FC97053-245A-4B1A-B9BB-525D39837A6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5FC97053-245A-4B1A-B9BB-525D39837A6A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +54,5 @@ Global
 		{135B9725-47A5-4ACA-A284-3AE7CA914F80} = {CA13B030-A1CF-4812-BF72-360E8D8D8B28}
 		{3CBF79C3-D493-4B59-9454-ED0817489467} = {CA13B030-A1CF-4812-BF72-360E8D8D8B28}
 		{8B8E3AF9-DA32-4D81-BCFA-0E429A53F4AD} = {DE2BEB24-BA83-4977-BB13-360218228307}
-		{5FC97053-245A-4B1A-B9BB-525D39837A6A} = {34BA0730-A48B-4D92-B1FB-9BE2A2BFBC6B}
 	EndGlobalSection
 EndGlobal
