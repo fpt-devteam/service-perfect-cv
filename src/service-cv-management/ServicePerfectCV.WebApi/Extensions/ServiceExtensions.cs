@@ -75,6 +75,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
+            services.AddScoped<IPushNotificationService, FcmPushNotificationService>();
             services.AddScoped<JwtSecurityTokenHandler>();
 
             services.AddScoped<GoogleOAuthService>();

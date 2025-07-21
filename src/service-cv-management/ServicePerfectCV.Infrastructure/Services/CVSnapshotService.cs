@@ -23,7 +23,9 @@ namespace ServicePerfectCV.Infrastructure.Services
 {
     public class CVSnapshotService(
         ApplicationDbContext context,
-        ICacheService cacheService
+        ICacheService cacheService,
+        IPushNotificationService pushNotificationService,
+        IDeviceTokenRepository deviceTokenRepository
     ) : ICVSnapshotService
     {
         public async Task UpdateCVSnapshotIfChangedAsync(Guid cvId)
@@ -149,6 +151,9 @@ namespace ServicePerfectCV.Infrastructure.Services
                         .SetProperty(cv => cv.UpdatedAt, DateTime.UtcNow));
 
                 await cacheService.SetAsync($"cv:{cvId}", newJson, TimeSpan.FromHours(1));
+
+                var tokens = await deviceTokenRepository.GetTokensByUserIdAsync(cv.UserId);
+                await pushNotificationService.SendAsync(tokens, "CV Updated", "Your CV has been updated.");
             }
         }
     }

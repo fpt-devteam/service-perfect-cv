@@ -21,5 +21,6 @@ namespace ServicePerfectCV.Domain.Entities
         public AuthenticationMethod AuthMethod { get; set; } = AuthenticationMethod.JWT;
 
         public ICollection<CV> CVs { get; set; } = [];
+        public ICollection<DeviceToken> DeviceTokens { get; set; } = [];
     }
 }
