@@ -1,4 +1,5 @@
 using ServicePerfectCV.Domain.Common;
+using ServicePerfectCV.Domain.Enums;
 using System;
 
 namespace ServicePerfectCV.Domain.Entities
@@ -8,7 +9,8 @@ namespace ServicePerfectCV.Domain.Entities
         public required Guid Id { get; set; }
         public required Guid UserId { get; set; }
         public required string Token { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DevicePlatform Platform { get; set; }
+        public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 

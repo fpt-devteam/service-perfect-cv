@@ -16,5 +16,11 @@ namespace ServicePerfectCV.Infrastructure.Repositories
                 .Select(t => t.Token)
                 .ToListAsync();
         }
+
+        public async Task<DeviceToken?> GetByTokenAsync(string token)
+        {
+            return await _context.DeviceTokens
+                .FirstOrDefaultAsync(t => t.Token == token && t.DeletedAt == null);
+        }
     }
 }
