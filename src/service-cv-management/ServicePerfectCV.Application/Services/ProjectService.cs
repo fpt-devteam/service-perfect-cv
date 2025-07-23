@@ -18,17 +18,20 @@ namespace ServicePerfectCV.Application.Services
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
         private readonly ICVSnapshotService _cvSnapshotService;
+        private readonly NotificationService _notificationService;
 
         public ProjectService(
             IProjectRepository projectRepository,
             ICVRepository cvRepository,
             IMapper mapper,
-            ICVSnapshotService cvSnapshotService)
+            ICVSnapshotService cvSnapshotService,
+            NotificationService notificationService)
         {
             _projectRepository = projectRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
             _cvSnapshotService = cvSnapshotService;
+            _notificationService = notificationService;
         }
 
         public async Task<ProjectResponse> CreateAsync(CreateProjectRequest request)
@@ -44,6 +47,9 @@ namespace ServicePerfectCV.Application.Services
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
+            // Send notification
+            await _notificationService.SendProjectUpdateNotificationAsync(cv.UserId, "added");
+
             return _mapper.Map<ProjectResponse>(newProject);
         }
 
@@ -51,6 +57,10 @@ namespace ServicePerfectCV.Application.Services
         {
             var existingProject = await _projectRepository.GetByIdAsync(id: projectId)
                 ?? throw new DomainException(ProjectErrors.NotFound);
+
+            var cv = await _cvRepository.GetByIdAsync(existingProject.CVId);
+            if (cv == null)
+                throw new DomainException(ProjectErrors.CVNotFound);
 
             existingProject.Title = request.Title ?? existingProject.Title;
             existingProject.Description = request.Description ?? existingProject.Description;
@@ -63,6 +73,9 @@ namespace ServicePerfectCV.Application.Services
             await _projectRepository.SaveChangesAsync();
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingProject.CVId);
+
+            // Send notification
+            await _notificationService.SendProjectUpdateNotificationAsync(cv.UserId, "updated");
 
             return _mapper.Map<ProjectResponse>(existingProject);
         }
@@ -92,6 +105,9 @@ namespace ServicePerfectCV.Application.Services
             _projectRepository.Update(project);
             await _projectRepository.SaveChangesAsync();
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(project.CVId);
+
+            // Send notification
+            await _notificationService.SendProjectUpdateNotificationAsync(userId, "deleted");
         }
     }
 }

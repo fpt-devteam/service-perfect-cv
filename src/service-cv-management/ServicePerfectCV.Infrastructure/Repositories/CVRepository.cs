@@ -22,7 +22,14 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         {
             var baseQuery = _context.CVs
                 .AsNoTracking()
-                .Where(cv => cv.UserId == userId);
+                .Where(cv => cv.UserId == userId && cv.DeletedAt == null);
+
+            // Apply search filter if search term is provided
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                baseQuery = baseQuery.Where(cv => cv.Title.Contains(query.SearchTerm));
+            }
+
             var sorted = query.Sort != null ? ApplySort(baseQuery, query.Sort) : baseQuery.OrderBy(cv => cv.UpdatedAt ?? cv.CreatedAt);
             var totalCount = await sorted.CountAsync();
             var paged = sorted.Skip(query.Offset).Take(query.Limit);
@@ -68,6 +75,20 @@ namespace ServicePerfectCV.Infrastructure.Repositories
                 .AsSplitQuery()
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> DeleteByCVIdAndUserIdAsync(Guid cvId, Guid userId)
+        {
+            var cv = await _context.CVs
+                .FirstOrDefaultAsync(cv => cv.Id == cvId && cv.UserId == userId && cv.DeletedAt == null);
+
+            if (cv == null) return false;
+
+            cv.DeletedAt = DateTime.UtcNow;
+            _context.CVs.Update(cv);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

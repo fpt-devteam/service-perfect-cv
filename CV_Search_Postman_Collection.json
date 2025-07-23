@@ -1,0 +1,360 @@
+{
+    "info": {
+        "name": "CV Search API",
+        "description": "Collection for testing CV search functionality",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "YOUR_JWT_TOKEN_HERE",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Get All CVs",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"]
+                },
+                "description": "Get all CVs for the authenticated user"
+            }
+        },
+        {
+            "name": "Search CVs by Title",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?searchTerm=software",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "searchTerm",
+                            "value": "software",
+                            "description": "Search term for CV title"
+                        }
+                    ]
+                },
+                "description": "Search CVs by title containing 'software'"
+            }
+        },
+        {
+            "name": "Search with Pagination",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?searchTerm=developer&limit=5&offset=0",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "searchTerm",
+                            "value": "developer",
+                            "description": "Search term for CV title"
+                        },
+                        {
+                            "key": "limit",
+                            "value": "5",
+                            "description": "Number of items per page"
+                        },
+                        {
+                            "key": "offset",
+                            "value": "0",
+                            "description": "Number of items to skip"
+                        }
+                    ]
+                },
+                "description": "Search CVs with pagination (5 items per page, starting from first item)"
+            }
+        },
+        {
+            "name": "Search with Sorting (Newest First)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?searchTerm=engineer&sort.updatedAt=1",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "searchTerm",
+                            "value": "engineer",
+                            "description": "Search term for CV title"
+                        },
+                        {
+                            "key": "sort.updatedAt",
+                            "value": "1",
+                            "description": "Sort by updatedAt descending (newest first)"
+                        }
+                    ]
+                },
+                "description": "Search CVs and sort by updatedAt in descending order"
+            }
+        },
+        {
+            "name": "Search with Sorting (Oldest First)",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?searchTerm=engineer&sort.updatedAt=0",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "searchTerm",
+                            "value": "engineer",
+                            "description": "Search term for CV title"
+                        },
+                        {
+                            "key": "sort.updatedAt",
+                            "value": "0",
+                            "description": "Sort by updatedAt ascending (oldest first)"
+                        }
+                    ]
+                },
+                "description": "Search CVs and sort by updatedAt in ascending order"
+            }
+        },
+        {
+            "name": "Search with All Parameters",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?searchTerm=fullstack&limit=10&offset=5&sort.updatedAt=0",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "searchTerm",
+                            "value": "fullstack",
+                            "description": "Search term for CV title"
+                        },
+                        {
+                            "key": "limit",
+                            "value": "10",
+                            "description": "Number of items per page"
+                        },
+                        {
+                            "key": "offset",
+                            "value": "5",
+                            "description": "Number of items to skip"
+                        },
+                        {
+                            "key": "sort.updatedAt",
+                            "value": "0",
+                            "description": "Sort by updatedAt ascending"
+                        }
+                    ]
+                },
+                "description": "Search CVs with all parameters: search term, pagination, and sorting"
+            }
+        },
+        {
+            "name": "Search with Empty Term",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?searchTerm=",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "searchTerm",
+                            "value": "",
+                            "description": "Empty search term (should return all CVs)"
+                        }
+                    ]
+                },
+                "description": "Test search with empty search term (should return all CVs)"
+            }
+        },
+        {
+            "name": "Search with Special Characters",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?searchTerm=front-end",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "searchTerm",
+                            "value": "front-end",
+                            "description": "Search term with special characters"
+                        }
+                    ]
+                },
+                "description": "Test search with special characters in search term"
+            }
+        },
+        {
+            "name": "Search with Long Term",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?searchTerm=software%20engineer%20with%20react%20experience",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "searchTerm",
+                            "value": "software engineer with react experience",
+                            "description": "Long search term"
+                        }
+                    ]
+                },
+                "description": "Test search with a long search term"
+            }
+        },
+        {
+            "name": "Test Invalid Sort Parameter",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?sort.updatedAt=invalid",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "sort.updatedAt",
+                            "value": "invalid",
+                            "description": "Invalid sort parameter (should return 400)"
+                        }
+                    ]
+                },
+                "description": "Test with invalid sort parameter"
+            }
+        },
+        {
+            "name": "Test Negative Pagination",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?limit=-1&offset=-1",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "limit",
+                            "value": "-1",
+                            "description": "Negative limit (should return 400)"
+                        },
+                        {
+                            "key": "offset",
+                            "value": "-1",
+                            "description": "Negative offset (should return 400)"
+                        }
+                    ]
+                },
+                "description": "Test with negative pagination parameters"
+            }
+        },
+        {
+            "name": "Test Without Authorization",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs?searchTerm=test",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs"],
+                    "query": [
+                        {
+                            "key": "searchTerm",
+                            "value": "test",
+                            "description": "Search term"
+                        }
+                    ]
+                },
+                "description": "Test without authorization header (should return 401)"
+            }
+        }
+    ]
+}

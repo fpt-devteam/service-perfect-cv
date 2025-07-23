@@ -19,6 +19,5 @@ namespace ServicePerfectCV.Application.DTOs.Authentication.Requests
         public string? DeviceToken { get; init; }
 
         public DevicePlatform? Platform { get; init; }
-
     }
 }

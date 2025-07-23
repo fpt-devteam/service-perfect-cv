@@ -1,0 +1,314 @@
+{
+    "info": {
+        "name": "CV Delete API",
+        "description": "Collection for testing CV delete functionality",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8080",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "YOUR_JWT_TOKEN_HERE",
+            "type": "string"
+        },
+        {
+            "key": "cvId",
+            "value": "123e4567-e89b-12d3-a456-426614174000",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Delete CV Successfully",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs/{{cvId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs", "{{cvId}}"]
+                },
+                "description": "Delete a CV successfully (soft delete)"
+            }
+        },
+        {
+            "name": "Delete Non-existent CV",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs/00000000-0000-0000-0000-000000000000",
+                    "host": ["{{baseUrl}}"],
+                    "path": [
+                        "api",
+                        "cvs",
+                        "00000000-0000-0000-0000-000000000000"
+                    ]
+                },
+                "description": "Try to delete a CV that doesn't exist (should return 404)"
+            }
+        },
+        {
+            "name": "Delete CV Without Authorization",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs/{{cvId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs", "{{cvId}}"]
+                },
+                "description": "Try to delete a CV without authorization header (should return 401)"
+            }
+        },
+        {
+            "name": "Delete CV with Invalid Token",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer invalid-token",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs/{{cvId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs", "{{cvId}}"]
+                },
+                "description": "Try to delete a CV with invalid token (should return 401)"
+            }
+        },
+        {
+            "name": "Delete CV with Invalid GUID",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs/invalid-guid",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs", "invalid-guid"]
+                },
+                "description": "Try to delete a CV with invalid GUID format (should return 400)"
+            }
+        },
+        {
+            "name": "Delete Already Deleted CV",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs/{{cvId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs", "{{cvId}}"]
+                },
+                "description": "Try to delete a CV that was already deleted (should return 404)"
+            }
+        },
+        {
+            "name": "Integration Test - Delete and List",
+            "item": [
+                {
+                    "name": "1. Get All CVs Before Delete",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/cvs",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "cvs"]
+                        },
+                        "description": "Get all CVs before deleting one"
+                    }
+                },
+                {
+                    "name": "2. Delete CV",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/cvs/{{cvId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "cvs", "{{cvId}}"]
+                        },
+                        "description": "Delete the CV"
+                    }
+                },
+                {
+                    "name": "3. Get All CVs After Delete",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/cvs",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "cvs"]
+                        },
+                        "description": "Get all CVs after deleting one (deleted CV should not appear)"
+                    }
+                }
+            ],
+            "description": "Integration test to verify CV disappears from list after delete"
+        },
+        {
+            "name": "Integration Test - Delete and Search",
+            "item": [
+                {
+                    "name": "1. Search CVs Before Delete",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/cvs?searchTerm=test",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "cvs"],
+                            "query": [
+                                {
+                                    "key": "searchTerm",
+                                    "value": "test"
+                                }
+                            ]
+                        },
+                        "description": "Search CVs before deleting one"
+                    }
+                },
+                {
+                    "name": "2. Delete CV",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/cvs/{{cvId}}",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "cvs", "{{cvId}}"]
+                        },
+                        "description": "Delete the CV"
+                    }
+                },
+                {
+                    "name": "3. Search CVs After Delete",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/cvs?searchTerm=test",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "cvs"],
+                            "query": [
+                                {
+                                    "key": "searchTerm",
+                                    "value": "test"
+                                }
+                            ]
+                        },
+                        "description": "Search CVs after deleting one (deleted CV should not appear in search results)"
+                    }
+                }
+            ],
+            "description": "Integration test to verify CV disappears from search results after delete"
+        },
+        {
+            "name": "Test Delete CV of Another User",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{anotherUserToken}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs/{{cvId}}",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs", "{{cvId}}"]
+                },
+                "description": "Try to delete a CV that belongs to another user (should return 404)"
+            }
+        },
+        {
+            "name": "Verify CV Still Exists in Database",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{token}}",
+                        "type": "text"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/api/cvs/{{cvId}}/full-content",
+                    "host": ["{{baseUrl}}"],
+                    "path": ["api", "cvs", "{{cvId}}", "full-content"]
+                },
+                "description": "Try to get full content of deleted CV (should return 404, proving soft delete works)"
+            }
+        }
+    ]
+}

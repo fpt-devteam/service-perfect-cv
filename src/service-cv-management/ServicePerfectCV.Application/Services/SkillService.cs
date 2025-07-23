@@ -19,19 +19,22 @@ namespace ServicePerfectCV.Application.Services
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
         private readonly ICVSnapshotService _cvSnapshotService;
+        private readonly NotificationService _notificationService;
 
         public SkillService(
             ISkillRepository skillRepository,
             ICVRepository cvRepository,
             ICategoryRepository categoryRepository,
             IMapper mapper,
-            ICVSnapshotService cvSnapshotService)
+            ICVSnapshotService cvSnapshotService,
+            NotificationService notificationService)
         {
             _skillRepository = skillRepository;
             _cvRepository = cvRepository;
             _categoryRepository = categoryRepository;
             _mapper = mapper;
             _cvSnapshotService = cvSnapshotService;
+            _notificationService = notificationService;
         }
 
         public async Task<SkillResponse> CreateAsync(Guid cvId, Guid userId, CreateSkillRequest request)
@@ -46,6 +49,9 @@ namespace ServicePerfectCV.Application.Services
             await _skillRepository.SaveChangesAsync();
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
+
+            // Send notification
+            await _notificationService.SendSkillUpdateNotificationAsync(userId, "added");
 
             return _mapper.Map<SkillResponse>(newSkill);
         }
@@ -62,6 +68,9 @@ namespace ServicePerfectCV.Application.Services
             await _skillRepository.SaveChangesAsync();
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
+
+            // Send notification
+            await _notificationService.SendSkillUpdateNotificationAsync(userId, "updated");
 
             return _mapper.Map<SkillResponse>(skillToUpdate);
         }
@@ -92,6 +101,9 @@ namespace ServicePerfectCV.Application.Services
             await _skillRepository.SaveChangesAsync();
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
+
+            // Send notification
+            await _notificationService.SendSkillUpdateNotificationAsync(userId, "deleted");
         }
     }
 }

@@ -19,6 +19,7 @@ namespace ServicePerfectCV.Application.Services
         private readonly IEmploymentTypeRepository _employmentTypeRepository;
         private readonly IOrganizationRepository _organizationRepository;
         private readonly ICVSnapshotService _cvSnapshotService;
+        private readonly NotificationService _notificationService;
 
         public ExperienceService(
             IExperienceRepository experienceRepository,
@@ -27,7 +28,8 @@ namespace ServicePerfectCV.Application.Services
             IJobTitleRepository jobTitleRepository,
             IEmploymentTypeRepository employmentTypeRepository,
             IOrganizationRepository organizationRepository,
-            ICVSnapshotService cvSnapshotService)
+            ICVSnapshotService cvSnapshotService,
+            NotificationService notificationService)
         {
             _experienceRepository = experienceRepository;
             _cvRepository = cvRepository;
@@ -36,6 +38,7 @@ namespace ServicePerfectCV.Application.Services
             _employmentTypeRepository = employmentTypeRepository;
             _organizationRepository = organizationRepository;
             _cvSnapshotService = cvSnapshotService;
+            _notificationService = notificationService;
         }
 
         public async Task<ExperienceResponse> CreateAsync(Guid cvId, CreateExperienceRequest request)
@@ -58,6 +61,9 @@ namespace ServicePerfectCV.Application.Services
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
+            // Send notification
+            await _notificationService.SendExperienceUpdateNotificationAsync(cv.UserId, "added");
+
             return _mapper.Map<ExperienceResponse>(newExperience);
         }
 
@@ -66,6 +72,10 @@ namespace ServicePerfectCV.Application.Services
             var existingExperience = await _experienceRepository.GetByIdAsync(experienceId);
             if (existingExperience == null)
                 throw new DomainException(ExperienceErrors.NotFound);
+
+            var cv = await _cvRepository.GetByIdAsync(existingExperience.CVId);
+            if (cv == null)
+                throw new DomainException(ExperienceErrors.CVNotFound);
 
             var employmentType = await _employmentTypeRepository.GetByIdAsync(request.EmploymentTypeId);
             if (employmentType == null)
@@ -89,6 +99,9 @@ namespace ServicePerfectCV.Application.Services
             await _experienceRepository.SaveChangesAsync();
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingExperience.CVId);
+
+            // Send notification
+            await _notificationService.SendExperienceUpdateNotificationAsync(cv.UserId, "updated");
 
             return _mapper.Map<ExperienceResponse>(existingExperience);
         }
@@ -124,6 +137,9 @@ namespace ServicePerfectCV.Application.Services
 
             // Update CV snapshot after deleting experience
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(experience.CVId);
+
+            // Send notification
+            await _notificationService.SendExperienceUpdateNotificationAsync(userId, "deleted");
         }
     }
 }
