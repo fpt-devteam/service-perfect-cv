@@ -40,7 +40,7 @@ namespace ServicePerfectCV.Infrastructure.Services
             using var stream = file.OpenReadStream();
             await _storageClient.UploadObjectAsync(_bucketName, fileName, file.ContentType, stream);
             var encodedPath = Uri.EscapeDataString(fileName);
-            return $"https://firebasestorage.googleapis.com/v0/b/{_bucketName}/o/{encodedPath}?alt=media";
+            return $"{_storageUrl}/{_bucketName}/o/{encodedPath}?alt=media";
         }
     }
 }
