@@ -2,6 +2,9 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using ServicePerfectCV.Application.Configurations;
+using ServicePerfectCV.Application.DTOs.Experience.Requests;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Mappings;
 using ServicePerfectCV.Application.Services;
@@ -23,7 +26,12 @@ namespace ServicePerfectCV.WebApi.Extensions
         public static void ConfigureServices(this IServiceCollection services)
         {
             services.AddFluentValidationAutoValidation();
-            services.AddValidatorsFromAssemblyContaining<ServicePerfectCV.Application.DTOs.Experience.Requests.CreateExperienceRequest>();
+            services.AddValidatorsFromAssemblyContaining<CreateExperienceRequest>();
+            services.AddScoped<IFirebaseStorageService>(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<FirebaseCloudStorageSettings>>().Value;
+                return new FirebaseStorageService(settings);
+            });
             services.AddAutoMapper(typeof(AuthMappingProfile));
             services.AddAutoMapper(typeof(UserMappingProfile));
             services.AddAutoMapper(typeof(CVMappingProfile));

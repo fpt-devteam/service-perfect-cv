@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ServicePerfectCV.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using ServicePerfectCV.Infrastructure.Data;
 namespace ServicePerfectCV.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250723142823_AddFirstLastNameUserTable")]
+    partial class AddFirstLastNameUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,40 +223,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasFilter("[DeletedAt] IS NULL");
 
                     b.ToTable("Degrees");
-                });
-
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.DeviceToken", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Platform")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("RegisteredAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("DeviceTokens");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
@@ -730,17 +699,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Navigation("CV");
                 });
 
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.DeviceToken", b =>
-                {
-                    b.HasOne("ServicePerfectCV.Domain.Entities.User", "User")
-                        .WithMany("DeviceTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
                 {
                     b.HasOne("ServicePerfectCV.Domain.Entities.CV", "CV")
@@ -890,8 +848,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.User", b =>
                 {
                     b.Navigation("CVs");
-
-                    b.Navigation("DeviceTokens");
                 });
 #pragma warning restore 612, 618
         }
