@@ -9,6 +9,7 @@
     <DockerfileContext>..\..\</DockerfileContext>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\ServicePerfectCV.WebApi.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Templates\*.html">
@@ -39,6 +40,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.0" />
   
     
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
+  
+    
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4"><!-- <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets> -->
     
@@ -62,8 +66,7 @@
   
     
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -26,6 +26,14 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(512);
 
+            builder.Property(u => u.FirstName)
+                .HasMaxLength(100)
+                .IsRequired(false);
+
+            builder.Property(u => u.LastName)
+                .HasMaxLength(100)
+                .IsRequired(false);
+
             builder.Property(u => u.CreatedAt)
                 .IsRequired()
                 .HasDefaultValueSql("GETUTCDATE()");

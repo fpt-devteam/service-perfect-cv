@@ -29,12 +29,14 @@ namespace ServicePerfectCV.WebApi
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
             builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
             builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
+            builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("Firebase"));
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddRedis(builder.Configuration);
             builder.Services.AddConfiguredCors(builder.Configuration);
+            builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddControllers()
                 .AddJsonOptions(options =>
                 {

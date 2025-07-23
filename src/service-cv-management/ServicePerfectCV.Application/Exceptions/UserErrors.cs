@@ -24,5 +24,10 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "AccountAlreadyActivated",
             Message: "Account is already activated.",
             HttpStatusCode.Forbidden);
+
+        public static readonly Error NoFileUploaded = new(
+            Code: "NoFileUploaded",
+            Message: "No file uploaded.",
+            HttpStatusCode.BadRequest);
     }
 }
