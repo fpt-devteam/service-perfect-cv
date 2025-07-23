@@ -38,7 +38,8 @@ namespace ServicePerfectCV.Application.Services
                              JwtSecurityTokenHandler tokenHandler,
                              IMapper mapper,
                              IRefreshTokenService refreshTokenService,
-                             IOAuthService oauthService)
+                             IOAuthService oauthService,
+                             IDeviceTokenRepository deviceTokenRepository)
     {
 
         public async Task<RegisterResponse> RegisterAsync(RegisterRequest registerRequest)
@@ -147,6 +148,30 @@ namespace ServicePerfectCV.Application.Services
                 Role = user.Role.ToString()
             });
             await refreshTokenService.SaveAsync(tokens.RefreshToken, user.Id.ToString());
+
+            if (!string.IsNullOrWhiteSpace(loginRequest.DeviceToken))
+            {
+                var existing = await deviceTokenRepository.GetByTokenAsync(loginRequest.DeviceToken);
+                if (existing == null)
+                {
+                    await deviceTokenRepository.CreateAsync(new DeviceToken
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = user.Id,
+                        Token = loginRequest.DeviceToken,
+                        Platform = loginRequest.Platform ?? DevicePlatform.Web,
+                        RegisteredAt = DateTime.UtcNow
+                    });
+                }
+                else if (existing.UserId != user.Id)
+                {
+                    existing.UserId = user.Id;
+                    existing.Platform = loginRequest.Platform ?? existing.Platform;
+                    existing.RegisteredAt = DateTime.UtcNow;
+                    deviceTokenRepository.Update(existing);
+                }
+                await deviceTokenRepository.SaveChangesAsync();
+            }
             return new LoginResponse
             {
                 AccessToken = tokens.AccessToken,

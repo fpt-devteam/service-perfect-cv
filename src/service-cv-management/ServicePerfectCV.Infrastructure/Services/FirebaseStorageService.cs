@@ -17,7 +17,7 @@ namespace ServicePerfectCV.Infrastructure.Services
         private readonly string _bucketName;
         private readonly string _storageUrl;
 
-        public FirebaseStorageService(FirebaseSettings settings)
+        public FirebaseStorageService(FirebaseCloudStorageSettings settings)
         {
             var credential = GoogleCredential.FromFile(settings.CredentialsPath);
 

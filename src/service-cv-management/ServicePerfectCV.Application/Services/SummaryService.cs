@@ -16,17 +16,20 @@ namespace ServicePerfectCV.Application.Services
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
         private readonly ICVSnapshotService _cvSnapshotService;
+        private readonly NotificationService _notificationService;
 
         public SummaryService(
             ISummaryRepository summaryRepository,
             ICVRepository cvRepository,
             IMapper mapper,
-            ICVSnapshotService cvSnapshotService)
+            ICVSnapshotService cvSnapshotService,
+            NotificationService notificationService)
         {
             _summaryRepository = summaryRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
             _cvSnapshotService = cvSnapshotService;
+            _notificationService = notificationService;
         }
 
         public async Task<SummaryResponse> UpsertAsync(UpsertSummaryRequest request)
@@ -44,6 +47,9 @@ namespace ServicePerfectCV.Application.Services
 
                 await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
+                // Send notification
+                await _notificationService.SendSummaryUpdateNotificationAsync(cv.UserId);
+
                 return _mapper.Map<SummaryResponse>(newSummary);
             }
 
@@ -53,6 +59,9 @@ namespace ServicePerfectCV.Application.Services
             await _summaryRepository.SaveChangesAsync();
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
+
+            // Send notification
+            await _notificationService.SendSummaryUpdateNotificationAsync(cv.UserId);
 
             return _mapper.Map<SummaryResponse>(existingSummary);
         }

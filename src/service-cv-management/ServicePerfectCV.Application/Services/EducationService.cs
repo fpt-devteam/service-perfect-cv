@@ -18,6 +18,7 @@ namespace ServicePerfectCV.Application.Services
         private readonly IDegreeRepository _degreeRepository;
         private readonly IOrganizationRepository _organizationRepository;
         private readonly ICVSnapshotService _cvSnapshotService;
+        private readonly NotificationService _notificationService;
 
         public EducationService(
             IEducationRepository educationRepository,
@@ -25,7 +26,8 @@ namespace ServicePerfectCV.Application.Services
             IMapper mapper,
             IDegreeRepository degreeRepository,
             IOrganizationRepository organizationRepository,
-            ICVSnapshotService cvSnapshotService)
+            ICVSnapshotService cvSnapshotService,
+            NotificationService notificationService)
         {
             _educationRepository = educationRepository;
             _cvRepository = cvRepository;
@@ -33,6 +35,7 @@ namespace ServicePerfectCV.Application.Services
             _degreeRepository = degreeRepository;
             _organizationRepository = organizationRepository;
             _cvSnapshotService = cvSnapshotService;
+            _notificationService = notificationService;
         }
 
         public async Task<EducationResponse> CreateAsync(Guid cvId, CreateEducationRequest request)
@@ -51,6 +54,9 @@ namespace ServicePerfectCV.Application.Services
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
+            // Send notification
+            await _notificationService.SendEducationUpdateNotificationAsync(cv.UserId, "added");
+
             return _mapper.Map<EducationResponse>(newEducation);
         }
 
@@ -59,6 +65,10 @@ namespace ServicePerfectCV.Application.Services
             var existingEducation = await _educationRepository.GetByIdAsync(educationId);
             if (existingEducation == null)
                 throw new DomainException(EducationErrors.NotFound);
+
+            var cv = await _cvRepository.GetByIdAsync(existingEducation.CVId);
+            if (cv == null)
+                throw new DomainException(EducationErrors.CVNotFound);
 
             var degree = await _degreeRepository.GetByNameAsync(request.Degree);
             var organization = await _organizationRepository.GetByNameAsync(request.Organization);
@@ -78,6 +88,9 @@ namespace ServicePerfectCV.Application.Services
             await _educationRepository.SaveChangesAsync();
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingEducation.CVId);
+
+            // Send notification
+            await _notificationService.SendEducationUpdateNotificationAsync(cv.UserId, "updated");
 
             return _mapper.Map<EducationResponse>(existingEducation);
         }
@@ -112,6 +125,9 @@ namespace ServicePerfectCV.Application.Services
             await _educationRepository.SaveChangesAsync();
 
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(education.CVId);
+
+            // Send notification
+            await _notificationService.SendEducationUpdateNotificationAsync(userId, "deleted");
         }
     }
 }

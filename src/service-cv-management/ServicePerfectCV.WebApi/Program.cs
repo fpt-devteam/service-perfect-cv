@@ -29,8 +29,8 @@ namespace ServicePerfectCV.WebApi
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
             builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
             builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
-            builder.Services.Configure<FirebaseSettings>(builder.Configuration.GetSection("FcmSettings"));
-
+            builder.Services.Configure<FcmSettings>(builder.Configuration.GetSection("FcmSettings"));
+            builder.Services.Configure<FirebaseCloudStorageSettings>(builder.Configuration.GetSection("FirebaseCloudStorageSettings"));
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 

@@ -42,9 +42,9 @@ namespace ServicePerfectCV.Application.Services
                 Items = [.. cvs.Items.Select(cv => mapper.Map<CVResponse>(cv))]
             };
         }
-        public async Task<CVResponse> UpdateAsync(Guid id, UpdateCVRequest request, Guid userId)
+        public async Task<CVResponse> UpdateAsync(Guid cvId, UpdateCVRequest request, Guid userId)
         {
-            var cv = await cvRepository.GetByCVIdAndUserIdAsync(id, userId) ??
+            var cv = await cvRepository.GetByCVIdAndUserIdAsync(cvId, userId) ??
                 throw new DomainException(CVErrors.CVNotFound);
 
             if (request.Title != null)
@@ -85,6 +85,13 @@ namespace ServicePerfectCV.Application.Services
                 throw new DomainException(CVErrors.CVNotFound);
 
             return mapper.Map<CVFullContentResponse>(cv);
+        }
+
+        public async Task DeleteAsync(Guid cvId, Guid userId)
+        {
+            var deleted = await cvRepository.DeleteByCVIdAndUserIdAsync(cvId, userId);
+            if (!deleted)
+                throw new DomainException(CVErrors.CVNotFound);
         }
     }
 }

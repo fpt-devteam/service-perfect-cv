@@ -9,6 +9,7 @@ namespace ServicePerfectCV.Application.DTOs.CV.Requests
 {
     public class CVQuery : PaginationQuery
     {
+        public string? SearchTerm { get; set; } = null;
         public CVSort? Sort { get; set; } = null;
     }
     public class CVSort

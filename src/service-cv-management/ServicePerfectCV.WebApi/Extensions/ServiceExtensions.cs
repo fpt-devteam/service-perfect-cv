@@ -29,7 +29,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddValidatorsFromAssemblyContaining<CreateExperienceRequest>();
             services.AddScoped<IFirebaseStorageService>(sp =>
             {
-                var settings = sp.GetRequiredService<IOptions<FirebaseSettings>>().Value;
+                var settings = sp.GetRequiredService<IOptions<FirebaseCloudStorageSettings>>().Value;
                 return new FirebaseStorageService(settings);
             });
             services.AddAutoMapper(typeof(AuthMappingProfile));
@@ -83,6 +83,9 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
+            services.AddScoped<IPushNotificationService, FcmPushNotificationService>();
+            services.AddScoped<NotificationService>();
             services.AddScoped<JwtSecurityTokenHandler>();
 
             services.AddScoped<GoogleOAuthService>();
