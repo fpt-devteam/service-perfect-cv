@@ -31,41 +31,20 @@ namespace ServicePerfectCV.Application.Services
         private const string ResetCodePrefix = "reset_code:";
         private const int ResetCodeLength = 6;
         private const int ResetCodeExpiryMinutes = 10;
+        private const string ResetPasswordTemplate = "ResetPassword.html";
 
         public async Task<string> ForgetPasswordAsync(ForgetPasswordRequest request)
         {
             User user = await userRepository.GetByEmailAsync(request.Email) 
                 ?? throw new DomainException(UserErrors.NotFound);
 
-            // Generate 6-digit OTP
-            string resetCode = GenerateResetCode();
+            string resetCode = GenerateSecureResetCode();
             logger.LogInformation($"Generated reset code for {request.Email}: {resetCode}");
-            
-            // Save to Redis with 10-minute expiry
-            string redisKey = $"{ResetCodePrefix}{request.Email}";
+
+            string redisKey = GetResetCodeKey(request.Email);
             await cacheService.SetAsync(redisKey, resetCode, TimeSpan.FromMinutes(ResetCodeExpiryMinutes));
 
-            // Send email
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "ResetPassword.html");
-            logger.LogInformation($"Template path: {filePath}");
-            
-            if (!File.Exists(filePath))
-            {
-                logger.LogError($"Template file not found at: {filePath}");
-                throw new InvalidOperationException("Email template not found");
-            }
-
-            var emailBody = await helper.RenderEmailTemplateAsync(filePath, new Dictionary<string, string>
-            {
-                { "UserName", user.Email },
-                { "ResetCode", resetCode }
-            });
-
-            await emailSender.SendEmailAsync(
-                mail: user.Email,
-                subject: "Password Reset Verification Code",
-                body: emailBody
-            );
+            await SendResetPasswordEmailAsync(user.Email, resetCode);
 
             return "Reset code has been sent to your email.";
         }
@@ -112,10 +91,39 @@ namespace ServicePerfectCV.Application.Services
             return true;
         }
 
-        private string GenerateResetCode()
+        private string GetResetCodeKey(string email) => $"{ResetCodePrefix}{email}";
+
+        private async Task SendResetPasswordEmailAsync(string email, string resetCode)
         {
-            Random random = new Random();
-            return random.Next(100000, 999999).ToString();
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Templates", ResetPasswordTemplate);
+            logger.LogInformation($"Template path: {filePath}");
+
+            if (!File.Exists(filePath))
+            {
+                logger.LogError($"Template file not found at: {filePath}");
+                throw new InvalidOperationException("Email template not found");
+            }
+
+            var emailBody = await helper.RenderEmailTemplateAsync(filePath, new Dictionary<string, string>
+            {
+                { "UserName", email },
+                { "ResetCode", resetCode }
+            });
+
+            await emailSender.SendEmailAsync(
+                mail: email,
+                subject: "Password Reset Verification Code",
+                body: emailBody
+            );
+        }
+
+        private string GenerateSecureResetCode()
+        {
+            using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+            var bytes = new byte[4];
+            rng.GetBytes(bytes);
+            int code = BitConverter.ToInt32(bytes, 0) % 900000 + 100000;
+            return Math.Abs(code).ToString("D6");
         }
     }
 }
