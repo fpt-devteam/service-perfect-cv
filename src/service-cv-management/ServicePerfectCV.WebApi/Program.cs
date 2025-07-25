@@ -6,6 +6,8 @@ using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.WebApi.Extensions;
 using ServicePerfectCV.WebApi.Middleware;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace ServicePerfectCV.WebApi
 {
@@ -20,6 +22,36 @@ namespace ServicePerfectCV.WebApi
                 .AddJsonFile("appsettings.json", false, true)
                 .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
+
+            if (builder.Environment.EnvironmentName == "Production")
+            {
+                var azureStorageSettings = builder.Configuration.GetSection("AzureStorageSettings").Get<AzureStorageSettings>();
+                string connectionString = azureStorageSettings.ConnectionString;
+                string containerName = azureStorageSettings.ContainerName;
+                string fcmBlobName = azureStorageSettings.FcmBlobName;
+                string firebaseStorageServiceBlobName = azureStorageSettings.FirebaseStorageServiceBlobName;
+                string downloadFcmFilePath = $@"home\site\wwwroot\{fcmBlobName}";
+                string downloadFirebaseStorageServiceFilePath = $@"home\site\wwwroot\{firebaseStorageServiceBlobName}";
+
+                // Create the BlobServiceClient object
+                BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+
+                // Get the container client
+                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+                // Get the blob client
+                BlobClient fcmBlobClient = containerClient.GetBlobClient(fcmBlobName);
+                BlobClient firebaseStorageServiceBlobClient = containerClient.GetBlobClient(firebaseStorageServiceBlobName);
+
+                // Download the blob to a file
+                fcmBlobClient.DownloadTo(downloadFcmFilePath);
+                firebaseStorageServiceBlobClient.DownloadTo(downloadFirebaseStorageServiceFilePath);
+
+                Console.WriteLine("File downloaded successfully!");
+                Console.WriteLine($"Fcm file downloaded to: {downloadFcmFilePath}");
+                Console.WriteLine($"Firebase storage service file downloaded to: {downloadFirebaseStorageServiceFilePath}");
+            }
+
 
             builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             builder.Services.Configure<RefreshTokenConfiguration>(builder.Configuration.GetSection("RefreshToken"));
