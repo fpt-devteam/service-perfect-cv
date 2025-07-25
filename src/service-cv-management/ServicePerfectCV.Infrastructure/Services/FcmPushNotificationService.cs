@@ -22,15 +22,30 @@ namespace ServicePerfectCV.Infrastructure.Services
             {
                 _logger.LogInformation("Getting FCM access token for project: {ProjectId}", _settings.ProjectId);
 
-                if (!File.Exists(_settings.ServiceAccountKeyPath))
+                if (_credential == null)
                 {
-                    _logger.LogError("Service account key file not found at: {Path}", _settings.ServiceAccountKeyPath);
-                    throw new FileNotFoundException($"Service account key file not found at: {_settings.ServiceAccountKeyPath}");
-                }
+                    var credentialJson = new
+                    {
+                        type = _settings.Type,
+                        project_id = _settings.ProjectId,
+                        private_key_id = _settings.PrivateKeyId,
+                        private_key = _settings.PrivateKey.Replace("\\n", Environment.NewLine),
+                        client_email = _settings.ClientEmail,
+                        client_id = _settings.ClientId,
+                        auth_uri = _settings.AuthUri,
+                        token_uri = _settings.TokenUri,
+                        auth_provider_x509_cert_url = _settings.AuthProviderX509CertUrl,
+                        client_x509_cert_url = _settings.ClientX509CertUrl,
+                        universe_domain = _settings.UniverseDomain
+                    };
 
-                _credential ??= GoogleCredential
-                    .FromFile(_settings.ServiceAccountKeyPath)
-                    .CreateScoped("https://www.googleapis.com/auth/firebase.messaging");
+                    // _logger.LogInformation("Credential JSON: {CredentialJson}", JsonSerializer.Serialize(credentialJson));
+
+                    var credentialJsonString = JsonSerializer.Serialize(credentialJson);
+                    _credential = GoogleCredential
+                        .FromJson(credentialJsonString)
+                        .CreateScoped("https://www.googleapis.com/auth/firebase.messaging");
+                }
 
                 var token = await ((ITokenAccess)_credential).GetAccessTokenForRequestAsync("https://fcm.googleapis.com/v1/projects/{_settings.ProjectId}/messages:send", CancellationToken.None);
 

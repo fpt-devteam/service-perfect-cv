@@ -5,21 +5,43 @@ using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Http;
 using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Services
 {
     public class FirebaseStorageService : IFirebaseStorageService
     {
+        private readonly ILogger<FirebaseStorageService> _logger;
         private readonly StorageClient _storageClient;
         private readonly string _bucketName;
         private readonly string _storageUrl;
 
-        public FirebaseStorageService(FirebaseCloudStorageSettings settings)
+        public FirebaseStorageService(FirebaseCloudStorageSettings settings, ILogger<FirebaseStorageService> logger)
         {
-            var credential = GoogleCredential.FromFile(settings.CredentialsPath);
+            _logger = logger;
+            var credentialJson = new
+            {
+                type = settings.Type,
+                project_id = settings.ProjectId,
+                private_key_id = settings.PrivateKeyId,
+                private_key = settings.PrivateKey.Replace("\\n", Environment.NewLine),
+                client_email = settings.ClientEmail,
+                client_id = settings.ClientId,
+                auth_uri = settings.AuthUri,
+                token_uri = settings.TokenUri,
+                auth_provider_x509_cert_url = settings.AuthProviderX509CertUrl,
+                client_x509_cert_url = settings.ClientX509CertUrl,
+                universe_domain = settings.UniverseDomain
+            };
+
+            // _logger.LogInformation("Credential JSON: {CredentialJson}", JsonSerializer.Serialize(credentialJson));
+
+            var credentialJsonString = JsonSerializer.Serialize(credentialJson);
+            var credential = GoogleCredential.FromJson(credentialJsonString);
 
             if (FirebaseApp.DefaultInstance == null)
             {

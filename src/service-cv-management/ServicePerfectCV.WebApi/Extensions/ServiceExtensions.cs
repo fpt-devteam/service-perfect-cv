@@ -30,7 +30,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IFirebaseStorageService>(sp =>
             {
                 var settings = sp.GetRequiredService<IOptions<FirebaseCloudStorageSettings>>().Value;
-                return new FirebaseStorageService(settings);
+                var logger = sp.GetRequiredService<ILogger<FirebaseStorageService>>();
+                return new FirebaseStorageService(settings, logger);
             });
             services.AddAutoMapper(typeof(AuthMappingProfile));
             services.AddAutoMapper(typeof(UserMappingProfile));
