@@ -50,7 +50,7 @@ namespace ServicePerfectCV.Application.Services
                 await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
                 // Send notification
-                await _notificationService.SendContactUpdateNotificationAsync(cv.UserId);
+                _notificationService.SendContactUpdateNotificationAsync(cv.UserId);
 
                 return _mapper.Map<ContactResponse>(newContact);
             }

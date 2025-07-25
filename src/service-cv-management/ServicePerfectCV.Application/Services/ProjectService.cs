@@ -75,7 +75,7 @@ namespace ServicePerfectCV.Application.Services
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingProject.CVId);
 
             // Send notification
-            await _notificationService.SendProjectUpdateNotificationAsync(cv.UserId, "updated");
+            _notificationService.SendProjectUpdateNotificationAsync(cv.UserId, "updated");
 
             return _mapper.Map<ProjectResponse>(existingProject);
         }
