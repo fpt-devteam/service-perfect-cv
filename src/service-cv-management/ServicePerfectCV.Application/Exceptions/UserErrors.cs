@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ServicePerfectCV.Application.Interfaces;
+using System.Security.Cryptography;
 
 namespace ServicePerfectCV.Application.Exceptions
 {
@@ -28,6 +30,19 @@ namespace ServicePerfectCV.Application.Exceptions
         public static readonly Error NoFileUploaded = new(
             Code: "NoFileUploaded",
             Message: "No file uploaded.",
+            HttpStatusCode.BadRequest);
+
+        public static readonly Error InvalidResetCode = new(
+            Code: "InvalidResetCode",
+            Message: "Invalid or expired reset code.",
+            HttpStatusCode.BadRequest);
+        public static readonly Error ResetCodeNotFound = new(
+            Code: "ResetCodeNotFound",
+            Message: "Reset code not found.",
+            HttpStatusCode.NotFound);
+        public static readonly Error PasswordTooWeak = new(
+            Code: "PasswordTooWeak",
+            Message: "Password does not meet security requirements.",
             HttpStatusCode.BadRequest);
     }
 }

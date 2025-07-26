@@ -7,6 +7,8 @@ using ServicePerfectCV.Application.Services;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Linq;
 
 namespace ServicePerfectCV.WebApi.Controllers
 {
@@ -16,14 +18,17 @@ namespace ServicePerfectCV.WebApi.Controllers
     {
         private readonly UserService userService;
         private readonly IFirebaseStorageService _firebaseStorageService;
+        private readonly ICacheService cacheService;
 
         public UserController(
             UserService userService,
-            IFirebaseStorageService firebaseStorageService
+            IFirebaseStorageService firebaseStorageService,
+            ICacheService cacheService
             )
         {
             this.userService = userService;
             _firebaseStorageService = firebaseStorageService;
+            this.cacheService = cacheService;
         }
 
         [Authorize]
@@ -59,6 +64,22 @@ namespace ServicePerfectCV.WebApi.Controllers
 
             await userService.UpdateProfileAsync(userId, request);
             return NoContent();
+        }
+
+        [HttpPost("password-reset-request")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RequestPasswordReset([FromBody] string email)
+        {
+            await userService.RequestPasswordResetAsync(email);
+            return Ok();
+        }
+
+        [HttpPost("password-reset")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            await userService.ResetPasswordAsync(request.Code, request.NewPassword);
+            return Ok();
         }
     }
 }
