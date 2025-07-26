@@ -75,8 +75,8 @@ namespace ServicePerfectCV.Application.Services
                 UserId = user.Id.ToString(),
                 Role = user.Role.ToString()
             });
-            
-            await emailSender.SendEmailAsync(
+
+            emailSender.SendEmailAsync(
                 mail: user.Email,
                 subject: Subjects.WelcomeToPerfectCV,
                 body: await helper.RenderEmailTemplateAsync(filePath, new Dictionary<string, string>
