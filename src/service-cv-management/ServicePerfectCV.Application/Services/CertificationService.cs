@@ -52,7 +52,7 @@ namespace ServicePerfectCV.Application.Services
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             // Send notification
-            _notificationService.SendCertificationUpdateNotificationAsync(cv.UserId, "added");
+            await _notificationService.SendCertificationUpdateNotificationAsync(cv.UserId, "added");
 
             return _mapper.Map<CertificationResponse>(source: newCertification);
         }

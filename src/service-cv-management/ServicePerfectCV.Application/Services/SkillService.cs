@@ -70,7 +70,7 @@ namespace ServicePerfectCV.Application.Services
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             // Send notification
-            _notificationService.SendSkillUpdateNotificationAsync(userId, "updated");
+            await _notificationService.SendSkillUpdateNotificationAsync(userId, "updated");
 
             return _mapper.Map<SkillResponse>(skillToUpdate);
         }

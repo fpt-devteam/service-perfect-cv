@@ -62,7 +62,7 @@ namespace ServicePerfectCV.Application.Services
             await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             // Send notification
-            _notificationService.SendExperienceUpdateNotificationAsync(cv.UserId, "added");
+            await _notificationService.SendExperienceUpdateNotificationAsync(cv.UserId, "added");
 
             return _mapper.Map<ExperienceResponse>(newExperience);
         }
