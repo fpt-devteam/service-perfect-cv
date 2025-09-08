@@ -93,3 +93,5 @@ node_modules/
 
 firebase-credentials.json
 perfect-cv-a6fcf-firebase-adminsdk-fbsvc-e45653e338.json
+
+appsettings.Development.json
