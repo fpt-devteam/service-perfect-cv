@@ -1,8 +1,9 @@
 using System.Text.Json.Serialization;
-using DotNetEnv;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using ServicePerfectCV.Application.Configurations;
+using ServicePerfectCV.Infrastructure;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.WebApi.Extensions;
 using ServicePerfectCV.WebApi.Middleware;
@@ -13,7 +14,6 @@ namespace ServicePerfectCV.WebApi
     {
         public static async Task Main(string[] args)
         {
-            Env.Load();
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             builder.Configuration
@@ -46,7 +46,9 @@ namespace ServicePerfectCV.WebApi
 
             builder.Services.ConfigureServices();
             builder.Services.AddAuthWithJwtAndGoogle(builder.Configuration);
-            // builder.Services.AddAuthentication(builder.Configuration);
+
+            // Register SK Infra (Ollama-backed)
+            builder.Services.AddSemanticKernelInfra(builder.Configuration);
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddConfiguredSwagger();

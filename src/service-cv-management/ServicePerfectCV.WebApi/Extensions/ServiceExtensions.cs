@@ -94,7 +94,14 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddSingleton<OAuthServiceFactory>();
             services.AddScoped<IOAuthService, GoogleOAuthService>();
 
-            services.AddHttpClient();
+            services.AddHttpClient("", client =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(10);
+            });
+
+            // Register job services for async AI processing
+            services.AddSingleton<IJobStore, InMemoryJobStore>();
+            services.AddScoped<IJobProcessingService, JobProcessingService>();
         }
     }
 }
