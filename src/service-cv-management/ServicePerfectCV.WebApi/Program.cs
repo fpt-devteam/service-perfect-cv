@@ -56,15 +56,6 @@ namespace ServicePerfectCV.WebApi
             WebApplication app = builder.Build();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            if (!app.Environment.IsEnvironment("Testing"))
-            {
-                using (IServiceScope scope = app.Services.CreateScope())
-                {
-                    ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                    await dbContext.Database.MigrateAsync();
-                }
-            }
-
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseCors("AppCorsPolicy");

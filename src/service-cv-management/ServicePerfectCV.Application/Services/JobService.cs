@@ -1,5 +1,7 @@
-using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
+using ServicePerfectCV.Application.DTOs.AI;
 using ServicePerfectCV.Application.Interfaces.AI;
+using System.Collections.Concurrent;
 
 namespace ServicePerfectCV.Application.Services;
 
@@ -11,33 +13,33 @@ public enum JobStatus
     Failed
 }
 
-public class JobResult
+public class Job<T>
 {
     public string JobId { get; set; } = string.Empty;
     public JobStatus Status { get; set; }
-    public string? Result { get; set; }
+    public T? Result { get; set; }
     public string? Error { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
 }
 
-public interface IJobStore
+public interface IJobStore<T>
 {
-    string CreateJob(string cvText, string jdText);
-    JobResult? GetJob(string jobId);
-    void UpdateJob(string jobId, JobStatus status, string? result = null, string? error = null);
-    void CompleteJob(string jobId, string result);
+    string CreateJob();
+    Job<T>? GetJob(string jobId);
+    void UpdateJob(string jobId, JobStatus status, T? result = default, string? error = null);
+    void CompleteJob(string jobId, T result);
     void FailJob(string jobId, string error);
 }
 
-public sealed class InMemoryJobStore : IJobStore
+public sealed class InMemoryJobStore<T> : IJobStore<T>
 {
-    private readonly ConcurrentDictionary<string, JobResult> _jobs = new();
+    private readonly ConcurrentDictionary<string, Job<T>> _jobs = new();
 
-    public string CreateJob(string cvText, string jdText)
+    public string CreateJob()
     {
         var jobId = Guid.NewGuid().ToString("N");
-        var job = new JobResult
+        var job = new Job<T>
         {
             JobId = jobId,
             Status = JobStatus.Pending,
@@ -48,12 +50,12 @@ public sealed class InMemoryJobStore : IJobStore
         return jobId;
     }
 
-    public JobResult? GetJob(string jobId)
+    public Job<T>? GetJob(string jobId)
     {
         return _jobs.TryGetValue(jobId, out var job) ? job : null;
     }
 
-    public void UpdateJob(string jobId, JobStatus status, string? result = null, string? error = null)
+    public void UpdateJob(string jobId, JobStatus status, T? result, string? error = null)
     {
         if (_jobs.TryGetValue(jobId, out var job))
         {
@@ -67,50 +69,57 @@ public sealed class InMemoryJobStore : IJobStore
         }
     }
 
-    public void CompleteJob(string jobId, string result)
+    public void CompleteJob(string jobId, T result)
     {
         UpdateJob(jobId, JobStatus.Completed, result);
     }
 
     public void FailJob(string jobId, string error)
     {
-        UpdateJob(jobId, JobStatus.Failed, null, error);
+        UpdateJob(jobId, JobStatus.Failed, default, error);
     }
 }
 
 public interface IJobProcessingService
 {
-    Task ProcessReviewJobAsync(string jobId, string cvText, string jdText, CancellationToken ct = default);
+    Task ProcessCvAnalysisJobAsync(string jobId, CvEntity cv, JobDescription jd, CancellationToken ct = default);
 }
 
 public sealed class JobProcessingService : IJobProcessingService
 {
     private readonly IAIOrchestrator _orchestrator;
-    private readonly IJobStore _jobStore;
+    private readonly IJobStore<CvAnalysisFinalOutput> _jobStore;
+    private readonly ILogger<JobProcessingService> _logger = LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<JobProcessingService>();
 
-    public JobProcessingService(IAIOrchestrator orchestrator, IJobStore jobStore)
+    public JobProcessingService(IAIOrchestrator orchestrator, IJobStore<CvAnalysisFinalOutput> jobStore)
     {
         _orchestrator = orchestrator;
         _jobStore = jobStore;
     }
 
-    public async Task ProcessReviewJobAsync(string jobId, string cvText, string jdText, CancellationToken ct = default)
+    public async Task ProcessCvAnalysisJobAsync(string jobId, CvEntity cv, JobDescription jd, CancellationToken ct = default)
     {
         try
         {
             // Update job status to processing
-            _jobStore.UpdateJob(jobId, JobStatus.Processing);
+            _jobStore.UpdateJob(jobId: jobId, status: JobStatus.Processing);
 
-            // Process the AI review
-            var result = await _orchestrator.ReviewCvAgainstJdAsync(cvText, jdText, ct);
+            _logger.LogInformation("Starting CV analysis job {JobId}", jobId);
+
+            var result = await _orchestrator.AnalyzeCvWithSemanticKernelAsync(cv, jd, ct);
+
+            _logger.LogInformation("Completed CV analysis job {JobId}", jobId);
+
 
             // Complete the job with the result
-            _jobStore.CompleteJob(jobId, result);
+            _jobStore.CompleteJob(jobId: jobId, result: result);
         }
         catch (Exception ex)
         {
             // Fail the job with error message
-            _jobStore.FailJob(jobId, ex.Message);
+
+            _jobStore.FailJob(jobId: jobId, error: ex.Message);
+            throw;
         }
     }
 }

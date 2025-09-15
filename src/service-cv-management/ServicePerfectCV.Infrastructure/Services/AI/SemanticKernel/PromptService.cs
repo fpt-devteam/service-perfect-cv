@@ -27,8 +27,8 @@ public sealed class PromptService : IPromptService
             Interpolate(prompt, variables),
             new OpenAIPromptExecutionSettings
             {
-                Temperature = _opts.Temperature ?? 0.2f,
-                MaxTokens = _opts.MaxTokens ?? 1024
+                Temperature = _opts.Temperature,
+                MaxTokens = _opts.MaxTokens
             },
             kernel: _kernel,
             ct);

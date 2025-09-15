@@ -1,12 +1,25 @@
 namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
 
+public enum AIProvider
+{
+    OpenAI,
+    GoogleAI,
+    Ollama
+}
+
 public sealed class SemanticKernelOptions
 {
-    // OpenAI-compatible (Ollama) settings
-    public string? OpenAIModel { get; set; }           // e.g., "llama3.1:8b"
-    public string? OpenAIApiKey { get; set; }          // e.g., "env:OLLAMA_API_KEY"
-    public string? OpenAIBaseUrl { get; set; }         // e.g., "http://localhost:11434/v1"
+    public AIProvider Provider { get; set; } = AIProvider.Ollama;
 
-    public int? MaxTokens { get; set; } = 1024;
-    public float? Temperature { get; set; } = 0.2f;
+    public string OpenAIModel { get; set; } = "gpt-4o";
+    public string OpenAIApiKey { get; set; } = string.Empty;
+
+    public string GoogleAIModel { get; set; } = "gemini-1.5-flash";
+    public string GoogleAIApiKey { get; set; } = string.Empty;
+
+    public string OllamaAIModel { get; set; } = "llama3.1:latest";
+    public string OllamaEndpoint { get; set; } = "http://localhost:11434";
+
+    public required int MaxTokens { get; set; }
+    public required float Temperature { get; set; }
 }

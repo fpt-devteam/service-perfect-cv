@@ -1,23 +1,19 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ServicePerfectCV.Application.Configurations;
+using ServicePerfectCV.Application.DTOs.AI;
 using ServicePerfectCV.Application.DTOs.Experience.Requests;
 using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.AI;
 using ServicePerfectCV.Application.Mappings;
 using ServicePerfectCV.Application.Services;
-using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Helpers;
 using ServicePerfectCV.Infrastructure.Repositories;
 using ServicePerfectCV.Infrastructure.Repositories.Common;
 using ServicePerfectCV.Infrastructure.Services;
-using System;
-using System.Collections.Generic;
+using ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.WebApi.Extensions
 {
@@ -89,6 +85,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<NotificationService>();
             services.AddScoped<JwtSecurityTokenHandler>();
 
+
             services.AddScoped<GoogleOAuthService>();
             services.AddScoped<LinkedInOAuthService>();
             services.AddSingleton<OAuthServiceFactory>();
@@ -100,8 +97,15 @@ namespace ServicePerfectCV.WebApi.Extensions
             });
 
             // Register job services for async AI processing
-            services.AddSingleton<IJobStore, InMemoryJobStore>();
+            services.AddSingleton<IJobStore<CvAnalysisFinalOutput>, InMemoryJobStore<CvAnalysisFinalOutput>>();
             services.AddScoped<IJobProcessingService, JobProcessingService>();
+
+            services.AddScoped<PromptSanitizeHelper>();
+            services.AddScoped<IJobRubricBuilder, JobRubricBuilder>();
+
+            services.AddScoped<IPromptService, PromptService>();
+            services.AddScoped<IAIOrchestrator, AIOrchestrator>();
+            services.AddScoped<CvReviewerPlugin>();
         }
     }
 }

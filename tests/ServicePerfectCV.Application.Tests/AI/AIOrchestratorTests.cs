@@ -1,5 +1,6 @@
 using ServicePerfectCV.Application.Interfaces.AI;
 using ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
+using Microsoft.SemanticKernel;
 using Moq;
 using Xunit;
 
@@ -18,7 +19,13 @@ public class AIOrchestratorTests
                   .ReturnsAsync("OK");
 
         var plugin = new CvReviewerPlugin();
-        var orchestrator = new AIOrchestrator(mockPrompt.Object, plugin);
+
+        // Create a mock Kernel for the constructor
+        var kernel = Kernel.CreateBuilder()
+            .AddOpenAIChatCompletion("gpt-4", "test-key")
+            .Build();
+
+        var orchestrator = new AIOrchestrator(mockPrompt.Object, plugin, kernel);
 
         var res = await orchestrator.ReviewCvAgainstJdAsync("cv", "jd");
         Assert.Equal("OK", res);
