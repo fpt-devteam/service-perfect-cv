@@ -2,7 +2,7 @@
 {
     public enum PromptType
     {
-        JobRubric,
+        SectionRubricBuilding,
         SectionScoring,
         OverallSummary
     }

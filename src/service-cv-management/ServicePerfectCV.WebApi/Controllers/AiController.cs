@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using ServicePerfectCV.Application.Constants;
 using ServicePerfectCV.Application.DTOs.AI;
 using ServicePerfectCV.Application.Interfaces.AI;
 using ServicePerfectCV.Application.Services;
+using ServicePerfectCV.Infrastructure.Constants;
 
 namespace ServicePerfectCV.WebApi.Controllers;
 
@@ -259,22 +261,266 @@ public sealed class AIController : ControllerBase
 
         _ = Task.Run(async () =>
         {
-            try
-            {
-                await _jobProcessingService.ProcessCvAnalysisJobAsync(
-                    jobId: jobId,
-                    cv: cv,
-                    jd: jd,
-                    ct: ct
-                );
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
+            await _jobProcessingService.ProcessScoreCvSectionJobAsync(
+                jobId: jobId,
+                cv: cv,
+                sectionRubric: MockRubricDictionary(),
+                ct: ct
+            );
         });
 
 
         return Ok(new { jobId });
     }
+
+
+    private SectionRubricDictionary MockRubricDictionary() => new()
+        {
+            { Section.Contact, MockContactRubric() },
+            { Section.Skills, MockSkillRubric() },
+            { Section.Education, MockEducationRubric() },
+            { Section.Experience, MockExperienceRubric() },
+            { Section.Projects, MockProjectsRubric() },
+            { Section.Summary, MockSummaryRubric() }
+        };
+
+    private SectionRubric MockSkillRubric() => new()
+    {
+        Weight0To1 = 0.25,
+        Criteria = new List<SectionRubricCriteria>
+    {
+        new SectionRubricCriteria
+        {
+            Id = "skills.oop_programming",
+            Criterion = "Object-Oriented Programming (OOP) Proficiency",
+            Description = "Evaluate the depth and breadth of programming skills in one or more object-oriented programming languages, including understanding of OOP concepts (encapsulation, inheritance, polymorphism, abstraction) demonstrated through projects or coursework.",
+            Weight0To1 = 0.4,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No mention of OOP languages or minimal exposure without practical application. Basic syntax knowledge at best.",
+                One   = "Limited exposure to an OOP language, only basic syntax, no clear understanding of core OOP principles.",
+                Two   = "Familiarity with one OOP language; can write simple programs but struggles with applying core OOP concepts.",
+                Three = "Solid programming skills in one OOP language (e.g., Python, Java, C++). Can implement basic OOP principles in projects, demonstrating understanding of data structures and algorithms.",
+                Four  = "Strong programming skills in one or more OOP languages. Demonstrates good understanding and application of OOP principles (e.g., design patterns, class hierarchy) in projects. Able to write clean, efficient, and well-structured code.",
+                Five  = "Excellent programming skills in multiple OOP languages or deep expertise in one. Demonstrates advanced application of OOP principles, complex data structures, and algorithms in significant projects. Code is robust, scalable, and follows best practices, showing strong problem-solving capabilities."
+            }
+        },
+        new SectionRubricCriteria
+        {
+            Id = "skills.unix_linux",
+            Criterion = "Unix/Linux Understanding",
+            Description = "Assess the candidate's understanding of Unix/Linux environments, including command-line usage, scripting, file systems, and basic system administration concepts, as 'in-depth understanding' is required.",
+            Weight0To1 = 0.3,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No mention of Unix/Linux experience, or states no familiarity.",
+                One   = "Minimal exposure to Unix/Linux, perhaps through basic commands in a classroom setting, no practical application.",
+                Two   = "Basic familiarity with common Unix/Linux commands (e.g., `ls`, `cd`, `grep`), can navigate the file system.",
+                Three = "Good understanding of Unix/Linux. Proficient with common commands, shell scripting (e.g., Bash), and understands basic file permissions and process management. Applied in coursework or personal projects.",
+                Four  = "Strong, in-depth understanding of Unix/Linux. Comfortable with advanced command-line tools, debugging utilities, scripting for automation, and understands core OS concepts (processes, memory, I/O). Demonstrated in significant projects or previous intern roles.",
+                Five  = "Exceptional, in-depth understanding of Unix/Linux. Can troubleshoot complex issues, write advanced shell scripts, manipulate system processes, and understands system architecture deeply. Potentially contributed to Linux-based projects or managed a personal server environment effectively."
+            }
+        },
+        new SectionRubricCriteria
+        {
+            Id = "skills.problem_solving_analytical",
+            Criterion = "Problem Solving & Analytical Skills",
+            Description = "Evaluate the candidate's inherent ability to break down complex problems, think analytically, and pay strong attention to detail, as evidenced by academic performance, project descriptions, or contest participation.",
+            Weight0To1 = 0.3,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No indication of problem-solving abilities or attention to detail; CV contains errors or inconsistencies.",
+                One   = "Limited evidence of analytical thinking; projects are trivial or poorly explained. CV has minor errors.",
+                Two   = "Basic problem-solving skills evident, perhaps through simple coursework projects. Some attention to detail but not consistently applied.",
+                Three = "Good problem-solving and analytical skills, demonstrated through relevant coursework or projects. Shows reasonable attention to detail in CV and descriptions.",
+                Four  = "Excellent problem-solving and analytical skills, applied to challenging academic problems or complex projects. Strong attention to detail, evidenced by error-free and well-structured CV and project descriptions. Potential participation in competitive programming.",
+                Five  = "Outstanding problem-solving and analytical abilities, evidenced by exceptional academic performance, participation/medals in competitive programming (e.g., Olympiads), or tackling highly complex problems in projects. Demonstrates meticulous attention to detail in all aspects of their work and presentation."
+            }
+        }
+    }
+    };
+
+    private SectionRubric MockContactRubric() => new()
+    {
+        Weight0To1 = 0.10,
+        Criteria = new List<SectionRubricCriteria>
+    {
+        new SectionRubricCriteria
+        {
+            Id = "contact.basic",
+            Criterion = "Professional and Complete Contact Information",
+            Description = "Clear, professional email/phone, plus LinkedIn and/or GitHub.",
+            Weight0To1 = 1.0,
+            Scoring = new ScoringScale
+            {
+                Zero  = "Missing or unprofessional contact info.",
+                One   = "Only email/phone provided, incomplete or unprofessional.",
+                Two   = "Email and phone are present, but missing LinkedIn/GitHub.",
+                Three = "Professional email/phone plus either LinkedIn or GitHub.",
+                Four  = "Professional email/phone plus both LinkedIn and GitHub.",
+                Five  = "Complete, professional contact info with extra links (e.g., portfolio, website) presented clearly."
+            }
+        }
+    }
+    };
+
+    private SectionRubric MockEducationRubric() => new()
+    {
+        Weight0To1 = 0.15,
+        Criteria = new List<SectionRubricCriteria>
+    {
+        new SectionRubricCriteria
+        {
+            Id = "edu.degree",
+            Criterion = "Relevant Degree and Major",
+            Description = "Degree or major in quantitative/technical discipline.",
+            Weight0To1 = 0.6,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No degree or irrelevant major.",
+                One   = "Unrelated major with minimal technical coursework.",
+                Two   = "Currently studying in a relevant field but unclear depth.",
+                Three = "Pursuing or completed relevant degree with average standing.",
+                Four  = "Completed relevant degree with strong performance.",
+                Five  = "Completed relevant degree with exceptional performance or advanced study (graduate-level)."
+            }
+        },
+        new SectionRubricCriteria
+        {
+            Id = "edu.academic",
+            Criterion = "Academic Performance & Achievements",
+            Description = "GPA, scholarships, Olympiad or competition awards.",
+            Weight0To1 = 0.4,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No academic performance mentioned.",
+                One   = "Low GPA or weak academic record.",
+                Two   = "Average GPA without distinctions.",
+                Three = "Good GPA or small awards/scholarships.",
+                Four  = "High GPA and notable academic recognition.",
+                Five  = "Outstanding GPA plus major awards (national/international Olympiad or scholarships)."
+            }
+        }
+    }
+    };
+
+    private SectionRubric MockExperienceRubric() => new()
+    {
+        Weight0To1 = 0.25,
+        Criteria = new List<SectionRubricCriteria>
+    {
+        new SectionRubricCriteria
+        {
+            Id = "exp.problem_solving",
+            Criterion = "Problem Solving & Analytical Skills",
+            Description = "Ability to solve algorithmic or real-world problems effectively.",
+            Weight0To1 = 0.5,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No evidence of problem-solving ability.",
+                One   = "Minimal: basic coursework or trivial tasks.",
+                Two   = "Some problem-solving in small projects or coursework.",
+                Three = "Good: applied problem-solving in internships or personal projects.",
+                Four  = "Strong: coding contests, internships, or complex project work.",
+                Five  = "Outstanding: national/international competitions (ICPC, Olympiad) or advanced research."
+            }
+        },
+        new SectionRubricCriteria
+        {
+            Id = "exp.teamwork",
+            Criterion = "Teamwork & Collaboration",
+            Description = "Ability to work maturely and effectively in a team.",
+            Weight0To1 = 0.3,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No teamwork evidence.",
+                One   = "Basic mention of group coursework.",
+                Two   = "Some collaboration in school projects.",
+                Three = "Good teamwork in internships or hackathons.",
+                Four  = "Strong collaboration: leadership roles or cross-functional teamwork.",
+                Five  = "Exceptional: demonstrated leadership, mentoring, or impactful team contribution."
+            }
+        },
+        new SectionRubricCriteria
+        {
+            Id = "exp.initiative",
+            Criterion = "Initiative & Self-Motivation",
+            Description = "Proactive contributions beyond assignments.",
+            Weight0To1 = 0.2,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No initiative shown.",
+                One   = "Minimal initiative (completed assigned tasks only).",
+                Two   = "Some initiative in small side projects.",
+                Three = "Good initiative: independent learning or side projects.",
+                Four  = "Strong: initiated impactful projects or contributions.",
+                Five  = "Exceptional: consistently proactive, initiating large-scale or innovative projects."
+            }
+        }
+    }
+    };
+
+    private SectionRubric MockProjectsRubric() => new()
+    {
+        Weight0To1 = 0.20,
+        Criteria = new List<SectionRubricCriteria>
+    {
+        new SectionRubricCriteria
+        {
+            Id = "proj.relevance",
+            Criterion = "Technical Relevance to JD",
+            Description = "Projects demonstrate OOP, problem solving, Unix/Linux, or teamwork.",
+            Weight0To1 = 0.7,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No relevant projects.",
+                One   = "Unrelated projects or unclear descriptions.",
+                Two   = "Somewhat related, limited technical detail.",
+                Three = "Relevant projects showing applied technical skills.",
+                Four  = "Strongly relevant projects with good technical depth.",
+                Five  = "Highly relevant, technically complex projects directly aligned with JD."
+            }
+        },
+        new SectionRubricCriteria
+        {
+            Id = "proj.initiative",
+            Criterion = "Initiative & Creativity in Projects",
+            Description = "Evidence of self-driven or innovative project work.",
+            Weight0To1 = 0.3,
+            Scoring = new ScoringScale
+            {
+                Zero  = "Only coursework projects.",
+                One   = "Minimal independent initiative in projects.",
+                Two   = "Some self-initiated projects but small scope.",
+                Three = "Good independent project(s) with practical use.",
+                Four  = "Multiple self-driven, impactful projects.",
+                Five  = "Exceptional: innovative, large-scale, or widely used independent projects."
+            }
+        }
+    }
+    };
+
+    private SectionRubric MockSummaryRubric() => new()
+    {
+        Weight0To1 = 0.05,
+        Criteria = new List<SectionRubricCriteria>
+    {
+        new SectionRubricCriteria
+        {
+            Id = "summary.clarity",
+            Criterion = "Clarity & Relevance of Career Objective",
+            Description = "Clear, relevant objective aligned with job role.",
+            Weight0To1 = 1.0,
+            Scoring = new ScoringScale
+            {
+                Zero  = "No career objective provided.",
+                One   = "Vague or generic objective, not role-specific.",
+                Two   = "Somewhat relevant but lacks clarity or focus.",
+                Three = "Clear and relevant to the role, but could be more specific.",
+                Four  = "Well-written, specific, and clearly aligned with the job role.",
+                Five  = "Exceptional: concise, compelling, and perfectly tailored to the job and company."
+            }
+        }
+    }
+    };
 }

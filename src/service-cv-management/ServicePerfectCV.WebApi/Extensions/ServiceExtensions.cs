@@ -101,11 +101,11 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IJobProcessingService, JobProcessingService>();
 
             services.AddScoped<PromptSanitizeHelper>();
-            services.AddScoped<IJobRubricBuilder, JobRubricBuilder>();
+            services.AddScoped<ISectionRubricBuilder, SectionRubricBuilder>();
 
-            services.AddScoped<IPromptService, PromptService>();
             services.AddScoped<IAIOrchestrator, AIOrchestrator>();
-            services.AddScoped<CvReviewerPlugin>();
+
+            services.AddScoped<SectionScoreService>();
         }
     }
 }

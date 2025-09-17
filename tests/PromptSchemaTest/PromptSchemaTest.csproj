@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\service-cv-management\ServicePerfectCV.Application\ServicePerfectCV.Application.csproj" />
     <ProjectReference Include="..\..\src\service-cv-management\ServicePerfectCV.Infrastructure\ServicePerfectCV.Infrastructure.csproj" />
   </ItemGroup>
 

@@ -1,3 +1,5 @@
+using ServicePerfectCV.Application.Constants;
+
 namespace ServicePerfectCV.Application.DTOs.AI;
 
 public record JobDescription(string Title, string Level, List<string> Requirements);
@@ -18,19 +20,14 @@ public record CvEntity(
     List<ExperienceItem> Experience,
     List<ProjectItem> Projects,
     List<EducationItem> Education,
-    Dictionary<string, string> Languages);
+    Dictionary<string, string> Languages
+);
 
-public record SectionScoreDto(int score_0_5, List<string> strengths, List<string> current_limitations, List<string> improvement_suggestions);
+public record OverallDto(
+    int readiness_score_0_100,
+    string readiness_band,
+    string summary_note,
+    Dictionary<string, double> section_weighted_scores
+);
 
-public record SectionFeedbackMap(
-    SectionScoreDto contact,
-    SectionScoreDto summary,
-    SectionScoreDto skills,
-    SectionScoreDto experience,
-    SectionScoreDto projects,
-    SectionScoreDto education,
-    SectionScoreDto certifications);
-
-public record OverallDto(int readiness_score_0_100, string readiness_band, string summary_note);
-
-public record CvAnalysisFinalOutput(OverallDto? overall = null, SectionFeedbackMap? section_feedback = null);
+public record CvAnalysisFinalOutput(SectionScoreDictionary? sectionScores = null);

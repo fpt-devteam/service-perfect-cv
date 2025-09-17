@@ -19,6 +19,8 @@ public static class SemanticKernelInstaller
             return CreateKernelByProvider(opts);
         });
 
+        services.AddScoped<IAIOrchestrator, AIOrchestrator>();
+
         return services;
     }
 

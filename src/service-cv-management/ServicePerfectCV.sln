@@ -11,13 +11,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Infrastruc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.WebApi", "ServicePerfectCV.WebApi\ServicePerfectCV.WebApi.csproj", "{3CBF79C3-D493-4B59-9454-ED0817489467}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "service-cv-management", "{CA13B030-A1CF-4812-BF72-360E8D8D8B28}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CA13B030-A1CF-4812-BF72-360E8D8D8B28}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "..\..\tools", "{DE2BEB24-BA83-4977-BB13-360218228307}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{DE2BEB24-BA83-4977-BB13-360218228307}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Seeder", "..\..\tools\ServicePerfectCV.Seeder\ServicePerfectCV.Seeder.csproj", "{8B8E3AF9-DA32-4D81-BCFA-0E429A53F4AD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.Application.Tests", "..\..\tests\ServicePerfectCV.Application.Tests\ServicePerfectCV.Application.Tests.csproj", "{BBFAC611-A98A-4E86-A166-CAA4F4775631}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PromptSchemaTest", "..\..\tests\PromptSchemaTest\PromptSchemaTest.csproj", "{76BD9C0B-1BC7-7C69-CF9D-26E683DBD823}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{BBFAC611-A98A-4E86-A166-CAA4F4775631}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BBFAC611-A98A-4E86-A166-CAA4F4775631}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BBFAC611-A98A-4E86-A166-CAA4F4775631}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76BD9C0B-1BC7-7C69-CF9D-26E683DBD823}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76BD9C0B-1BC7-7C69-CF9D-26E683DBD823}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76BD9C0B-1BC7-7C69-CF9D-26E683DBD823}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76BD9C0B-1BC7-7C69-CF9D-26E683DBD823}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

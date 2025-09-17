@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using ServicePerfectCV.Application.Constants;
 using ServicePerfectCV.Application.DTOs.AI;
 using ServicePerfectCV.Application.Interfaces.AI;
 using System.Collections.Concurrent;
@@ -82,7 +83,7 @@ public sealed class InMemoryJobStore<T> : IJobStore<T>
 
 public interface IJobProcessingService
 {
-    Task ProcessCvAnalysisJobAsync(string jobId, CvEntity cv, JobDescription jd, CancellationToken ct = default);
+    Task ProcessScoreCvSectionJobAsync(string jobId, CvEntity cv, SectionRubricDictionary sectionRubric, CancellationToken ct = default);
 }
 
 public sealed class JobProcessingService : IJobProcessingService
@@ -97,7 +98,7 @@ public sealed class JobProcessingService : IJobProcessingService
         _jobStore = jobStore;
     }
 
-    public async Task ProcessCvAnalysisJobAsync(string jobId, CvEntity cv, JobDescription jd, CancellationToken ct = default)
+    public async Task ProcessScoreCvSectionJobAsync(string jobId, CvEntity cv, SectionRubricDictionary sectionRubric, CancellationToken ct = default)
     {
         try
         {
@@ -106,10 +107,12 @@ public sealed class JobProcessingService : IJobProcessingService
 
             _logger.LogInformation("Starting CV analysis job {JobId}", jobId);
 
-            var result = await _orchestrator.AnalyzeCvWithSemanticKernelAsync(cv, jd, ct);
+            var result = await _orchestrator.ScoreCvSectionsAgainstRubricAsync(
+                cv: cv,
+                rubricDictionary: sectionRubric,
+                ct: ct);
 
             _logger.LogInformation("Completed CV analysis job {JobId}", jobId);
-
 
             // Complete the job with the result
             _jobStore.CompleteJob(jobId: jobId, result: result);
@@ -117,9 +120,9 @@ public sealed class JobProcessingService : IJobProcessingService
         catch (Exception ex)
         {
             // Fail the job with error message
-
             _jobStore.FailJob(jobId: jobId, error: ex.Message);
-            throw;
+            _logger.LogError(ex, "Failed CV analysis job {JobId}", jobId);
+            _logger.LogError("Exception: {Message}", ex.Message);
         }
     }
 }
