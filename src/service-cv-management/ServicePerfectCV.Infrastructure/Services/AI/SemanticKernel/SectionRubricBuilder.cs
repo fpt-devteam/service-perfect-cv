@@ -5,6 +5,7 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using OpenAI.Chat;
 using ServicePerfectCV.Application.Constants;
 using ServicePerfectCV.Application.DTOs.AI;
+using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Interfaces.AI;
 using ServicePerfectCV.Infrastructure.Constants;
 using ServicePerfectCV.Infrastructure.Helpers;
@@ -18,16 +19,18 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
         private readonly ILogger<SectionRubricBuilder> _logger;
         private readonly Kernel _kernel;
         private readonly SemanticKernelOptions _options;
+        private readonly IJsonHelper _jsonHelper;
 
-        public SectionRubricBuilder(ILogger<SectionRubricBuilder> logger, Kernel kernel, IOptions<SemanticKernelOptions> options)
+        public SectionRubricBuilder(ILogger<SectionRubricBuilder> logger, Kernel kernel, IOptions<SemanticKernelOptions> options, IJsonHelper jsonHelper)
         {
             _logger = logger;
             _kernel = kernel;
             _options = options.Value;
+            _jsonHelper = jsonHelper;
         }
         public async Task<SectionRubricDictionary> BuildSectionRubricsAsync(JobDescription jd, CancellationToken ct = default)
         {
-            var schema = JsonHelper.GenerateJsonSchema<SectionRubricDictionary>();
+            var schema = _jsonHelper.GenerateJsonSchema<SectionRubricDictionary>();
             _logger.LogDebug("Job Rubric Schema: {Schema}", schema);
 
             var rubricSettings = new OpenAIPromptExecutionSettings
@@ -52,13 +55,13 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
                 {
                     ["title"] = PromptSanitizeHelper.SanitizeInput(jd.Title),
                     ["level"] = PromptSanitizeHelper.SanitizeInput(jd.Level),
-                    ["requirements"] = JsonHelper.Serialize(jd.Requirements),
+                    ["requirements"] = _jsonHelper.Serialize(jd.Requirements),
                     ["rubricSchema"] = schema
                 }, ct);
 
                 var rubricResultJson = rubricResult.ToString();
                 _logger.LogDebug("Rubric JSON: {RubricJson}", rubricResultJson);
-                return JsonHelper.Deserialize<SectionRubricDictionary>(rubricResultJson ?? string.Empty) ?? new SectionRubricDictionary();
+                return _jsonHelper.Deserialize<SectionRubricDictionary>(rubricResultJson ?? string.Empty) ?? new SectionRubricDictionary();
             }
             catch (JsonException ex)
             {

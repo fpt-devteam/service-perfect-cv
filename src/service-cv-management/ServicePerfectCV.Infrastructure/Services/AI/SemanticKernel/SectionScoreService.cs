@@ -4,6 +4,7 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using OpenAI.Chat;
 using ServicePerfectCV.Application.Constants;
+using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Infrastructure.Helpers;
 using System.Text.Json;
 
@@ -14,12 +15,14 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
         private readonly ILogger<SectionScoreService> _logger;
         private readonly Kernel _kernel;
         private readonly SemanticKernelOptions _options;
+        private readonly IJsonHelper _jsonHelper;
 
-        public SectionScoreService(ILogger<SectionScoreService> logger, Kernel kernel, IOptions<SemanticKernelOptions> options)
+        public SectionScoreService(ILogger<SectionScoreService> logger, Kernel kernel, IOptions<SemanticKernelOptions> options, IJsonHelper jsonHelper)
         {
             _logger = logger;
             _kernel = kernel;
             _options = options.Value;
+            _jsonHelper = jsonHelper;
         }
         public async Task<SectionScoreDictionary> ScoreAllSectionsAsync(
            Dictionary<Section, string> rubricDictionary,
@@ -30,16 +33,15 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
             {
                 var sectionRubric = rubricDictionary.TryGetValue(sectionKey, out string? value) ? value : string.Empty;
 
-                return new KeyValuePair<Section, SectionScore>(
+                var tmp = new KeyValuePair<Section, SectionScore>(
                     sectionKey,
                     await ScoreSectionAsync(sectionRubric, contentDictionary[sectionKey], sectionKey.ToString().ToLower(), ct)
                 );
+                return tmp;
             });
 
             var sectionResults = await Task.WhenAll(scoringTasks);
-            var resultDict = sectionResults.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            _logger.LogDebug("Score all sections: {Scores}", JsonHelper.Serialize(resultDict));
-            return new SectionScoreDictionary(resultDict);
+            return new SectionScoreDictionary(sectionResults);
         }
 
         public async Task<SectionScore> ScoreSectionAsync(
@@ -53,7 +55,7 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
                 Temperature = _options.Temperature,
                 ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                     jsonSchemaFormatName: "SectionScore",
-                    jsonSchema: BinaryData.FromString(data: JsonHelper.GenerateJsonSchema<SectionScore>()),
+                    jsonSchema: BinaryData.FromString(data: _jsonHelper.GenerateJsonSchema<SectionScore>()),
                     jsonSchemaIsStrict: true
                 ),
                 MaxTokens = _options.MaxTokens
@@ -71,14 +73,13 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
                     ["sectionName"] = PromptSanitizeHelper.SanitizeInput(sectionName),
                     ["sectionRubric"] = PromptSanitizeHelper.SanitizeInput(sectionRubric),
                     ["sectionContent"] = PromptSanitizeHelper.SanitizeInput(sectionContent),
-                    ["sectionScoreSchema"] = JsonHelper.GenerateJsonSchema<SectionScore>()
+                    ["sectionScoreSchema"] = _jsonHelper.GenerateJsonSchema<SectionScore>()
                 }, ct);
 
                 var sectionScoreResultJson = sectionScoreResult.ToString();
-                _logger.LogDebug("Section Score JSON for {Section}: {ScoreJson}", sectionName, sectionScoreResultJson);
-                var sectionScore = JsonHelper.Deserialize<SectionScore>(sectionScoreResultJson ?? string.Empty)
+                var sectionScore = _jsonHelper.Deserialize<SectionScore>(sectionScoreResultJson)
                     ?? new SectionScore();
-                sectionScore.TotalScore0To5 = sectionScore.CriteriaScores.Sum(c => (int)(c.Score0To5 * c.Weight0To1));
+                sectionScore.TotalScore0To5 = (int)sectionScore.CriteriaScores.Sum(c => c.Score0To5 * c.Weight0To1);
                 return sectionScore;
             }
             catch (JsonException ex)

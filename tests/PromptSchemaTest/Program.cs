@@ -1,4 +1,5 @@
 using ServicePerfectCV.Application.Constants;
+using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Infrastructure.Helpers;
 using System.Text.Json;
 namespace PromptSchemaTest
@@ -9,8 +10,8 @@ namespace PromptSchemaTest
         {
             Console.WriteLine("=== Testing Enhanced JobRubricSchemaManager and SectionScoringSchemaManager ===");
 
-            TestJobRubricSchema();
-            // TestSectionScoringSchema();
+            // TestJobRubricSchema();
+            TestSectionScoringSchema();
         }
 
         private static void TestJobRubricSchema()
@@ -19,7 +20,8 @@ namespace PromptSchemaTest
 
             try
             {
-                var schema = JsonHelper.GenerateJsonSchema<SectionRubricDictionary>();
+                IJsonHelper jsonHelper = new JsonHelper();
+                var schema = jsonHelper.GenerateJsonSchema<SectionRubricDictionary>();
 
                 // Try to parse as JSON to validate
                 using (JsonDocument doc = JsonDocument.Parse(schema))
@@ -50,7 +52,9 @@ namespace PromptSchemaTest
 
             try
             {
-                var schema = JsonHelper.GenerateJsonSchema<SectionRubricDictionary>();
+                IJsonHelper jsonHelper = new JsonHelper();
+                var schema = jsonHelper.GenerateJsonSchema<SectionScore>();
+                Console.WriteLine(schema);
 
                 // Try to parse as JSON to validate
                 using (JsonDocument doc = JsonDocument.Parse(schema))

@@ -2,7 +2,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
+using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Interfaces.AI;
+using ServicePerfectCV.Infrastructure.Helpers;
 using ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
 
 
@@ -20,6 +22,9 @@ public static class SemanticKernelInstaller
         });
 
         services.AddScoped<IAIOrchestrator, AIOrchestrator>();
+        services.AddScoped<IJsonHelper, JsonHelper>();
+        services.AddScoped<ISectionRubricBuilder, SectionRubricBuilder>();
+        services.AddScoped<SectionScoreService>();
 
         return services;
     }

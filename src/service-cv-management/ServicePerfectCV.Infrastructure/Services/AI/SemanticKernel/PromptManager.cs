@@ -157,7 +157,8 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
 
             RESPONSE FORMAT REQUIREMENTS:
             - Return ONLY raw JSON without any markdown formatting
-            - Do NOT use ```json or ``` code blocks
+            - DO NOT USE ```JSON or ``` code blocks
+            - DO NOT USE ```JSON or ``` code blocks
             - Do NOT include any explanatory text before or after the JSON
             - Start your response directly with { and end with }
             - Ensure the JSON is properly formatted and valid

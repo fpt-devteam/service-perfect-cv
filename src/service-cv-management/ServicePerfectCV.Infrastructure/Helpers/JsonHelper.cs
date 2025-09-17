@@ -1,132 +1,83 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Schema.Generation;
-using Newtonsoft.Json.Serialization;
+﻿using Json.Schema;
+using Json.Schema.Generation;
+using ServicePerfectCV.Application.Interfaces;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ServicePerfectCV.Infrastructure.Helpers
 {
-    public static class JsonHelper
+    public class JsonHelper : IJsonHelper
     {
-        // Default Newtonsoft.Json settings:
+        // Default System.Text.Json settings:
         // - CamelCase property names
         // - Enums serialized as string (camelCase)
         // - Null values ignored (to keep JSON compact)
-        private static readonly JsonSerializerSettings DefaultSettings = new()
+        private static readonly JsonSerializerOptions DefaultSettings = new()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Include,
+            PropertyNameCaseInsensitive = true,
+            AllowTrailingCommas = true,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters =
             {
-                new StringEnumConverter(new CamelCaseNamingStrategy())
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
             }
         };
 
         /// <summary>
-        /// Serialize an object to JSON using Newtonsoft.Json.
+        /// Serialize an object to JSON using System.Text.Json.
         /// </summary>
-        public static string Serialize<T>(T obj, JsonSerializerSettings? settings = null)
+        public string Serialize<T>(T obj)
         {
-            return JsonConvert.SerializeObject(obj, settings ?? DefaultSettings);
+            return JsonSerializer.Serialize(obj, DefaultSettings);
         }
 
         /// <summary>
-        /// Deserialize JSON into an object of type T using Newtonsoft.Json.
+        /// Deserialize JSON into an object of type T using System.Text.Json.
         /// </summary>
-        public static T? Deserialize<T>(string json, JsonSerializerSettings? settings = null)
+        public T? Deserialize<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json, settings ?? DefaultSettings);
+            return JsonSerializer.Deserialize<T>(json, DefaultSettings);
         }
 
         /// <summary>
-        /// Deserialize JSON into an object with a runtime type using Newtonsoft.Json.
+        /// Deserialize JSON into an object with a runtime type using System.Text.Json.
         /// </summary>
-        public static object? Deserialize(string json, Type type, JsonSerializerSettings? settings = null)
+        public object? Deserialize(string json, Type type)
         {
-            return JsonConvert.DeserializeObject(json, type, settings ?? DefaultSettings);
+            return JsonSerializer.Deserialize(json, type, DefaultSettings);
         }
 
         // =========================
-        // JSON SCHEMA (Newtonsoft.Json.Schema)
+        // JSON SCHEMA (JsonSchema.Net)
         // =========================
 
-        // Creates a default JSchemaGenerator configuration:
-        // - Required.Default: properties are optional unless explicitly marked
-        // - Stable SchemaId generation
-        // - Enums as string values to match StringEnumConverter
-        private static JSchemaGenerator CreateDefaultSchemaGenerator()
+        /// <summary>
+        /// Generate JSON Schema from a generic type (T) using JsonSchema.Net.
+        /// </summary>
+        public string GenerateJsonSchema<T>()
         {
-            var generator = new JSchemaGenerator
+            var schema = new JsonSchemaBuilder().FromType<T>().Build();
+            var options = new JsonSerializerOptions
             {
-                // Change to Required.Always if you want every property to be required
-                DefaultRequired = Required.Default,
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                SchemaIdGenerationHandling = SchemaIdGenerationHandling.None
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-
-            // Ensure enums are generated as string values
-            generator.GenerationProviders.Add(new StringEnumGenerationProvider());
-
-            // Attributes such as [JsonProperty], [JsonRequired], [DefaultValue], etc.
-            // will be respected automatically by JSchemaGenerator
-            return generator;
+            return JsonSerializer.Serialize(schema, options);
         }
 
         /// <summary>
-        /// Generate JSON Schema from a generic type (T) using Newtonsoft.Json.Schema.
+        /// Generate JSON Schema from a runtime type using JsonSchema.Net.
         /// </summary>
-        public static string GenerateJsonSchema<T>(Action<JSchemaGenerator>? configure = null)
+        public string GenerateJsonSchema(Type type)
         {
-            var generator = CreateDefaultSchemaGenerator();
-            configure?.Invoke(generator);
-
-            var schema = generator.Generate(typeof(T));
-            return schema.ToString();
-        }
-
-        /// <summary>
-        /// Generate JSON Schema from a runtime type using Newtonsoft.Json.Schema.
-        /// </summary>
-        public static string GenerateJsonSchema(Type type, Action<JSchemaGenerator>? configure = null)
-        {
-            var generator = CreateDefaultSchemaGenerator();
-            configure?.Invoke(generator);
-
-            var schema = generator.Generate(type);
-            return schema.ToString();
-        }
-    }
-
-    /// <summary>
-    /// Custom provider to generate enum values as strings in JSON Schema,
-    /// matching StringEnumConverter with camelCase naming.
-    /// </summary>
-    internal sealed class StringEnumGenerationProvider : JSchemaGenerationProvider
-    {
-        public override JSchema GetSchema(JSchemaTypeGenerationContext context)
-        {
-            // Enum -> string type with allowed enum values
-            var schema = new JSchema
+            var schema = new JsonSchemaBuilder().FromType(type).Build();
+            var options = new JsonSerializerOptions
             {
-                Type = JSchemaType.String
+                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-
-            var names = Enum.GetNames(context.ObjectType);
-            foreach (var name in names)
-            {
-                // Convert enum names to camelCase (to match serialization)
-                var camel = char.ToLowerInvariant(name[0]) + name.Substring(1);
-                schema.Enum.Add(new JValue(camel));
-            }
-
-            return schema;
-        }
-
-        public override bool CanGenerateSchema(JSchemaTypeGenerationContext context)
-        {
-            return context.ObjectType.IsEnum;
+            return JsonSerializer.Serialize(schema, options);
         }
     }
 }

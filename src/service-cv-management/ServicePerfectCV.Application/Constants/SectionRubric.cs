@@ -1,21 +1,21 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ServicePerfectCV.Infrastructure.Constants
 {
     public class ScoringScale
     {
-        [JsonProperty("0")]
+        [JsonPropertyName("0")]
         public string Zero { get; set; } = string.Empty;
-        [JsonProperty("1")]
+        [JsonPropertyName("1")]
         public string One { get; set; } = string.Empty;
-        [JsonProperty("2")]
+        [JsonPropertyName("2")]
         public string Two { get; set; } = string.Empty;
-        [JsonProperty("3")]
+        [JsonPropertyName("3")]
         public string Three { get; set; } = string.Empty;
-        [JsonProperty("4")]
+        [JsonPropertyName("4")]
         public string Four { get; set; } = string.Empty;
-        [JsonProperty("5")]
+        [JsonPropertyName("5")]
         public string Five { get; set; } = string.Empty;
     }
 

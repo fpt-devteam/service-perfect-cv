@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Logging;
 using ServicePerfectCV.Application.Constants;
 using ServicePerfectCV.Application.DTOs.AI;
+using ServicePerfectCV.Application.Extensions;
+using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Interfaces.AI;
-using ServicePerfectCV.Infrastructure.Extensions;
-using ServicePerfectCV.Infrastructure.Helpers;
 
 namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
 
@@ -11,15 +11,20 @@ public sealed class AIOrchestrator : IAIOrchestrator
 {
     private readonly ISectionRubricBuilder _rubricBuilder;
     private readonly SectionScoreService _sectionScoreService;
+    private readonly IJsonHelper _jsonHelper;
 
     private static readonly ILogger<AIOrchestrator> _logger = LoggerFactory
         .Create(builder => builder.AddConsole())
         .CreateLogger<AIOrchestrator>();
 
-    public AIOrchestrator(ISectionRubricBuilder rubricBuilder, SectionScoreService sectionScoreService)
+    public AIOrchestrator(
+        ISectionRubricBuilder rubricBuilder,
+        SectionScoreService sectionScoreService,
+        IJsonHelper jsonHelper)
     {
         _rubricBuilder = rubricBuilder;
         _sectionScoreService = sectionScoreService;
+        _jsonHelper = jsonHelper;
     }
 
     public async Task<SectionRubricDictionary> BuildCvSectionRubricsAsync(
@@ -35,12 +40,12 @@ public sealed class AIOrchestrator : IAIOrchestrator
         CancellationToken ct = default)
     {
         var sectionScores = await _sectionScoreService.ScoreAllSectionsAsync(
-           rubricDictionary: rubricDictionary.ToSerializedDictionary(),
-           contentDictionary: cv.ToContentDictionary(),
+           rubricDictionary: rubricDictionary.ToSerializedDictionary(_jsonHelper),
+           contentDictionary: cv.ToContentDictionary(_jsonHelper),
            ct: ct
         );
 
-        _logger.LogDebug("Section Scores: {Scores}", JsonHelper.Serialize(sectionScores));
+        _logger.LogDebug("Section Scores: {Scores}", _jsonHelper.Serialize(sectionScores));
 
         // 4. Calculate overall assessment
         //var overallAssessment = await CalculateOverallAssessmentAsync(jd, sectionScores, ct);
