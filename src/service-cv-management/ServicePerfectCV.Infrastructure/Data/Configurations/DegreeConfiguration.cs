@@ -20,7 +20,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 
             builder.HasIndex(e => new { e.Code, e.Name })
                 .IsUnique()
-                .HasFilter("[DeletedAt] IS NULL");
+                .HasFilter("\"DeletedAt\" IS NULL");
         }
     }
 }

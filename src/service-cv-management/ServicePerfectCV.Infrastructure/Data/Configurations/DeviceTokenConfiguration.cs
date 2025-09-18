@@ -11,7 +11,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.HasKey(dt => dt.Id);
             builder.Property(dt => dt.Token).IsRequired();
             builder.Property(dt => dt.Platform).IsRequired();
-            builder.Property(dt => dt.RegisteredAt).HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(dt => dt.RegisteredAt).HasDefaultValueSql("NOW()");
             builder.HasOne(dt => dt.User)
                 .WithMany(u => u.DeviceTokens)
                 .HasForeignKey(dt => dt.UserId)

@@ -37,7 +37,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(e => e.CreatedAt)
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
 
             builder.Property(e => e.DeletedAt)
                 .IsRequired(false);

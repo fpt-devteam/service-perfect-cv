@@ -32,7 +32,7 @@ namespace ServicePerfectCV.WebApi
             builder.Services.Configure<FcmSettings>(builder.Configuration.GetSection("FcmSettings"));
             builder.Services.Configure<FirebaseCloudStorageSettings>(builder.Configuration.GetSection("FirebaseCloudStorageSettings"));
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddRedis(builder.Configuration);
             builder.Services.AddConfiguredCors(builder.Configuration);

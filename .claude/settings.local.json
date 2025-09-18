@@ -11,7 +11,11 @@
       "Bash(dotnet ef migrations add:*)",
       "Bash(dotnet tool list:*)",
       "Bash(dotnet tool install:*)",
-      "Bash(ren:*)"
+      "Bash(ren:*)",
+      "Bash(dotnet ef migrations:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker-compose logs:*)",
+      "Bash(dotnet ef database update:*)"
     ],
     "deny": [],
     "ask": []

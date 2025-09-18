@@ -23,12 +23,12 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             .IsRequired(false);
 
          builder.Property(c => c.FullContent)
-            .HasColumnType("nvarchar(max)")
+            .HasColumnType("text")
             .IsRequired(false);
 
          builder.Property(c => c.CreatedAt)
                .IsRequired()
-               .HasDefaultValueSql("GETUTCDATE()");
+               .HasDefaultValueSql("NOW()");
          builder.Property(c => c.UpdatedAt)
                .IsRequired(false)
                .HasDefaultValueSql("NULL");

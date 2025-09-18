@@ -17,11 +17,11 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.HasIndex(e => e.Name)
                 .IsUnique()
-                .HasFilter("[DeletedAt] IS NULL");
+                .HasFilter("\"DeletedAt\" IS NULL");
 
             builder.Property(e => e.CreatedAt)
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
 
             builder.Property(e => e.DeletedAt)
                 .IsRequired(false);

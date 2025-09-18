@@ -6,7 +6,6 @@ using ServicePerfectCV.Domain.Enums;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Helpers;
 using System.Text.Json;
-using ServicePerfectCV.Domain.ValueObjects;
 using ServicePerfectCV.Application.DTOs.CV;
 using ServicePerfectCV.Application.DTOs.CV.Responses;
 using ServicePerfectCV.Application.DTOs.Contact.Responses;

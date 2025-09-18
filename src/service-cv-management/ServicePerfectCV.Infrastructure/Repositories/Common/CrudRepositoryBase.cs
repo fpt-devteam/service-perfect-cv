@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Common;
 using ServicePerfectCV.Infrastructure.Data;

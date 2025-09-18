@@ -44,26 +44,47 @@ This command stops all containers and deletes the data volume (note: database da
 
 Migration helps update the database schema (tables, columns, indexes, etc.) based on the data models in your code.
 
-### Add a New Migration
+### Important: PostgreSQL Migration
+
+The project has been migrated from SQL Server to PostgreSQL. If you have existing migrations from SQL Server, follow these steps to clean up:
+
+#### Clean Up Old Migrations (One-time setup)
+
+1. **Remove existing migrations folder:**
+   ```bash
+   rm -rf src/service-cv-management/ServicePerfectCV.Infrastructure/Migrations
+   ```
+
+2. **Create initial migration for PostgreSQL:**
+   ```bash
+   dotnet ef migrations add InitialPostgreSQL --project ./src/service-cv-management/ServicePerfectCV.Infrastructure --startup-project ./src/service-cv-management/ServicePerfectCV.WebApi
+   ```
+
+3. **Update database to apply new migration:**
+   ```bash
+   dotnet ef database update --project ./src/service-cv-management/ServicePerfectCV.Infrastructure --startup-project ./src/service-cv-management/ServicePerfectCV.WebApi
+   ```
+
+### Regular Migration Commands
+
+#### Add a New Migration
 
 ```bash
-dotnet ef migrations add <MigrationName> --project ./ServicePerfectCV.Infrastructure --startup-project ./ServicePerfectCV.WebApi
+dotnet ef migrations add <MigrationName> --project ./src/service-cv-management/ServicePerfectCV.Infrastructure --startup-project ./src/service-cv-management/ServicePerfectCV.WebApi
 ```
 
-### Apply Migration to Database
+#### Apply Migration to Database
 
 ```bash
-
-dotnet ef database update --project ./ServicePerfectCV.Infrastructure --startup-project ./ServicePerfectCV.WebApi
+dotnet ef database update --project ./src/service-cv-management/ServicePerfectCV.Infrastructure --startup-project ./src/service-cv-management/ServicePerfectCV.WebApi
 ```
 
 This command creates or updates the database schema to the latest migration.
 
-### Remove Last Migration (if you need to fix it)
+#### Remove Last Migration (if you need to fix it)
 
 ```bash
-
-dotnet ef migrations remove --project ./ServicePerfectCV.Infrastructure --startup-project ./ServicePerfectCV.WebApi
+dotnet ef migrations remove --project ./src/service-cv-management/ServicePerfectCV.Infrastructure --startup-project ./src/service-cv-management/ServicePerfectCV.WebApi
 ```
 
 ## Seed Data

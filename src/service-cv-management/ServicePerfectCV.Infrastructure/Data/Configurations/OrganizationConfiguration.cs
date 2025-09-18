@@ -18,7 +18,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.HasIndex(e => new { e.Name, e.OrganizationType })
                 .IsUnique()
-                .HasFilter("[DeletedAt] IS NULL");
+                .HasFilter("\"DeletedAt\" IS NULL");
 
             builder.Property(e => e.LogoUrl)
                 .HasMaxLength(maxLength: OrganizationConstraints.LogoUrlMaxLength);
@@ -34,7 +34,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(e => e.CreatedAt)
                 .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasDefaultValueSql("NOW()");
 
             builder.Property(e => e.DeletedAt)
                 .IsRequired(required: false);
