@@ -14,14 +14,8 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
         public void Configure(EntityTypeBuilder<Skill> builder)
         {
             builder.HasKey(s => s.Id);
-            builder.Property(s => s.CategoryId)
-                .IsRequired(false);
 
-            builder.Property(s => s.Category)
-                .IsRequired(true)
-                .HasMaxLength(SkillCategoryConstraint.NameMaxLength);
-
-            builder.Property(s => s.Description)
+            builder.Property(s => s.SkillItems)
                 .IsRequired()
                 .HasMaxLength(1000);
 
@@ -37,12 +31,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .WithMany(c => c.Skills)
                 .HasForeignKey(s => s.CVId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.NoAction);
-                
-            builder.HasOne(s => s.CategoryNavigation)
-                .WithMany(c => c.Skills)
-                .HasForeignKey(s => s.CategoryId)
-                .IsRequired(false)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

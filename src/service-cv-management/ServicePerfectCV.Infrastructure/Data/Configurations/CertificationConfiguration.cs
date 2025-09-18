@@ -34,10 +34,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             .HasForeignKey(cv => cv.CVId)
             .IsRequired().OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(c => c.OrganizationNavigation)
-            .WithMany(org => org.Certifications)
-            .HasForeignKey(org => org.OrganizationId)
-            .IsRequired(false).OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -13,7 +13,6 @@ namespace ServicePerfectCV.Application.Mappings
             CreateMap<Certification, CertificationResponse>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Organization, opt => opt.MapFrom(src => src.Organization))
-                .ForMember(dest => dest.OrganizationId, opt => opt.MapFrom(src => src.OrganizationId))
                 .ForMember(dest => dest.IssuedDate, opt => opt.MapFrom(src => src.IssuedDate))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
 

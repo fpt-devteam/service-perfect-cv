@@ -16,8 +16,5 @@ namespace ServicePerfectCV.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<Experience> Experiences { get; set; } = [];
-        public virtual ICollection<Education> Educations { get; set; } = [];
-        public virtual ICollection<Certification> Certifications { get; set; } = [];
     }
 }

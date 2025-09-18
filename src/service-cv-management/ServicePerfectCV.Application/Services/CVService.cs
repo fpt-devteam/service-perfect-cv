@@ -16,8 +16,7 @@ namespace ServicePerfectCV.Application.Services
 {
     public class CVService(
         ICVRepository cvRepository,
-        IMapper mapper,
-        ICVSnapshotService cvSnapshotService
+        IMapper mapper
     )
     {
         public async Task<CVResponse> CreateAsync(CreateCVRequest request, Guid userId)
@@ -28,7 +27,6 @@ namespace ServicePerfectCV.Application.Services
             await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();
 
-            await cvSnapshotService.UpdateCVSnapshotIfChangedAsync(newCV.Id);
 
             return mapper.Map<CVResponse>(newCV);
         }
@@ -65,7 +63,6 @@ namespace ServicePerfectCV.Application.Services
             cvRepository.Update(cv);
             await cvRepository.SaveChangesAsync();
 
-            await cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cv.Id);
 
             return mapper.Map<CVResponse>(cv);
         }

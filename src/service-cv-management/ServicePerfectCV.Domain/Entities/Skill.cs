@@ -12,9 +12,7 @@ namespace ServicePerfectCV.Domain.Entities
     {
         public Guid Id { get; set; }
         public Guid CVId { get; set; }
-        public Guid? CategoryId { get; set; }
-        public required string Category { get; set; }
-        public required string Description { get; set; }
+        public required string SkillItems { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
@@ -22,6 +20,5 @@ namespace ServicePerfectCV.Domain.Entities
 
         // Navigation properties
         public virtual CV CV { get; set; } = default!;
-        public virtual Category CategoryNavigation { get; set; } = default!;
     }
 }

@@ -75,7 +75,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<CertificationService>();
             services.AddScoped<SummaryService>();
             services.AddScoped<EmploymentTypeService>();
-            services.AddScoped<ICVSnapshotService, CVSnapshotService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICacheService, RedisCacheService>();

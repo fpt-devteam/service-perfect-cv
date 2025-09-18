@@ -5,7 +5,12 @@
       "Bash(dotnet restore:*)",
       "Bash(dotnet build:*)",
       "Bash(dotnet run:*)",
-      "Bash(dir \"C:\\Users\\NHATTHANG\\FptUniversity\\service-perfect-cv\\src\\service-cv-management\\ServicePerfectCV.Application\\Extensions\")"
+      "Bash(dir \"C:\\Users\\NHATTHANG\\FptUniversity\\service-perfect-cv\\src\\service-cv-management\\ServicePerfectCV.Application\\Extensions\")",
+      "Bash(dir \"C:\\Users\\NHATTHANG\\FptUniversity\\service-perfect-cv\\src\\service-cv-management\")",
+      "Bash(dir \"C:\\Users\\NHATTHANG\\FptUniversity\\service-perfect-cv\\src\\service-cv-management\\ServicePerfectCV.Domain\")",
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet tool list:*)",
+      "Bash(dotnet tool install:*)"
     ],
     "deny": [],
     "ask": []

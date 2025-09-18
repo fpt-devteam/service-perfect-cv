@@ -17,20 +17,17 @@ namespace ServicePerfectCV.Application.Services
         private readonly IProjectRepository _projectRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
-        private readonly ICVSnapshotService _cvSnapshotService;
         private readonly NotificationService _notificationService;
 
         public ProjectService(
             IProjectRepository projectRepository,
             ICVRepository cvRepository,
             IMapper mapper,
-            ICVSnapshotService cvSnapshotService,
             NotificationService notificationService)
         {
             _projectRepository = projectRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
-            _cvSnapshotService = cvSnapshotService;
             _notificationService = notificationService;
         }
 
@@ -45,7 +42,6 @@ namespace ServicePerfectCV.Application.Services
             await _projectRepository.CreateAsync(newProject);
             await _projectRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
 
             // Send notification
             await _notificationService.SendProjectUpdateNotificationAsync(cv.UserId, "added");
@@ -65,14 +61,13 @@ namespace ServicePerfectCV.Application.Services
             existingProject.Title = request.Title ?? existingProject.Title;
             existingProject.Description = request.Description ?? existingProject.Description;
             existingProject.Link = request.Link;
-            existingProject.StartDate = request.StartDate;
-            existingProject.EndDate = request.EndDate;
+            existingProject.StartDate = request.StartDate?.ToDateTime(TimeOnly.MinValue);
+            existingProject.EndDate = request.EndDate?.ToDateTime(TimeOnly.MinValue);
             existingProject.UpdatedAt = DateTime.UtcNow;
 
             _projectRepository.Update(existingProject);
             await _projectRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingProject.CVId);
 
             // Send notification
             await _notificationService.SendProjectUpdateNotificationAsync(cv.UserId, "updated");
@@ -104,7 +99,6 @@ namespace ServicePerfectCV.Application.Services
             project.DeletedAt = DateTime.UtcNow;
             _projectRepository.Update(project);
             await _projectRepository.SaveChangesAsync();
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(project.CVId);
 
             // Send notification
             await _notificationService.SendProjectUpdateNotificationAsync(userId, "deleted");

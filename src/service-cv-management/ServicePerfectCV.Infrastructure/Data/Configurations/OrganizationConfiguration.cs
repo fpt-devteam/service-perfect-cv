@@ -39,17 +39,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(e => e.DeletedAt)
                 .IsRequired(required: false);
 
-            builder.HasMany(o => o.Educations)
-                .WithOne(e => e.OrganizationNavigation)
-                .HasForeignKey(o => o.OrganizationId);
-
-            builder.HasMany(o => o.Experiences)
-                .WithOne(e => e.OrganizationNavigation)
-                .HasForeignKey(o => o.OrganizationId);
-
-            builder.HasMany(o => o.Certifications)
-                .WithOne(c => c.OrganizationNavigation)
-                .HasForeignKey(o => o.OrganizationId);
         }
     }
 }

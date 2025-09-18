@@ -33,17 +33,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasForeignKey(e => e.CVId)
                 .OnDelete(deleteBehavior: DeleteBehavior.NoAction);
 
-            builder.HasOne(e => e.DegreeNavigation)
-                .WithMany(degree => degree.Educations)
-                .HasForeignKey(e => e.DegreeId)
-                .IsRequired(required: false)
-                .OnDelete(deleteBehavior: DeleteBehavior.SetNull);
-
-            builder.HasOne(e => e.OrganizationNavigation)
-                .WithMany(o => o.Educations)
-                .HasForeignKey(e => e.OrganizationId)
-                .IsRequired(required: false)
-                .OnDelete(deleteBehavior: DeleteBehavior.SetNull);
         }
     }
 }

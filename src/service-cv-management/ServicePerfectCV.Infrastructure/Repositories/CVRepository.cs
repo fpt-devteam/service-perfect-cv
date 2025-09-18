@@ -66,7 +66,6 @@ namespace ServicePerfectCV.Infrastructure.Repositories
                 .Include(c => c.Contact)
                 .Include(c => c.Summary)
                 .Include(c => c.Skills.Where(skill => skill.DeletedAt == null))
-                    .ThenInclude(s => s.CategoryNavigation)
                 .Include(c => c.Educations.Where(education => education.DeletedAt == null))
                 .Include(c => c.Experiences.Where(experience => experience.DeletedAt == null))
                     .ThenInclude(e => e.EmploymentType)

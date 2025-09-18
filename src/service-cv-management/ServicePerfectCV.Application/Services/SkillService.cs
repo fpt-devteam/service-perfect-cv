@@ -16,24 +16,18 @@ namespace ServicePerfectCV.Application.Services
     {
         private readonly ISkillRepository _skillRepository;
         private readonly ICVRepository _cvRepository;
-        private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
-        private readonly ICVSnapshotService _cvSnapshotService;
         private readonly NotificationService _notificationService;
 
         public SkillService(
             ISkillRepository skillRepository,
             ICVRepository cvRepository,
-            ICategoryRepository categoryRepository,
             IMapper mapper,
-            ICVSnapshotService cvSnapshotService,
             NotificationService notificationService)
         {
             _skillRepository = skillRepository;
             _cvRepository = cvRepository;
-            _categoryRepository = categoryRepository;
             _mapper = mapper;
-            _cvSnapshotService = cvSnapshotService;
             _notificationService = notificationService;
         }
 
@@ -48,7 +42,6 @@ namespace ServicePerfectCV.Application.Services
             await _skillRepository.CreateAsync(newSkill);
             await _skillRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             // Send notification
             await _notificationService.SendSkillUpdateNotificationAsync(userId, "added");
@@ -67,7 +60,6 @@ namespace ServicePerfectCV.Application.Services
             _skillRepository.Update(skillToUpdate);
             await _skillRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             // Send notification
             await _notificationService.SendSkillUpdateNotificationAsync(userId, "updated");
@@ -100,7 +92,6 @@ namespace ServicePerfectCV.Application.Services
             _skillRepository.Update(skill);
             await _skillRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             // Send notification
             await _notificationService.SendSkillUpdateNotificationAsync(userId, "deleted");

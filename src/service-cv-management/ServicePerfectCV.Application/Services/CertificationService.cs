@@ -16,7 +16,6 @@ namespace ServicePerfectCV.Application.Services
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
         private readonly IOrganizationRepository _organizationRepository;
-        private readonly ICVSnapshotService _cvSnapshotService;
         private readonly NotificationService _notificationService;
 
         public CertificationService(
@@ -24,14 +23,12 @@ namespace ServicePerfectCV.Application.Services
             ICVRepository cvRepository,
             IMapper mapper,
             IOrganizationRepository organizationRepository,
-            ICVSnapshotService cvSnapshotService,
             NotificationService notificationService)
         {
             _certificationRepository = certificationRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
             _organizationRepository = organizationRepository;
-            _cvSnapshotService = cvSnapshotService;
             _notificationService = notificationService;
         }
 
@@ -44,12 +41,10 @@ namespace ServicePerfectCV.Application.Services
             var newCertification = _mapper.Map<Certification>(source: request);
             newCertification.Id = Guid.NewGuid();
             newCertification.CVId = cvId;
-            newCertification.OrganizationId = (await _organizationRepository.GetByNameAsync(request.Organization))?.Id;
 
             await _certificationRepository.CreateAsync(entity: newCertification);
             await _certificationRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             // Send notification
             await _notificationService.SendCertificationUpdateNotificationAsync(cv.UserId, "added");
@@ -68,16 +63,14 @@ namespace ServicePerfectCV.Application.Services
                 throw new DomainException(CertificationErrors.CVNotFound);
 
             existingCertification.Name = request.Name;
-            existingCertification.OrganizationId = (await _organizationRepository.GetByNameAsync(request.Organization))?.Id;
             existingCertification.Organization = request.Organization;
-            existingCertification.IssuedDate = request.IssuedDate;
+            existingCertification.IssuedDate = request.IssuedDate?.ToDateTime(TimeOnly.MinValue);
             existingCertification.Description = request.Description;
             existingCertification.UpdatedAt = DateTime.UtcNow;
 
             _certificationRepository.Update(entity: existingCertification);
             await _certificationRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingCertification.CVId);
 
             // Send notification
             await _notificationService.SendCertificationUpdateNotificationAsync(cv.UserId, "updated");
@@ -125,7 +118,6 @@ namespace ServicePerfectCV.Application.Services
             certification.DeletedAt = DateTime.UtcNow;
             _certificationRepository.Update(entity: certification);
             await _certificationRepository.SaveChangesAsync();
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(certification.CVId);
 
             // Send notification
             await _notificationService.SendCertificationUpdateNotificationAsync(userId, "deleted");

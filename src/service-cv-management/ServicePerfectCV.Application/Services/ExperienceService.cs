@@ -18,7 +18,6 @@ namespace ServicePerfectCV.Application.Services
         private readonly IJobTitleRepository _jobTitleRepository;
         private readonly IEmploymentTypeRepository _employmentTypeRepository;
         private readonly IOrganizationRepository _organizationRepository;
-        private readonly ICVSnapshotService _cvSnapshotService;
         private readonly NotificationService _notificationService;
 
         public ExperienceService(
@@ -28,7 +27,6 @@ namespace ServicePerfectCV.Application.Services
             IJobTitleRepository jobTitleRepository,
             IEmploymentTypeRepository employmentTypeRepository,
             IOrganizationRepository organizationRepository,
-            ICVSnapshotService cvSnapshotService,
             NotificationService notificationService)
         {
             _experienceRepository = experienceRepository;
@@ -37,7 +35,6 @@ namespace ServicePerfectCV.Application.Services
             _jobTitleRepository = jobTitleRepository;
             _employmentTypeRepository = employmentTypeRepository;
             _organizationRepository = organizationRepository;
-            _cvSnapshotService = cvSnapshotService;
             _notificationService = notificationService;
         }
 
@@ -53,13 +50,10 @@ namespace ServicePerfectCV.Application.Services
 
             var newExperience = _mapper.Map<Experience>(request);
             newExperience.CVId = cvId;
-            newExperience.JobTitleId = (await _jobTitleRepository.GetByNameAsync(request.JobTitle))?.Id;
-            newExperience.OrganizationId = (await _organizationRepository.GetByNameAsync(request.Organization))?.Id;
 
             await _experienceRepository.CreateAsync(newExperience);
             await _experienceRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(cvId);
 
             // Send notification
             await _notificationService.SendExperienceUpdateNotificationAsync(cv.UserId, "added");
@@ -81,24 +75,18 @@ namespace ServicePerfectCV.Application.Services
             if (employmentType == null)
                 throw new DomainException(EmploymentTypeErrors.NotFound);
 
-            var jobTitle = await _jobTitleRepository.GetByNameAsync(request.JobTitle);
-            var organization = await _organizationRepository.GetByNameAsync(request.Organization);
-
             existingExperience.JobTitle = request.JobTitle;
-            existingExperience.JobTitleId = jobTitle?.Id;
             existingExperience.EmploymentTypeId = employmentType.Id;
             existingExperience.Organization = request.Organization;
-            existingExperience.OrganizationId = organization?.Id;
             existingExperience.Location = request.Location;
-            existingExperience.StartDate = request.StartDate;
-            existingExperience.EndDate = request.EndDate;
+            existingExperience.StartDate = request.StartDate.ToDateTime(TimeOnly.MinValue);
+            existingExperience.EndDate = request.EndDate.ToDateTime(TimeOnly.MinValue);
             existingExperience.Description = request.Description;
             existingExperience.UpdatedAt = DateTime.UtcNow;
 
             _experienceRepository.Update(existingExperience);
             await _experienceRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(existingExperience.CVId);
 
             // Send notification
             await _notificationService.SendExperienceUpdateNotificationAsync(cv.UserId, "updated");
@@ -135,8 +123,6 @@ namespace ServicePerfectCV.Application.Services
             _experienceRepository.Update(experience);
             await _experienceRepository.SaveChangesAsync();
 
-            // Update CV snapshot after deleting experience
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(experience.CVId);
 
             // Send notification
             await _notificationService.SendExperienceUpdateNotificationAsync(userId, "deleted");

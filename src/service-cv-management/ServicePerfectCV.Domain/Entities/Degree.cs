@@ -13,7 +13,5 @@ namespace ServicePerfectCV.Domain.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        // Navigation property
-        public virtual ICollection<Education> Educations { get; set; } = [];
     }
 }

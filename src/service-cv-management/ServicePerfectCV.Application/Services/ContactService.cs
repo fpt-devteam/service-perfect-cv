@@ -15,20 +15,17 @@ namespace ServicePerfectCV.Application.Services
         private readonly IContactRepository _contactRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
-        private readonly ICVSnapshotService _cvSnapshotService;
         private readonly NotificationService _notificationService;
 
         public ContactService(
             IContactRepository contactRepository,
             ICVRepository cvRepository,
             IMapper mapper,
-            ICVSnapshotService cvSnapshotService,
             NotificationService notificationService)
         {
             _contactRepository = contactRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
-            _cvSnapshotService = cvSnapshotService;
             _notificationService = notificationService;
         }
 
@@ -47,8 +44,7 @@ namespace ServicePerfectCV.Application.Services
                 await _contactRepository.CreateAsync(newContact);
                 await _contactRepository.SaveChangesAsync();
 
-                await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
-
+                
                 // Send notification
                 await _notificationService.SendContactUpdateNotificationAsync(cv.UserId);
 
@@ -66,8 +62,7 @@ namespace ServicePerfectCV.Application.Services
             _contactRepository.Update(existingContact);
             await _contactRepository.SaveChangesAsync();
 
-            await _cvSnapshotService.UpdateCVSnapshotIfChangedAsync(request.CVId);
-
+            
             // Send notification
             await _notificationService.SendContactUpdateNotificationAsync(cv.UserId);
 

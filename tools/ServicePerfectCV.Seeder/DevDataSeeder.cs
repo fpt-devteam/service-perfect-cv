@@ -207,10 +207,8 @@ namespace ServicePerfectCV.Seeder
                     return id;
                 })
                 .RuleFor(e => e.CVId, f => f.PickRandom(_cvIds))
-                .RuleFor(e => e.JobTitleId, f => _jobTitleIds.Any() ? f.PickRandom(_jobTitleIds) : (Guid?)null)
                 .RuleFor(e => e.JobTitle, f => f.Name.JobTitle())
                 .RuleFor(e => e.EmploymentTypeId, f => f.PickRandom(_employmentTypeIds))
-                .RuleFor(e => e.OrganizationId, f => _organizationIds.Any() ? f.PickRandom(_organizationIds) : (Guid?)null)
                 .RuleFor(e => e.Organization, f => f.Company.CompanyName())
                 .RuleFor(e => e.Location, f => f.Address.City())
                 .RuleFor(e => e.StartDate, f => DateOnly.FromDateTime(f.Date.Past(5)))
