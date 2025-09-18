@@ -1,4 +1,4 @@
-using ServicePerfectCV.Domain.ValueObjects;
+using ServicePerfectCV.Application.DTOs.CV;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,6 +12,6 @@ namespace ServicePerfectCV.Application.DTOs.CV.Requests
         [Required(ErrorMessage = "Title is required.")]
         [MaxLength(200, ErrorMessage = "Title cannot exceed 200 characters.")]
         public required string Title { get; init; }
-        public JobDetail? JobDetail { get; init; } = null;
+        public JobDescriptionDto? JobDescription { get; init; } = null;
     }
 }

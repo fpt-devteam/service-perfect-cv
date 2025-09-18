@@ -1,3 +1,4 @@
+using ServicePerfectCV.Application.DTOs.CV;
 using ServicePerfectCV.Application.DTOs.Education.Requests;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace ServicePerfectCV.Application.DTOs.CV.Requests
     {
         [MaxLength(200, ErrorMessage = "Title cannot exceed 200 characters.")]
         public string Title { get; init; } = null!;
-        public JobDetailDto? JobDetail { get; init; }
+        public JobDescriptionDto? JobDescription { get; init; }
         public Guid? AnalysisId { get; init; }
     }
 }

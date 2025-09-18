@@ -6,7 +6,6 @@ using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
-using ServicePerfectCV.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,9 +49,9 @@ namespace ServicePerfectCV.Application.Services
                 cv.Title = request.Title;
             }
 
-            if (request.JobDetail != null)
+            if (request.JobDescription != null)
             {
-                cv.JobDetail = mapper.Map<JobDetail>(request.JobDetail);
+                cv.JobDescription = mapper.Map<JobDescription>(request.JobDescription);
             }
 
             if (request.AnalysisId.HasValue)

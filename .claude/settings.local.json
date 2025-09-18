@@ -10,7 +10,8 @@
       "Bash(dir \"C:\\Users\\NHATTHANG\\FptUniversity\\service-perfect-cv\\src\\service-cv-management\\ServicePerfectCV.Domain\")",
       "Bash(dotnet ef migrations add:*)",
       "Bash(dotnet tool list:*)",
-      "Bash(dotnet tool install:*)"
+      "Bash(dotnet tool install:*)",
+      "Bash(ren:*)"
     ],
     "deny": [],
     "ask": []

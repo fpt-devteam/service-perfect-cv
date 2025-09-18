@@ -19,7 +19,7 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
         public Guid? AnalysisId { get; init; }
         public DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; init; }
-        public JobDetailDto? JobDetail { get; init; }
+        public JobDescriptionDto? JobDescription { get; init; }
         public ContactResponse? Contact { get; init; }
         public SummaryResponse? Summary { get; init; }
         public IEnumerable<SkillResponse> Skills { get; init; } = new List<SkillResponse>();

@@ -1,5 +1,4 @@
 using ServicePerfectCV.Domain.Common;
-using ServicePerfectCV.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,6 @@ namespace ServicePerfectCV.Domain.Entities
         public Guid UserId { get; set; }
         public Guid? VersionId { get; set; }
         public Guid? AnalysisId { get; set; }
-        public JobDetail? JobDetail { get; set; }
         public string Title { get; set; } = default!;
         public string? FullContent { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -23,6 +21,7 @@ namespace ServicePerfectCV.Domain.Entities
 
         // Navigation properties
         public User User { get; set; } = default!;
+        public JobDescription? JobDescription { get; set; }
         public Contact Contact { get; set; } = default!;
         public Summary Summary { get; set; } = default!;
         public ICollection<Education> Educations { get; set; } = [];

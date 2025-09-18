@@ -61,20 +61,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             .WithOne(ce => ce.CV)
             .HasForeignKey(ce => ce.CVId);
 
-         builder.OwnsOne(c => c.JobDetail, jd =>
-         {
-            jd.Property(p => p.JobTitle)
-                     .HasColumnName("JobTitle")
-                     .HasMaxLength(100);
-
-            jd.Property(p => p.CompanyName)
-                     .HasColumnName("CompanyName")
-                     .HasMaxLength(120);
-
-            jd.Property(p => p.Description)
-                     .HasColumnName("JobDescription")
-                     .HasMaxLength(5000);
-         });
       }
    }
 }
