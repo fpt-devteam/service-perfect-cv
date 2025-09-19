@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet build)",
+      "Read(//c/Users/NHATTHANG/FptUniversity/service-perfect-cv/tools/ServicePerfectCV.Seeder/**)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet ef migrations remove:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

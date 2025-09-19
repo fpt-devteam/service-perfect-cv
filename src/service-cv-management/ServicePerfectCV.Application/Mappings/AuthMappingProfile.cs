@@ -13,6 +13,12 @@ namespace ServicePerfectCV.Application.Mappings
     {
         public AuthMappingProfile()
         {
+            // Global type converters for DateTime/DateOnly
+            CreateMap<DateTime, DateOnly>().ConvertUsing(src => DateOnly.FromDateTime(src));
+            CreateMap<DateTime?, DateOnly?>().ConvertUsing(src => src.HasValue ? DateOnly.FromDateTime(src.Value) : null);
+            CreateMap<DateOnly, DateTime>().ConvertUsing(src => src.ToDateTime(TimeOnly.MinValue));
+            CreateMap<DateOnly?, DateTime?>().ConvertUsing(src => src.HasValue ? src.Value.ToDateTime(TimeOnly.MinValue) : null);
+
             CreateMap<RegisterRequest, User>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore())

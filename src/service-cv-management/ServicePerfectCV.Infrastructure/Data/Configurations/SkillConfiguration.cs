@@ -15,9 +15,13 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
         {
             builder.HasKey(s => s.Id);
 
-            builder.Property(s => s.SkillItems)
+            builder.Property(s => s.Content)
                 .IsRequired()
                 .HasMaxLength(1000);
+
+            builder.Property(s => s.Category)
+                .IsRequired()
+                .HasMaxLength(100);
 
             builder.Property(s => s.CreatedAt)
                 .IsRequired();

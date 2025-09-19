@@ -201,8 +201,8 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     Degree = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Organization = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
                     FieldOfStudy = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     Gpa = table.Column<decimal>(type: "numeric(3,2)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -305,7 +305,8 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CVId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SkillItems = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    Content = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    Category = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)

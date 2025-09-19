@@ -42,10 +42,6 @@ namespace ServicePerfectCV.Application.Services
             await _skillRepository.CreateAsync(newSkill);
             await _skillRepository.SaveChangesAsync();
 
-
-            // Send notification
-            await _notificationService.SendSkillUpdateNotificationAsync(userId, "added");
-
             return _mapper.Map<SkillResponse>(newSkill);
         }
 
@@ -59,10 +55,6 @@ namespace ServicePerfectCV.Application.Services
 
             _skillRepository.Update(skillToUpdate);
             await _skillRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendSkillUpdateNotificationAsync(userId, "updated");
 
             return _mapper.Map<SkillResponse>(skillToUpdate);
         }
@@ -91,10 +83,6 @@ namespace ServicePerfectCV.Application.Services
             skill.DeletedAt = DateTime.UtcNow;
             _skillRepository.Update(skill);
             await _skillRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendSkillUpdateNotificationAsync(userId, "deleted");
         }
     }
 }

@@ -32,11 +32,11 @@ namespace ServicePerfectCV.Domain.ValueObjects
 
     public class EducationInfo
     {
-        public string Degree { get; set; } = string.Empty;
-        public string Organization { get; set; } = string.Empty;
+        public required string Degree { get; set; }
+        public required string Organization { get; set; }
         public string? FieldOfStudy { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         public string? Description { get; set; }
         public decimal? Gpa { get; set; }
     }
@@ -63,7 +63,8 @@ namespace ServicePerfectCV.Domain.ValueObjects
 
     public class SkillInfo
     {
-        public string SkillItems { get; set; } = string.Empty;
+        public required string Category { get; set; }
+        public required string Content { get; set; }
     }
 
     public class CertificationInfo

@@ -15,7 +15,8 @@
       "Bash(dotnet ef migrations:*)",
       "Bash(docker-compose up:*)",
       "Bash(docker-compose logs:*)",
-      "Bash(dotnet ef database update:*)"
+      "Bash(dotnet ef database update:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []

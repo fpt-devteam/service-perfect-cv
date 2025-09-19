@@ -47,10 +47,6 @@ namespace ServicePerfectCV.Application.Services
             await _educationRepository.CreateAsync(newEducation);
             await _educationRepository.SaveChangesAsync();
 
-
-            // Send notification
-            await _notificationService.SendEducationUpdateNotificationAsync(cv.UserId, "added");
-
             return _mapper.Map<EducationResponse>(newEducation);
         }
 
@@ -64,21 +60,17 @@ namespace ServicePerfectCV.Application.Services
             if (cv == null)
                 throw new DomainException(EducationErrors.CVNotFound);
 
-            existingEducation.Degree = request.Degree;
-            existingEducation.Organization = request.Organization;
-            existingEducation.FieldOfStudy = request.FieldOfStudy;
-            existingEducation.StartDate = request.StartDate.ToDateTime(TimeOnly.MinValue);
-            existingEducation.EndDate = request.EndDate.ToDateTime(TimeOnly.MinValue);
-            existingEducation.Description = request.Description;
-            existingEducation.Gpa = request.Gpa;
+            existingEducation.Degree = request.Degree ?? existingEducation.Degree;
+            existingEducation.Organization = request.Organization ?? existingEducation.Organization;
+            existingEducation.FieldOfStudy = request.FieldOfStudy ?? existingEducation.FieldOfStudy;
+            existingEducation.StartDate = request.StartDate ?? existingEducation.StartDate;
+            existingEducation.EndDate = request.EndDate ?? existingEducation.EndDate;
+            existingEducation.Description = request.Description ?? existingEducation.Description;
+            existingEducation.Gpa = request.Gpa ?? existingEducation.Gpa;
             existingEducation.UpdatedAt = DateTime.UtcNow;
 
             _educationRepository.Update(existingEducation);
             await _educationRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendEducationUpdateNotificationAsync(cv.UserId, "updated");
 
             return _mapper.Map<EducationResponse>(existingEducation);
         }
@@ -111,10 +103,6 @@ namespace ServicePerfectCV.Application.Services
             education.DeletedAt = DateTime.UtcNow;
             _educationRepository.Update(education);
             await _educationRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendEducationUpdateNotificationAsync(userId, "deleted");
         }
     }
 }

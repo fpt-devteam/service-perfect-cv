@@ -277,8 +277,19 @@ namespace ServicePerfectCV.Seeder
                 .RuleFor(e => e.EmploymentTypeId, f => f.PickRandom(_employmentTypeIds))
                 .RuleFor(e => e.Organization, f => f.Company.CompanyName())
                 .RuleFor(e => e.Location, f => f.Address.City())
-                .RuleFor(e => e.StartDate, f => f.Date.Past(5).ToUniversalTime())
-                .RuleFor(e => e.EndDate, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(e => e.StartDate, f => f.Date.Past(5))
+                .RuleFor(e => e.EndDate, (f, e) =>
+                {
+                    // Generate a random duration between 1 month and 3 years for work experience
+                    var durationInDays = f.Random.Int(30, 1095); // 30 days to 3 years
+                    var endDate = e.StartDate.AddDays(durationInDays);
+
+                    // Ensure EndDate doesn't exceed current time
+                    if (endDate > DateTime.UtcNow)
+                        endDate = DateTime.UtcNow.AddDays(-f.Random.Int(1, 30));
+
+                    return endDate;
+                })
                 .RuleFor(e => e.Description, f => f.Lorem.Paragraph())
                 .RuleFor(e => e.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(e => e.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
@@ -318,7 +329,20 @@ namespace ServicePerfectCV.Seeder
                 .RuleFor(p => p.Description, f => f.Lorem.Paragraph())
                 .RuleFor(p => p.Link, f => f.Internet.Url())
                 .RuleFor(p => p.StartDate, f => f.Date.Past(2).ToUniversalTime())
-                .RuleFor(p => p.EndDate, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(p => p.EndDate, (f, p) =>
+                {
+                    if (!p.StartDate.HasValue) return null;
+
+                    // Generate a random duration between 1 week and 2 years for projects
+                    var durationInDays = f.Random.Int(7, 730); // 7 days to 2 years
+                    var endDate = p.StartDate.Value.AddDays(durationInDays);
+
+                    // Ensure EndDate doesn't exceed current time
+                    if (endDate > DateTime.UtcNow)
+                        endDate = DateTime.UtcNow.AddDays(-f.Random.Int(1, 30));
+
+                    return endDate.ToUniversalTime();
+                })
                 .RuleFor(p => p.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(p => p.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(p => p.DeletedAt, f => null);
@@ -502,23 +526,23 @@ namespace ServicePerfectCV.Seeder
                     return id;
                 })
                 .RuleFor(s => s.CVId, f => f.PickRandom(_cvIds))
-                .RuleFor(s => s.SkillItems, f => f.PickRandom(new[]
+                .RuleFor(s => s.Content, f => f.PickRandom(new[]
                 {
-                    "C#",
-                    "Java",
-                    "Python",
-                    "JavaScript",
-                    "SQL",
-                    "HTML/CSS",
-                    "ReactJS",
-                    "Angular",
-                    "Node.js",
-                    "ASP.NET Core",
-                    "Django",
-                    "Flask",
-                    "Ruby on Rails",
-                    "Swift",
-                    "Kotlin"
+                    "Proficient in C# and .NET Core for backend development and API design.",
+                    "Experienced with Java and Spring Boot for scalable enterprise applications.",
+                    "Skilled in Python for scripting, automation, and data analysis tasks.",
+                    "Strong knowledge of JavaScript, TypeScript, and modern frontend frameworks such as React and Angular.",
+                    "Expertise in SQL and database design, including performance optimization and query tuning.",
+                    "Hands-on experience with cloud platforms like Azure and AWS for deploying and managing applications.",
+                    "Familiar with CI/CD pipelines, Docker, and Kubernetes for DevOps and container orchestration.",
+                    "Solid understanding of RESTful API development and integration.",
+                    "Knowledgeable in software architecture patterns, including microservices and event-driven systems.",
+                    "Experienced in Agile methodologies, code reviews, and collaborative development practices.",
+                    "Ability to write unit tests and implement test-driven development (TDD).",
+                    "Skilled in troubleshooting, debugging, and optimizing application performance.",
+                    "Experience with version control systems such as Git and GitHub.",
+                    "Understanding of security best practices in web and cloud applications.",
+                    "Ability to mentor junior developers and contribute to technical documentation."
                 }))
                 .RuleFor(s => s.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(s => s.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
@@ -680,10 +704,21 @@ namespace ServicePerfectCV.Seeder
                     "Mathematics",
                     "Physics"
                 }))
-                .RuleFor(e => e.StartDate, f => f.Date.Past(10).ToUniversalTime())
-                .RuleFor(e => e.EndDate, (f, e) => e.StartDate.HasValue ?
-                    f.Date.Between(e.StartDate.Value, DateTime.UtcNow).ToUniversalTime() :
-                    (DateTime?)null)
+                .RuleFor(p => p.StartDate, f => DateOnly.FromDateTime(f.Date.Past(5)))
+                .RuleFor(e => e.EndDate, (f, e) =>
+                {
+                    if (!e.StartDate.HasValue) return null;
+
+                    // Generate a random duration between 1 month and 4 years
+                    var durationInDays = f.Random.Int(30, 1460); // 30 days to 4 years
+                    var endDate = e.StartDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(durationInDays);
+
+                    // Ensure EndDate doesn't exceed current time
+                    if (endDate > DateTime.UtcNow)
+                        endDate = DateTime.UtcNow.AddDays(-f.Random.Int(1, 30));
+
+                    return DateOnly.FromDateTime(endDate);
+                })
                 .RuleFor(e => e.Description, f => f.Lorem.Sentences(2))
                 .RuleFor(e => e.Gpa, f => f.Random.Decimal(2.0m, 4.0m))
                 .RuleFor(e => e.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
@@ -874,7 +909,8 @@ namespace ServicePerfectCV.Seeder
                     }).ToList(),
                     Skills = cv.Skills.Select(s => new SkillInfo
                     {
-                        SkillItems = s.SkillItems
+                        Content = s.Content,
+                        Category = s.Category
                     }).ToList(),
                     Certifications = cv.Certifications.Select(c => new CertificationInfo
                     {

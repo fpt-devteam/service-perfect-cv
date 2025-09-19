@@ -12,8 +12,8 @@ namespace ServicePerfectCV.Domain.Entities
     {
         public Guid Id { get; set; }
         public Guid CVId { get; set; }
-        public required string SkillItems { get; set; }
-
+        public required string Content { get; set; }
+        public required string Category { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

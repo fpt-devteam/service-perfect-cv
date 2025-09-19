@@ -25,6 +25,12 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(property => property.Description)
                 .HasMaxLength(maxLength: EducationConstraints.DescriptionMaxLength);
 
+            builder.Property(property => property.StartDate)
+                .HasColumnType("date");
+
+            builder.Property(property => property.EndDate)
+                .HasColumnType("date");
+
             builder.Property(property => property.Gpa)
                 .HasColumnType(typeName: "decimal(3, 2)");
 

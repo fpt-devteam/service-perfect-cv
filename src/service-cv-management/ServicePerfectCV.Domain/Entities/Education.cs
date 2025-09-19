@@ -13,8 +13,8 @@ namespace ServicePerfectCV.Domain.Entities
         public required string Organization { get; set; }
 
         public string? FieldOfStudy { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         public string? Description { get; set; }
         public decimal? Gpa { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -15,11 +15,9 @@ namespace ServicePerfectCV.Application.Mappings
 
             CreateMap<CreateSkillRequest, Skill>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
-                .ForMember(dest => dest.CVId, opt => opt.Ignore())
-                .ForMember(dest => dest.SkillItems, opt => opt.MapFrom(src => src.Description));
+                .ForMember(dest => dest.CVId, opt => opt.Ignore());
 
             CreateMap<UpdateSkillRequest, Skill>()
-                .ForMember(dest => dest.SkillItems, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.CVId, opt => opt.Ignore());
 
             CreateMap<Category, CategoryResponse>();
