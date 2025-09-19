@@ -1,4 +1,5 @@
 using ServicePerfectCV.Domain.Common;
+using ServicePerfectCV.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace ServicePerfectCV.Domain.Entities
         public Guid? VersionId { get; set; }
         public Guid? AnalysisId { get; set; }
         public string Title { get; set; } = default!;
-        public string? FullContent { get; set; }
+        public CVContent? Content { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

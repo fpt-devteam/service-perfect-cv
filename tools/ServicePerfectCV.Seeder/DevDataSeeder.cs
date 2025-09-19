@@ -6,13 +6,7 @@ using ServicePerfectCV.Domain.Enums;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Helpers;
 using System.Text.Json;
-using ServicePerfectCV.Application.DTOs.CV;
-using ServicePerfectCV.Application.DTOs.CV.Responses;
-using ServicePerfectCV.Application.DTOs.Contact.Responses;
-using ServicePerfectCV.Application.DTOs.Education.Responses;
-using ServicePerfectCV.Application.DTOs.Experience.Responses;
-using ServicePerfectCV.Application.DTOs.Project.Responses;
-using ServicePerfectCV.Application.DTOs.Certification.Responses;
+using ServicePerfectCV.Domain.ValueObjects;
 
 namespace ServicePerfectCV.Seeder
 {
@@ -23,13 +17,13 @@ namespace ServicePerfectCV.Seeder
         private List<Guid> _jobTitleIds = new List<Guid>();
         private List<Guid> _employmentTypeIds = new List<Guid>();
         private List<Guid> _organizationIds = new List<Guid>();
+        private List<Guid> _categoryIds = new List<Guid>();
         private List<Guid> _certificationIds = new List<Guid>();
         private List<Guid> _experienceIds = new List<Guid>();
         private List<Guid> _projectIds = new List<Guid>();
         private List<Guid> _degreeIds = new List<Guid>();
         private List<Guid> _educationIds = new List<Guid>();
         private List<Guid> _contactIds = new List<Guid>();
-        private List<Guid> _categoryIds = new List<Guid>();
         private List<Guid> _skillIds = new List<Guid>();
         private List<Guid> _summaryIds = new List<Guid>();
         private Guid _thangUserId = Guid.NewGuid();
@@ -37,7 +31,6 @@ namespace ServicePerfectCV.Seeder
         public async Task RunAsync(CancellationToken ct)
         {
             await dbContext.Database.MigrateAsync(ct);
-            // Uncomment the line below if you want to clear all data before seeding
             await ClearAllDataAsync(ct);
 
             await SeedUsersAsync(ct);
@@ -45,7 +38,6 @@ namespace ServicePerfectCV.Seeder
             await SeedOrganizationsAsync(ct);
             await SeedJobsTitleAsync(ct);
             await SeedDegreesAsync(ct);
-            await SeedCategoriesAsync(ct);
             await SeedCVsAsync(ct);
             await SeedExperiencesAsync(ct);
             await SeedProjectsAsync(ct);
@@ -55,8 +47,7 @@ namespace ServicePerfectCV.Seeder
             await SeedSkillsAsync(ct);
             await SeedSummariesAsync(ct);
 
-            // Update FullContent for all CVs after all related entities are seeded
-            await UpdateCVFullContentAsync(ct);
+            await UpdateCVContentAsync(ct);
         }
 
         private async Task SeedUsersAsync(CancellationToken ct)
@@ -68,30 +59,28 @@ namespace ServicePerfectCV.Seeder
                 return;
             }
 
-            // Faker<User>? userFaker = new Faker<User>()
-            //     .RuleFor(u => u.Id, f =>
-            //     {
-            //         var id = Guid.NewGuid();
-            //         _userIds.Add(id);
-            //         return id;
-            //     })
-            //     .RuleFor(u => u.Email, f => f.Internet.Email())
-            //     .RuleFor(u => u.PasswordHash, new PasswordHasher().HashPassword("123456"))
-            //     .RuleFor(u => u.AuthMethod, AuthenticationMethod.JWT)
-            //     .RuleFor(u => u.Status, UserStatus.Active)
-            //     .RuleFor(u => u.Role, UserRole.User);
+            Faker<User>? userFaker = new Faker<User>()
+                .RuleFor(u => u.Id, f =>
+                {
+                    var id = Guid.NewGuid();
+                    _userIds.Add(id);
+                    return id;
+                })
+                .RuleFor(u => u.Email, f => f.Internet.Email())
+                .RuleFor(u => u.PasswordHash, new PasswordHasher().HashPassword("Password123!"))
+                .RuleFor(u => u.AuthMethod, AuthenticationMethod.JWT)
+                .RuleFor(u => u.Status, UserStatus.Active)
+                .RuleFor(u => u.Role, UserRole.User);
 
-            // const int total = 20;
-            // const int batchSize = 10;
+            const int total = 20;
+            const int batchSize = 10;
 
-            // for (int i = 0; i < total / batchSize; i++)
-            // {
-            //     List<User>? users = userFaker.Generate(batchSize);
-            //     dbContext.Users.AddRange(users);
-            //     await dbContext.SaveChangesAsync(ct);
-
-            //     Console.WriteLine($"Inserted {(i + 1) * batchSize}/{total}");
-            // }
+            for (int i = 0; i < total / batchSize; i++)
+            {
+                List<User>? users = userFaker.Generate(batchSize);
+                dbContext.Users.AddRange(users);
+                await dbContext.SaveChangesAsync(ct);
+            }
 
             User user = new User
             {
@@ -118,7 +107,7 @@ namespace ServicePerfectCV.Seeder
                 return;
             }
 
-            string path = "jobtitles.json";
+            string path = "./MockData/jobtitles.json";
             if (!File.Exists(path))
             {
                 Console.WriteLine("Job titles seed file not found: " + path);
@@ -146,6 +135,7 @@ namespace ServicePerfectCV.Seeder
             Console.WriteLine($"Seeded Job Titles: {jobTitleEntities.Count}");
             Console.WriteLine($"Job Title IDs generated: {string.Join(", ", _jobTitleIds)}");
         }
+
         private async Task SeedCVsAsync(CancellationToken ct)
         {
             if (await dbContext.CVs.AnyAsync(ct))
@@ -165,15 +155,10 @@ namespace ServicePerfectCV.Seeder
                 })
                 .RuleFor(cv => cv.UserId, f => _thangUserId)
                 .RuleFor(cv => cv.Title, f => f.Name.JobTitle())
-                .RuleFor(cv => cv.JobDetail, f => new JobDetail(
-                    f.Name.JobTitle(),
-                    f.Company.CompanyName(),
-                    f.Name.JobDescriptor()
-                ))
-                .RuleFor(cv => cv.CreatedAt, f => f.Date.Past(1))
-                .RuleFor(cv => cv.UpdatedAt, f => f.Date.Past(1))
+                .RuleFor(cv => cv.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(cv => cv.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(cv => cv.DeletedAt, f => null)
-                .RuleFor(cv => cv.FullContent, f => null);
+                .RuleFor(cv => cv.Content, f => null);
 
             var cvs = cvFaker.Generate(20);
 
@@ -210,11 +195,11 @@ namespace ServicePerfectCV.Seeder
                 .RuleFor(e => e.EmploymentTypeId, f => f.PickRandom(_employmentTypeIds))
                 .RuleFor(e => e.Organization, f => f.Company.CompanyName())
                 .RuleFor(e => e.Location, f => f.Address.City())
-                .RuleFor(e => e.StartDate, f => DateOnly.FromDateTime(f.Date.Past(5)))
-                .RuleFor(e => e.EndDate, f => DateOnly.FromDateTime(f.Date.Past(1)))
+                .RuleFor(e => e.StartDate, f => f.Date.Past(5).ToUniversalTime())
+                .RuleFor(e => e.EndDate, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(e => e.Description, f => f.Lorem.Paragraph())
-                .RuleFor(e => e.CreatedAt, f => f.Date.Past(1))
-                .RuleFor(e => e.UpdatedAt, f => f.Date.Past(1))
+                .RuleFor(e => e.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(e => e.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(e => e.DeletedAt, f => null);
 
             var experiences = experienceFaker.Generate(50);
@@ -250,10 +235,10 @@ namespace ServicePerfectCV.Seeder
                 .RuleFor(p => p.Title, f => f.Commerce.ProductName())
                 .RuleFor(p => p.Description, f => f.Lorem.Paragraph())
                 .RuleFor(p => p.Link, f => f.Internet.Url())
-                .RuleFor(p => p.StartDate, f => DateOnly.FromDateTime(f.Date.Past(2)))
-                .RuleFor(p => p.EndDate, f => DateOnly.FromDateTime(f.Date.Past(1)))
-                .RuleFor(p => p.CreatedAt, f => f.Date.Past(1))
-                .RuleFor(p => p.UpdatedAt, f => f.Date.Past(1))
+                .RuleFor(p => p.StartDate, f => f.Date.Past(2).ToUniversalTime())
+                .RuleFor(p => p.EndDate, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(p => p.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(p => p.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(p => p.DeletedAt, f => null);
 
             var projects = projectFaker.Generate(30);
@@ -272,7 +257,7 @@ namespace ServicePerfectCV.Seeder
                 return;
             }
 
-            string path = "employment-type.json";
+            string path = "./MockData/employment-type.json";
             if (!File.Exists(path))
             {
                 Console.WriteLine("Employment Type seed file not found: " + path);
@@ -308,10 +293,10 @@ namespace ServicePerfectCV.Seeder
                 return;
             }
 
-            var universityJson = await File.ReadAllTextAsync("vietnam-university.json", ct);
-            var companyJson = await File.ReadAllTextAsync("companies.json", ct);
-            var highSchoolJson = await File.ReadAllTextAsync("high-schools.json", ct);
-            var organizationJson = await File.ReadAllTextAsync("organizations.json", ct);
+            var universityJson = await File.ReadAllTextAsync("./MockData/vietnam-university.json", ct);
+            var companyJson = await File.ReadAllTextAsync("./MockData/companies.json", ct);
+            var highSchoolJson = await File.ReadAllTextAsync("./MockData/high-schools.json", ct);
+            var organizationJson = await File.ReadAllTextAsync("./MockData/organizations.json", ct);
 
             var universityNames = JsonSerializer.Deserialize<List<string>>(universityJson) ?? new List<string>();
             var companyNames = JsonSerializer.Deserialize<List<string>>(companyJson) ?? new List<string>();
@@ -381,7 +366,7 @@ namespace ServicePerfectCV.Seeder
                 return;
             }
 
-            string path = "degrees.json";
+            string path = "./MockData/degrees.json";
             if (!File.Exists(path))
             {
                 Console.WriteLine("Degrees seed file not found: " + path);
@@ -413,47 +398,6 @@ namespace ServicePerfectCV.Seeder
             Console.WriteLine($"Seeded Degrees: {degreeEntities.Count}");
         }
 
-        private async Task SeedCategoriesAsync(CancellationToken ct)
-        {
-            if (await dbContext.Categories.AnyAsync(ct))
-            {
-                Console.WriteLine("Categories already seeded.");
-                // Load existing category IDs into the list
-                _categoryIds = await dbContext.Categories.AsNoTracking().Select(c => c.Id).ToListAsync(ct);
-                return;
-            }
-
-            string path = "categories.json";
-            if (!File.Exists(path))
-            {
-                Console.WriteLine("Categories seed file not found: " + path);
-                return;
-            }
-
-            var json = await File.ReadAllTextAsync(path, ct);
-            var categoryNames = JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
-
-            var categoryEntities = new List<Category>();
-
-            foreach (var categoryName in categoryNames)
-            {
-                var categoryId = Guid.NewGuid();
-                _categoryIds.Add(categoryId);
-
-                categoryEntities.Add(new Category
-                {
-                    Id = categoryId,
-                    Name = categoryName,
-                    CreatedAt = DateTime.UtcNow
-                });
-            }
-
-            dbContext.Categories.AddRange(categoryEntities);
-            await dbContext.SaveChangesAsync(ct);
-
-            Console.WriteLine($"Seeded Categories: {categoryEntities.Count}");
-        }
-
         private async Task SeedSkillsAsync(CancellationToken ct)
         {
             if (await dbContext.Skills.AnyAsync(ct))
@@ -462,16 +406,11 @@ namespace ServicePerfectCV.Seeder
                 return;
             }
 
-            if (!_categoryIds.Any() || !_cvIds.Any())
+            if (!_cvIds.Any())
             {
-                Console.WriteLine("Cannot seed skills: Categories or CVs not seeded yet.");
+                Console.WriteLine("Cannot seed skills: CVs not seeded yet.");
                 return;
             }
-
-
-            // Load categories from database to get names
-            var categories = await dbContext.Categories.AsNoTracking().ToListAsync(ct);
-            var categoryDict = categories.ToDictionary(c => c.Id, c => c.Name);
 
             var skills = new Faker<Skill>()
                 .RuleFor(s => s.Id, f =>
@@ -481,7 +420,7 @@ namespace ServicePerfectCV.Seeder
                     return id;
                 })
                 .RuleFor(s => s.CVId, f => f.PickRandom(_cvIds))
-                .RuleFor(s => s.Description, f => f.PickRandom(new[]
+                .RuleFor(s => s.SkillItems, f => f.PickRandom(new[]
                 {
                     "C#",
                     "Java",
@@ -499,10 +438,8 @@ namespace ServicePerfectCV.Seeder
                     "Swift",
                     "Kotlin"
                 }))
-                .RuleFor(s => s.CategoryId, f => f.PickRandom(_categoryIds))
-                .RuleFor(s => s.Category, (f, s) => categoryDict[s.CategoryId!.Value])
-                .RuleFor(s => s.CreatedAt, f => f.Date.Past(1))
-                .RuleFor(s => s.UpdatedAt, f => f.Date.Past(1))
+                .RuleFor(s => s.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(s => s.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(s => s.DeletedAt, f => null);
 
             var skillEntities = skills.Generate(50);
@@ -563,19 +500,14 @@ namespace ServicePerfectCV.Seeder
                     "Docker Certified Associate",
                     "Kubernetes Administrator Certification"
                 }))
-                .RuleFor(c => c.OrganizationId, f => _organizationIds.Any() ? f.PickRandom(_organizationIds) : (Guid?)null)
                 .RuleFor(c => c.Organization, (f, c) =>
                 {
-                    if (c.OrganizationId.HasValue && organizationDict.ContainsKey(c.OrganizationId.Value))
-                    {
-                        return organizationDict[c.OrganizationId.Value];
-                    }
                     return f.Company.CompanyName();
                 })
-                .RuleFor(c => c.IssuedDate, f => DateOnly.FromDateTime(f.Date.Past(3)))
+                .RuleFor(c => c.IssuedDate, f => f.Date.Past(3).ToUniversalTime())
                 .RuleFor(c => c.Description, f => f.Lorem.Sentence())
-                .RuleFor(c => c.CreatedAt, f => f.Date.Past(1))
-                .RuleFor(c => c.UpdatedAt, f => f.Date.Past(1))
+                .RuleFor(c => c.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(c => c.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(c => c.DeletedAt, f => null);
 
             var certifications = certificationFaker.Generate(40);
@@ -621,13 +553,8 @@ namespace ServicePerfectCV.Seeder
                     return id;
                 })
                 .RuleFor(e => e.CVId, f => f.PickRandom(_cvIds))
-                .RuleFor(e => e.DegreeId, f => f.PickRandom(_degreeIds))
                 .RuleFor(e => e.Degree, (f, e) =>
                 {
-                    if (e.DegreeId.HasValue && degreeDict.ContainsKey(e.DegreeId.Value))
-                    {
-                        return degreeDict[e.DegreeId.Value];
-                    }
                     return f.PickRandom(new[]
                     {
                         "Bachelor of Science",
@@ -637,13 +564,8 @@ namespace ServicePerfectCV.Seeder
                         "Doctor of Philosophy"
                     });
                 })
-                .RuleFor(e => e.OrganizationId, f => _organizationIds.Any() ? f.PickRandom(_organizationIds) : (Guid?)null)
                 .RuleFor(e => e.Organization, (f, e) =>
                 {
-                    if (e.OrganizationId.HasValue && organizationDict.ContainsKey(e.OrganizationId.Value))
-                    {
-                        return organizationDict[e.OrganizationId.Value];
-                    }
                     return f.PickRandom(new[]
                     {
                         "Harvard University",
@@ -676,14 +598,14 @@ namespace ServicePerfectCV.Seeder
                     "Mathematics",
                     "Physics"
                 }))
-                .RuleFor(e => e.StartDate, f => DateOnly.FromDateTime(f.Date.Past(10)))
+                .RuleFor(e => e.StartDate, f => f.Date.Past(10).ToUniversalTime())
                 .RuleFor(e => e.EndDate, (f, e) => e.StartDate.HasValue ?
-                    DateOnly.FromDateTime(f.Date.Between(e.StartDate.Value.ToDateTime(TimeOnly.MinValue), DateTime.Now)) :
-                    (DateOnly?)null)
+                    f.Date.Between(e.StartDate.Value, DateTime.UtcNow).ToUniversalTime() :
+                    (DateTime?)null)
                 .RuleFor(e => e.Description, f => f.Lorem.Sentences(2))
                 .RuleFor(e => e.Gpa, f => f.Random.Decimal(2.0m, 4.0m))
-                .RuleFor(e => e.CreatedAt, f => f.Date.Past(1))
-                .RuleFor(e => e.UpdatedAt, f => f.Date.Past(1))
+                .RuleFor(e => e.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(e => e.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
                 .RuleFor(e => e.DeletedAt, f => null);
 
             var educations = educationFaker.Generate(50);
@@ -802,17 +724,19 @@ namespace ServicePerfectCV.Seeder
             Console.WriteLine($"Seeded {summaries.Count} summaries.");
         }
 
-        private async Task UpdateCVFullContentAsync(CancellationToken ct)
+        private async Task UpdateCVContentAsync(CancellationToken ct)
         {
-            Console.WriteLine("Updating CV FullContent...");
+            Console.WriteLine("Updating CV Content...");
 
             // Get all CVs with their related data
             var cvs = await dbContext.CVs
                 .Include(c => c.Contact)
+                .Include(c => c.Summary)
                 .Include(c => c.Educations)
                 .Include(c => c.Experiences)
                     .ThenInclude(e => e.EmploymentType)
                 .Include(c => c.Projects)
+                .Include(c => c.Skills)
                 .Include(c => c.Certifications)
                 .AsNoTracking()
                 .ToListAsync(ct);
@@ -821,21 +745,10 @@ namespace ServicePerfectCV.Seeder
 
             foreach (var cv in cvs)
             {
-                // Create the snapshot response similar to CVSnapshotService
-                var snapshotResponse = new CVSnapshotResponse
+                var cvContent = new CVContent
                 {
-                    UserId = cv.UserId,
-                    Title = cv.Title,
-                    JobDetail = cv.JobDetail != null ? new JobDetailDto
+                    Contact = cv.Contact != null ? new ContactInfo
                     {
-                        JobTitle = cv.JobDetail.JobTitle,
-                        CompanyName = cv.JobDetail.CompanyName,
-                        Description = cv.JobDetail.Description
-                    } : null,
-                    Contacts = cv.Contact != null ? new ContactResponse
-                    {
-                        Id = cv.Contact.Id,
-                        CVId = cv.Contact.CVId,
                         PhoneNumber = cv.Contact.PhoneNumber,
                         Email = cv.Contact.Email,
                         LinkedInUrl = cv.Contact.LinkedInUrl,
@@ -844,70 +757,60 @@ namespace ServicePerfectCV.Seeder
                         Country = cv.Contact.Country,
                         City = cv.Contact.City
                     } : null,
-                    Educations = cv.Educations.Select(e => new EducationResponse
+                    Summary = cv.Summary != null ? new SummaryInfo
                     {
-                        Id = e.Id,
-                        Organization = e.Organization,
+                        Context = cv.Summary.Context
+                    } : null,
+                    Educations = cv.Educations.Select(e => new EducationInfo
+                    {
                         Degree = e.Degree,
+                        Organization = e.Organization,
                         FieldOfStudy = e.FieldOfStudy,
                         StartDate = e.StartDate,
                         EndDate = e.EndDate,
                         Description = e.Description,
                         Gpa = e.Gpa
-                    }),
-                    Experiences = cv.Experiences.Select(e => new ExperienceResponse
+                    }).ToList(),
+                    Experiences = cv.Experiences.Select(e => new ExperienceInfo
                     {
-                        Id = e.Id,
-                        CVId = e.CVId,
-                        JobTitleId = e.JobTitleId,
                         JobTitle = e.JobTitle,
                         EmploymentTypeId = e.EmploymentTypeId,
-                        EmploymentTypeName = e.EmploymentType?.Name,
-                        OrganizationId = e.OrganizationId,
                         Organization = e.Organization,
                         Location = e.Location,
                         StartDate = e.StartDate,
                         EndDate = e.EndDate,
-                        Description = e.Description,
-                        CreatedAt = e.CreatedAt,
-                        UpdatedAt = e.UpdatedAt
-                    }),
-                    Projects = cv.Projects.Select(p => new ProjectResponse
+                        Description = e.Description
+                    }).ToList(),
+                    Projects = cv.Projects.Select(p => new ProjectInfo
                     {
-                        Id = p.Id,
-                        CVId = p.CVId,
                         Title = p.Title,
                         Description = p.Description,
                         Link = p.Link,
                         StartDate = p.StartDate,
-                        EndDate = p.EndDate,
-                        CreatedAt = p.CreatedAt,
-                        UpdatedAt = p.UpdatedAt
-                    }),
-                    Certifications = cv.Certifications.Select(c => new CertificationResponse
+                        EndDate = p.EndDate
+                    }).ToList(),
+                    Skills = cv.Skills.Select(s => new SkillInfo
                     {
-                        Id = c.Id,
-                        CVId = c.CVId,
+                        SkillItems = s.SkillItems
+                    }).ToList(),
+                    Certifications = cv.Certifications.Select(c => new CertificationInfo
+                    {
                         Name = c.Name,
-                        OrganizationId = c.OrganizationId,
                         Organization = c.Organization,
                         IssuedDate = c.IssuedDate,
                         Description = c.Description
-                    })
+                    }).ToList()
                 };
 
-                // Serialize to JSON
-                var jsonContent = JsonSerializer.Serialize(snapshotResponse);
-
-                // Update the CV's FullContent
+                // Update the CV's Content
                 await dbContext.CVs
                     .Where(c => c.Id == cv.Id)
                     .ExecuteUpdateAsync(c => c
-                        .SetProperty(cv => cv.FullContent, jsonContent)
+                        .SetProperty(cv => cv.Content, cvContent)
                         .SetProperty(cv => cv.UpdatedAt, DateTime.UtcNow), ct);
             }
 
-            Console.WriteLine($"Updated FullContent for {cvs.Count} CVs");
+            Console.WriteLine($"Updated Content for {cvs.Count} CVs");
         }
 
         public async Task ClearAllDataAsync(CancellationToken ct)
@@ -935,11 +838,9 @@ namespace ServicePerfectCV.Seeder
             await dbContext.Summaries.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared Summaries");
 
-            // Xóa CVs
             await dbContext.CVs.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared CVs");
 
-            // Xóa các bảng reference
             await dbContext.JobTitles.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared JobTitles");
 
@@ -955,23 +856,21 @@ namespace ServicePerfectCV.Seeder
             await dbContext.Categories.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared Categories");
 
-            // Xóa Users cuối cùng
             await dbContext.Users.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared Users");
 
-            // Clear các lists ID
             _userIds.Clear();
             _cvIds.Clear();
             _jobTitleIds.Clear();
             _employmentTypeIds.Clear();
             _organizationIds.Clear();
+            _categoryIds.Clear();
             _experienceIds.Clear();
             _projectIds.Clear();
             _degreeIds.Clear();
             _certificationIds.Clear();
             _educationIds.Clear();
             _contactIds.Clear();
-            _categoryIds.Clear();
             _skillIds.Clear();
             _summaryIds.Clear();
 

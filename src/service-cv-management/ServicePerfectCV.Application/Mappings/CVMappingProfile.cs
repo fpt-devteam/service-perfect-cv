@@ -19,7 +19,7 @@ namespace ServicePerfectCV.Application.Mappings
             CreateMap<CV, CVResponse>()
                 .ForMember(dest => dest.CVId, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
-                .ForMember(dest => dest.FullContent, opt => opt.MapFrom(src => src.FullContent))
+                .ForMember(dest => dest.FullContent, opt => opt.MapFrom(src => src.Content))
                 .ForMember(dest => dest.LastEditedAt, opt => opt.MapFrom(src => src.UpdatedAt ?? src.CreatedAt));
             CreateMap<CV, CVFullContentResponse>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))

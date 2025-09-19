@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,8 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(c => c.AnalysisId)
                .IsRequired(false);
 
-            builder.Property(c => c.FullContent)
-               .HasColumnType("text")
+            builder.Property(c => c.Content)
+               .HasColumnType("jsonb")
                .IsRequired(false);
 
             builder.Property(c => c.CreatedAt)
