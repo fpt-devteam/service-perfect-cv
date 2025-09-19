@@ -11,7 +11,7 @@ namespace ServicePerfectCV.Application.Mappings
         public ContactMappingProfile()
         {
             CreateMap<Contact, ContactResponse>();
-            
+
             CreateMap<UpsertContactRequest, Contact>()
                 .ForMember(dest => dest.CVId, opt => opt.MapFrom(src => src.CVId))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))

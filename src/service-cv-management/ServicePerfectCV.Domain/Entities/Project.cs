@@ -20,7 +20,7 @@ namespace ServicePerfectCV.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        
+
         public virtual CV CV { get; set; } = default!;
     }
 }

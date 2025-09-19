@@ -10,13 +10,13 @@ namespace ServicePerfectCV.Domain.Entities
     {
         public required Guid Id { get; set; }
         public required Guid CVId { get; set; }
-        
+
         public required string JobTitle { get; set; }
 
         public required Guid EmploymentTypeId { get; set; }
 
         public required string Organization { get; set; }
-        
+
         public string? Location { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

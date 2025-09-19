@@ -3,8 +3,8 @@ using ServicePerfectCV.Application.DTOs.Contact.Responses;
 using ServicePerfectCV.Application.DTOs.Education.Responses;
 using ServicePerfectCV.Application.DTOs.Experience.Responses;
 using ServicePerfectCV.Application.DTOs.Project.Responses;
-using ServicePerfectCV.Application.DTOs.Summary.Responses;
 using ServicePerfectCV.Application.DTOs.Skill.Responses;
+using ServicePerfectCV.Application.DTOs.Summary.Responses;
 using System;
 using System.Collections.Generic;
 

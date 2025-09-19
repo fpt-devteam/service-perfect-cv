@@ -9,7 +9,7 @@ namespace ServicePerfectCV.Application.Common
             Code: "OrganizationNotFound",
             Message: "Organization not found",
             HttpStatusCode: HttpStatusCode.NotFound);
-            
+
         public static readonly Error AlreadyExists = new(
             Code: "OrganizationAlreadyExists",
             Message: "Organization with the same name already exists",

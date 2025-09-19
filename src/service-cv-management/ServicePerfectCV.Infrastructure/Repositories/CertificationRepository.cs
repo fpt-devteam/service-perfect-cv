@@ -36,7 +36,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
                 .Where(e => e.CVId == cvId && e.CV.UserId == userId && e.DeletedAt == null);
 
             queryable = query.Sort != null ? ApplySort(queryable: queryable, sort: query.Sort) : queryable;
-            
+
             queryable = queryable.Skip(query.Offset).Take(query.Limit);
 
             return await queryable.ToListAsync();

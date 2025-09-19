@@ -19,6 +19,6 @@ namespace ServicePerfectCV.Domain.Entities
         public DateTime? DeletedAt { get; set; }
 
         // Navigation property
-        public virtual CV CV { get; set; } = default!;               
+        public virtual CV CV { get; set; } = default!;
     }
 }

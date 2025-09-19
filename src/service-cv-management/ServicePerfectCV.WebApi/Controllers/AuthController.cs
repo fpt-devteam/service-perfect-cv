@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -7,13 +9,11 @@ using ServicePerfectCV.Application.DTOs.Authentication.Requests;
 using ServicePerfectCV.Application.DTOs.Authentication.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Services;
+using ServicePerfectCV.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
-using ServicePerfectCV.Domain.Enums;
 
 namespace ServicePerfectCV.WebApi.Controllers
 {

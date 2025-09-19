@@ -1,7 +1,7 @@
+using ServicePerfectCV.Application.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using ServicePerfectCV.Application.Common;
 
 namespace ServicePerfectCV.Application.DTOs.Contact.Requests
 {

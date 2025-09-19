@@ -42,7 +42,7 @@ namespace ServicePerfectCV.Application.Services
                 await _summaryRepository.CreateAsync(newSummary);
                 await _summaryRepository.SaveChangesAsync();
 
-                
+
                 // Send notification
                 await _notificationService.SendSummaryUpdateNotificationAsync(cv.UserId);
 
@@ -54,7 +54,7 @@ namespace ServicePerfectCV.Application.Services
             _summaryRepository.Update(existingSummary);
             await _summaryRepository.SaveChangesAsync();
 
-            
+
             // Send notification
             await _notificationService.SendSummaryUpdateNotificationAsync(cv.UserId);
 

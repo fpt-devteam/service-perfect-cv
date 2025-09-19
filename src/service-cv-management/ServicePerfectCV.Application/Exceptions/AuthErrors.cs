@@ -47,7 +47,7 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "GoogleOAuthConfigurationMissing",
             Message: "Google OAuth configuration is missing or invalid.",
             HttpStatusCode.InternalServerError);
-        
+
         public static readonly Error NotSupportedException = new(
             Code: "NotSupportedException",
             Message: "OAuth provider is not supported.",

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.DTOs.Authentication;
@@ -13,6 +7,12 @@ using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Services
 {

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Constraints;
+using ServicePerfectCV.Domain.Entities;
 
 namespace ServicePerfectCV.Infrastructure.Data.Configurations
 {

@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using ServicePerfectCV.Application.Configurations;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Google;
 
 namespace ServicePerfectCV.WebApi.Extensions
 {
@@ -72,7 +72,7 @@ namespace ServicePerfectCV.WebApi.Extensions
                 {
                     opt.ClientId = google.ClientId;
                     opt.ClientSecret = google.ClientSecret;
-                    opt.SignInScheme = "ExternalCookie"; 
+                    opt.SignInScheme = "ExternalCookie";
                     opt.Scope.Add("email");
                     opt.Scope.Add("profile");
                 });

@@ -5,7 +5,7 @@ namespace ServicePerfectCV.Application.Exceptions
 {
     public static class CertificationErrors
     {
-        public static readonly Error NotFound = new Error    
+        public static readonly Error NotFound = new Error
         (
             Code: "Certification_NotFound",
             Message: "Certification not found",

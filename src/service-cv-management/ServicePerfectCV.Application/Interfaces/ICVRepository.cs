@@ -1,3 +1,4 @@
+using ServicePerfectCV.Application.Common;
 using ServicePerfectCV.Application.DTOs.CV.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
@@ -6,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ServicePerfectCV.Application.Common;
 
 namespace ServicePerfectCV.Application.Interfaces
 {

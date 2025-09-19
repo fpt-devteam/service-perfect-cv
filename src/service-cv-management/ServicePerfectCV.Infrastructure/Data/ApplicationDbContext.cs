@@ -25,7 +25,7 @@ namespace ServicePerfectCV.Infrastructure.Data
         public DbSet<EmploymentType> EmploymentTypes { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<DeviceToken> DeviceTokens { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

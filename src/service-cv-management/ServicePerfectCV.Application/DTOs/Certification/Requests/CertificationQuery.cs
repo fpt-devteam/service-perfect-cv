@@ -1,6 +1,6 @@
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
-using System;
 using ServicePerfectCV.Domain.Constants;
+using System;
 
 namespace ServicePerfectCV.Application.DTOs.Certification.Requests
 {

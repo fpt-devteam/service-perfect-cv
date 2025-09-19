@@ -1,6 +1,6 @@
-using System;
 using FluentValidation;
 using ServicePerfectCV.Domain.Constraints;
+using System;
 
 namespace ServicePerfectCV.Application.DTOs.Experience.Requests
 {

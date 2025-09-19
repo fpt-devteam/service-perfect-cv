@@ -1,6 +1,6 @@
+using ServicePerfectCV.Application.DTOs.Category.Responses;
 using System;
 using System.Collections.Generic;
-using ServicePerfectCV.Application.DTOs.Category.Responses;
 
 namespace ServicePerfectCV.Application.DTOs.Skill.Responses
 {

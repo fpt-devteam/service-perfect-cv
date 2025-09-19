@@ -25,10 +25,10 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(c => c.DeletedAt);
 
-           
+
             builder.HasIndex(c => c.Name)
                 .IsUnique()
-                .HasFilter("\"DeletedAt\" IS NULL"); 
+                .HasFilter("\"DeletedAt\" IS NULL");
         }
     }
 }

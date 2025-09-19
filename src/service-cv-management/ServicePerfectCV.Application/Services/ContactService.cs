@@ -44,7 +44,7 @@ namespace ServicePerfectCV.Application.Services
                 await _contactRepository.CreateAsync(newContact);
                 await _contactRepository.SaveChangesAsync();
 
-                
+
                 // Send notification
                 await _notificationService.SendContactUpdateNotificationAsync(cv.UserId);
 
@@ -62,7 +62,7 @@ namespace ServicePerfectCV.Application.Services
             _contactRepository.Update(existingContact);
             await _contactRepository.SaveChangesAsync();
 
-            
+
             // Send notification
             await _notificationService.SendContactUpdateNotificationAsync(cv.UserId);
 

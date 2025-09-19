@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -7,6 +6,7 @@ using ServicePerfectCV.Infrastructure;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.WebApi.Extensions;
 using ServicePerfectCV.WebApi.Middleware;
+using System.Text.Json.Serialization;
 
 namespace ServicePerfectCV.WebApi
 {

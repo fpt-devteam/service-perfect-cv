@@ -37,17 +37,17 @@ namespace ServicePerfectCV.WebApi.Controllers
             return Ok(response);
         }
 
-            [Authorize]
-            [HttpPut("avatar")]
-            public async Task<IActionResult> UploadAvatarAsync([FromForm] UploadAvatarRequest file)
-            {
-                var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!Guid.TryParse(nameIdentifier, out var userId))
-                    throw new DomainException(UserErrors.NotFound);
+        [Authorize]
+        [HttpPut("avatar")]
+        public async Task<IActionResult> UploadAvatarAsync([FromForm] UploadAvatarRequest file)
+        {
+            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(nameIdentifier, out var userId))
+                throw new DomainException(UserErrors.NotFound);
 
-                var url = await userService.UploadAvatarAsync(userId, file.File);
-                return Ok(new { avatarUrl = url });
-            }
+            var url = await userService.UploadAvatarAsync(userId, file.File);
+            return Ok(new { avatarUrl = url });
+        }
 
         [Authorize]
         [HttpPut("profile")]

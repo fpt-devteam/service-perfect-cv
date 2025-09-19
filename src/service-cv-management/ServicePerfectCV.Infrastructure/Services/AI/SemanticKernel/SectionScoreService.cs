@@ -95,4 +95,3 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
         }
     }
 }
-

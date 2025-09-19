@@ -13,12 +13,12 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "EDU002",
             Message: "CV not found",
             HttpStatusCode.NotFound);
-            
+
         public static readonly Error DegreeNotFound = new(
             Code: "EDU003",
             Message: "Degree not found",
             HttpStatusCode.NotFound);
-            
+
         public static readonly Error OrganizationNotFound = new(
             Code: "EDU004",
             Message: "Organization not found",

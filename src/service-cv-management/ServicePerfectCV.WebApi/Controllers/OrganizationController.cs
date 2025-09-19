@@ -16,7 +16,7 @@ namespace ServicePerfectCV.WebApi.Controllers
     [Route("api/organizations")]
     public class OrganizationController(OrganizationService organizationService) : ControllerBase
     {
-        
+
 
         /// <summary>
         /// Searches organizations by name for autocomplete suggestions

@@ -1,5 +1,5 @@
-using System.Net;
 using ServicePerfectCV.Domain.Constants;
+using System.Net;
 
 namespace ServicePerfectCV.Application.Exceptions
 {

@@ -1,7 +1,7 @@
 using AutoMapper;
+using ServicePerfectCV.Application.DTOs.Category.Responses;
 using ServicePerfectCV.Application.DTOs.Skill.Requests;
 using ServicePerfectCV.Application.DTOs.Skill.Responses;
-using ServicePerfectCV.Application.DTOs.Category.Responses;
 using ServicePerfectCV.Domain.Entities;
 using System;
 
