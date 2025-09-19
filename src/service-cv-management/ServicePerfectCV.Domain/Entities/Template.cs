@@ -14,9 +14,9 @@ namespace ServicePerfectCV.Domain.Entities
         public string? ReactBundle { get; set; }
         public string? PreviewUrl { get; set; }
         public string? Descriptor { get; set; } // Store as JSON
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
 
         public ICollection<CV> CVs { get; set; } = [];
     }

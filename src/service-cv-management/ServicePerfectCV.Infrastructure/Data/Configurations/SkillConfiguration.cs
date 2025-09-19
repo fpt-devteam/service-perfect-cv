@@ -24,11 +24,17 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasMaxLength(100);
 
             builder.Property(s => s.CreatedAt)
-                .IsRequired();
+                .IsRequired()
+                .HasColumnType("timestamptz")
+                .HasDefaultValueSql("NOW()");
 
-            builder.Property(s => s.UpdatedAt);
+            builder.Property(s => s.UpdatedAt)
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
 
-            builder.Property(s => s.DeletedAt);
+            builder.Property(s => s.DeletedAt)
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
 
             // CV relationship
             builder.HasOne(s => s.CV)

@@ -24,10 +24,25 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             .HasMaxLength(100);
 
             builder.Property(c => c.IssuedDate)
-            .IsRequired(false);
+            .IsRequired(false)
+            .HasColumnType("date");
 
             builder.Property(c => c.Description)
+            .IsRequired(false)
             .HasMaxLength(500);
+
+            builder.Property(c => c.CreatedAt)
+            .IsRequired()
+            .HasColumnType("timestamptz")
+            .HasDefaultValueSql("NOW()");
+
+            builder.Property(c => c.UpdatedAt)
+            .IsRequired(false)
+            .HasColumnType("timestamptz");
+
+            builder.Property(c => c.DeletedAt)
+            .IsRequired(false)
+            .HasColumnType("timestamptz");
 
             builder.HasOne(c => c.CV)
             .WithMany(cv => cv.Certifications)

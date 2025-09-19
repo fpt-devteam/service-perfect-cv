@@ -13,7 +13,7 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
         public required string Title { get; init; } = default!;
         public required JobDescriptionResponse JobDescription { get; init; }
         public required CVContent Content { get; init; } = default!;
-        public required DateTime LastEditedAt { get; init; }
+        public required DateTimeOffset LastEditedAt { get; init; }
     }
 
 

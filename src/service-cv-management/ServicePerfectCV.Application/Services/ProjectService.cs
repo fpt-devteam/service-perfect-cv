@@ -61,8 +61,8 @@ namespace ServicePerfectCV.Application.Services
             existingProject.Title = request.Title ?? existingProject.Title;
             existingProject.Description = request.Description ?? existingProject.Description;
             existingProject.Link = request.Link;
-            existingProject.StartDate = request.StartDate?.ToDateTime(TimeOnly.MinValue);
-            existingProject.EndDate = request.EndDate?.ToDateTime(TimeOnly.MinValue);
+            existingProject.StartDate = request.StartDate;
+            existingProject.EndDate = request.EndDate;
             existingProject.UpdatedAt = DateTime.UtcNow;
 
             _projectRepository.Update(existingProject);

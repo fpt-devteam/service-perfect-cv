@@ -16,7 +16,7 @@ namespace ServicePerfectCV.Application.DTOs.Experience.Responses
         public DateOnly StartDate { get; init; }
         public DateOnly EndDate { get; init; }
         public string? Description { get; init; }
-        public DateTime CreatedAt { get; init; }
-        public DateTime? UpdatedAt { get; init; }
+        public DateTimeOffset CreatedAt { get; init; }
+        public DateTimeOffset? UpdatedAt { get; init; }
     }
 }

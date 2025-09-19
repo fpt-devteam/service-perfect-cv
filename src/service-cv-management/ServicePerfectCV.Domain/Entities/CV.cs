@@ -15,9 +15,9 @@ namespace ServicePerfectCV.Domain.Entities
         public Guid? VersionId { get; set; }
         public string Title { get; set; } = default!;
         public CVContent? Content { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
 
         // Navigation properties
         public User User { get; set; } = default!;

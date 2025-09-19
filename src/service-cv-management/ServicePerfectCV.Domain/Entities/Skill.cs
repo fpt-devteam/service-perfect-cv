@@ -12,11 +12,11 @@ namespace ServicePerfectCV.Domain.Entities
     {
         public Guid Id { get; set; }
         public Guid CVId { get; set; }
-        public required string Content { get; set; }
         public required string Category { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
+        public required string Content { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
 
         // Navigation properties
         public virtual CV CV { get; set; } = default!;

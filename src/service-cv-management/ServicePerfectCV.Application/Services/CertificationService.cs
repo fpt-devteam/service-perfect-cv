@@ -64,7 +64,7 @@ namespace ServicePerfectCV.Application.Services
 
             existingCertification.Name = request.Name;
             existingCertification.Organization = request.Organization;
-            existingCertification.IssuedDate = request.IssuedDate?.ToDateTime(TimeOnly.MinValue);
+            existingCertification.IssuedDate = request.IssuedDate;
             existingCertification.Description = request.Description;
             existingCertification.UpdatedAt = DateTime.UtcNow;
 

@@ -14,7 +14,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
         {
             builder.HasKey(s => s.Id);
 
-            builder.Property(s => s.Context)
+            builder.Property(s => s.Content)
                 .HasMaxLength(2000).IsRequired();
 
             builder.HasOne(s => s.CV)

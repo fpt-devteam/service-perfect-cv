@@ -11,7 +11,7 @@ namespace ServicePerfectCV.Application.DTOs.Project.Responses
         public string? Link { get; init; }
         public DateOnly? StartDate { get; init; }
         public DateOnly? EndDate { get; init; }
-        public DateTime CreatedAt { get; init; }
-        public DateTime? UpdatedAt { get; init; }
+        public DateTimeOffset CreatedAt { get; init; }
+        public DateTimeOffset? UpdatedAt { get; init; }
     }
 }

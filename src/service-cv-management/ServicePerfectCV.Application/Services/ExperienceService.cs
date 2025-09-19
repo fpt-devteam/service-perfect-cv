@@ -79,8 +79,8 @@ namespace ServicePerfectCV.Application.Services
             existingExperience.EmploymentTypeId = employmentType.Id;
             existingExperience.Organization = request.Organization;
             existingExperience.Location = request.Location;
-            existingExperience.StartDate = request.StartDate.ToDateTime(TimeOnly.MinValue);
-            existingExperience.EndDate = request.EndDate.ToDateTime(TimeOnly.MinValue);
+            existingExperience.StartDate = request.StartDate;
+            existingExperience.EndDate = request.EndDate;
             existingExperience.Description = request.Description;
             existingExperience.UpdatedAt = DateTime.UtcNow;
 

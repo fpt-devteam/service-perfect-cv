@@ -29,11 +29,26 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(p => p.StartDate)
                 .IsRequired(false)
+                .HasColumnType("date")
                 .HasDefaultValueSql("NULL");
 
             builder.Property(p => p.EndDate)
                 .IsRequired(false)
+                .HasColumnType("date")
                 .HasDefaultValueSql("NULL");
+
+            builder.Property(p => p.CreatedAt)
+                .IsRequired()
+                .HasColumnType("timestamptz")
+                .HasDefaultValueSql("NOW()");
+
+            builder.Property(p => p.UpdatedAt)
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
+
+            builder.Property(p => p.DeletedAt)
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
 
             builder.HasOne(p => p.CV)
                 .WithMany(c => c.Projects)

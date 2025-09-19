@@ -10,11 +10,11 @@ namespace ServicePerfectCV.Application.DTOs.Summary.Requests
         [Required(ErrorMessage = "CV ID is required.")]
         public required Guid CVId { get; init; }
 
-        [Required(ErrorMessage = "Context is required.")]
-        [StringLength(2000, MinimumLength = 10, ErrorMessage = "Context must be between 10-2000 characters")]
-        public string? Context { get; set; }
+        [Required(ErrorMessage = "Content is required.")]
+        [StringLength(2000, MinimumLength = 10, ErrorMessage = "Content must be between 10-2000 characters")]
+        public string? Content { get; set; }
 
         [JsonIgnore]
-        public Optional<string?> SummaryContext => Context != null ? Optional<string?>.From(Context) : Optional<string?>.None();
+        public Optional<string?> SummaryContent => Content != null ? Optional<string?>.From(Content) : Optional<string?>.None();
     }
 }

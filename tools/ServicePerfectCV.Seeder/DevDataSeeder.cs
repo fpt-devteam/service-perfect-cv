@@ -18,7 +18,6 @@ namespace ServicePerfectCV.Seeder
         private List<Guid> _jobTitleIds = new List<Guid>();
         private List<Guid> _employmentTypeIds = new List<Guid>();
         private List<Guid> _organizationIds = new List<Guid>();
-        private List<Guid> _categoryIds = new List<Guid>();
         private List<Guid> _certificationIds = new List<Guid>();
         private List<Guid> _experienceIds = new List<Guid>();
         private List<Guid> _projectIds = new List<Guid>();
@@ -157,8 +156,8 @@ namespace ServicePerfectCV.Seeder
                 })
                 .RuleFor(cv => cv.UserId, f => _thangUserId)
                 .RuleFor(cv => cv.Title, f => f.Name.JobTitle())
-                .RuleFor(cv => cv.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
-                .RuleFor(cv => cv.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(cv => cv.CreatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
+                .RuleFor(cv => cv.UpdatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
                 .RuleFor(cv => cv.DeletedAt, f => null)
                 .RuleFor(cv => cv.Content, f => null);
 
@@ -277,22 +276,24 @@ namespace ServicePerfectCV.Seeder
                 .RuleFor(e => e.EmploymentTypeId, f => f.PickRandom(_employmentTypeIds))
                 .RuleFor(e => e.Organization, f => f.Company.CompanyName())
                 .RuleFor(e => e.Location, f => f.Address.City())
-                .RuleFor(e => e.StartDate, f => f.Date.Past(5))
+                .RuleFor(e => e.StartDate, f => DateOnly.FromDateTime(f.Date.Past(5)))
                 .RuleFor(e => e.EndDate, (f, e) =>
                 {
                     // Generate a random duration between 1 month and 3 years for work experience
                     var durationInDays = f.Random.Int(30, 1095); // 30 days to 3 years
-                    var endDate = e.StartDate.AddDays(durationInDays);
+                    var endDate = e.StartDate.HasValue
+                        ? e.StartDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(durationInDays)
+                        : f.Date.Past(1);
 
                     // Ensure EndDate doesn't exceed current time
-                    if (endDate > DateTime.UtcNow)
-                        endDate = DateTime.UtcNow.AddDays(-f.Random.Int(1, 30));
+                    if (endDate > DateTime.Now)
+                        endDate = DateTime.Now.AddDays(-f.Random.Int(1, 30));
 
-                    return endDate;
+                    return DateOnly.FromDateTime(endDate);
                 })
                 .RuleFor(e => e.Description, f => f.Lorem.Paragraph())
-                .RuleFor(e => e.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
-                .RuleFor(e => e.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(e => e.CreatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
+                .RuleFor(e => e.UpdatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
                 .RuleFor(e => e.DeletedAt, f => null);
 
             var experiences = experienceFaker.Generate(50);
@@ -328,23 +329,23 @@ namespace ServicePerfectCV.Seeder
                 .RuleFor(p => p.Title, f => f.Commerce.ProductName())
                 .RuleFor(p => p.Description, f => f.Lorem.Paragraph())
                 .RuleFor(p => p.Link, f => f.Internet.Url())
-                .RuleFor(p => p.StartDate, f => f.Date.Past(2).ToUniversalTime())
+                .RuleFor(p => p.StartDate, f => DateOnly.FromDateTime(f.Date.Past(2)))
                 .RuleFor(p => p.EndDate, (f, p) =>
                 {
                     if (!p.StartDate.HasValue) return null;
 
                     // Generate a random duration between 1 week and 2 years for projects
                     var durationInDays = f.Random.Int(7, 730); // 7 days to 2 years
-                    var endDate = p.StartDate.Value.AddDays(durationInDays);
+                    var endDate = p.StartDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(durationInDays);
 
                     // Ensure EndDate doesn't exceed current time
-                    if (endDate > DateTime.UtcNow)
-                        endDate = DateTime.UtcNow.AddDays(-f.Random.Int(1, 30));
+                    if (endDate > DateTime.Now)
+                        endDate = DateTime.Now.AddDays(-f.Random.Int(1, 30));
 
-                    return endDate.ToUniversalTime();
+                    return DateOnly.FromDateTime(endDate);
                 })
-                .RuleFor(p => p.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
-                .RuleFor(p => p.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(p => p.CreatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
+                .RuleFor(p => p.UpdatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
                 .RuleFor(p => p.DeletedAt, f => null);
 
             var projects = projectFaker.Generate(30);
@@ -526,6 +527,7 @@ namespace ServicePerfectCV.Seeder
                     return id;
                 })
                 .RuleFor(s => s.CVId, f => f.PickRandom(_cvIds))
+                .RuleFor(s => s.Category, f => f.PickRandom(new[] { "Programming Languages", "Frameworks", "Databases", "Cloud Platforms", "DevOps Tools", "Soft Skills", "Other" }))
                 .RuleFor(s => s.Content, f => f.PickRandom(new[]
                 {
                     "Proficient in C# and .NET Core for backend development and API design.",
@@ -544,8 +546,8 @@ namespace ServicePerfectCV.Seeder
                     "Understanding of security best practices in web and cloud applications.",
                     "Ability to mentor junior developers and contribute to technical documentation."
                 }))
-                .RuleFor(s => s.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
-                .RuleFor(s => s.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(s => s.CreatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
+                .RuleFor(s => s.UpdatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
                 .RuleFor(s => s.DeletedAt, f => null);
 
             var skillEntities = skills.Generate(50);
@@ -554,12 +556,6 @@ namespace ServicePerfectCV.Seeder
             await dbContext.SaveChangesAsync(ct);
 
             Console.WriteLine($"Seeded {skillEntities.Count} skills.");
-        }
-
-        private class DegreeData
-        {
-            public string Code { get; set; } = default!;
-            public string Name { get; set; } = default!;
         }
 
         private async Task SeedCertificationsAsync(CancellationToken ct)
@@ -610,10 +606,10 @@ namespace ServicePerfectCV.Seeder
                 {
                     return f.Company.CompanyName();
                 })
-                .RuleFor(c => c.IssuedDate, f => f.Date.Past(3).ToUniversalTime())
+                .RuleFor(c => c.IssuedDate, f => DateOnly.FromDateTime(f.Date.Past(3)))
                 .RuleFor(c => c.Description, f => f.Lorem.Sentence())
-                .RuleFor(c => c.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
-                .RuleFor(c => c.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(c => c.CreatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
+                .RuleFor(c => c.UpdatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
                 .RuleFor(c => c.DeletedAt, f => null);
 
             var certifications = certificationFaker.Generate(40);
@@ -714,15 +710,15 @@ namespace ServicePerfectCV.Seeder
                     var endDate = e.StartDate.Value.ToDateTime(TimeOnly.MinValue).AddDays(durationInDays);
 
                     // Ensure EndDate doesn't exceed current time
-                    if (endDate > DateTime.UtcNow)
-                        endDate = DateTime.UtcNow.AddDays(-f.Random.Int(1, 30));
+                    if (endDate > DateTime.Now)
+                        endDate = DateTime.Now.AddDays(-f.Random.Int(1, 30));
 
                     return DateOnly.FromDateTime(endDate);
                 })
                 .RuleFor(e => e.Description, f => f.Lorem.Sentences(2))
                 .RuleFor(e => e.Gpa, f => f.Random.Decimal(2.0m, 4.0m))
-                .RuleFor(e => e.CreatedAt, f => f.Date.Past(1).ToUniversalTime())
-                .RuleFor(e => e.UpdatedAt, f => f.Date.Past(1).ToUniversalTime())
+                .RuleFor(e => e.CreatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
+                .RuleFor(e => e.UpdatedAt, f => new DateTimeOffset(DateTime.SpecifyKind(f.Date.Past(1), DateTimeKind.Utc)))
                 .RuleFor(e => e.DeletedAt, f => null);
 
             var educations = educationFaker.Generate(50);
@@ -819,7 +815,7 @@ namespace ServicePerfectCV.Seeder
                 {
                     Id = summaryId,
                     CVId = cvId,
-                    Context = faker.PickRandom(new[]
+                    Content = faker.PickRandom(new[]
                     {
                         "Experienced software developer with strong background in full-stack development, passionate about creating efficient and scalable solutions.",
                         "Results-driven professional with expertise in cloud technologies and modern development practices, dedicated to continuous learning and innovation.",
@@ -877,7 +873,7 @@ namespace ServicePerfectCV.Seeder
                     } : null,
                     Summary = cv.Summary != null ? new SummaryInfo
                     {
-                        Context = cv.Summary.Context
+                        Content = cv.Summary.Content
                     } : null,
                     Educations = cv.Educations.Select(e => new EducationInfo
                     {
@@ -926,7 +922,7 @@ namespace ServicePerfectCV.Seeder
                     .Where(c => c.Id == cv.Id)
                     .ExecuteUpdateAsync(c => c
                         .SetProperty(cv => cv.Content, cvContent)
-                        .SetProperty(cv => cv.UpdatedAt, DateTime.UtcNow), ct);
+                        .SetProperty(cv => cv.UpdatedAt, DateTimeOffset.UtcNow), ct);
             }
 
             Console.WriteLine($"Updated Content for {cvs.Count} CVs");
@@ -984,7 +980,6 @@ namespace ServicePerfectCV.Seeder
             _jobTitleIds.Clear();
             _employmentTypeIds.Clear();
             _organizationIds.Clear();
-            _categoryIds.Clear();
             _experienceIds.Clear();
             _projectIds.Clear();
             _degreeIds.Clear();

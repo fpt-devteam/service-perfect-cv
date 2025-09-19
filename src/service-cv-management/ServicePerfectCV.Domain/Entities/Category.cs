@@ -10,9 +10,9 @@ namespace ServicePerfectCV.Domain.Entities
     {
         public required Guid Id { get; set; }
         public required string Name { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
 
         // Navigation property
         public virtual ICollection<Skill> Skills { get; set; } = [];

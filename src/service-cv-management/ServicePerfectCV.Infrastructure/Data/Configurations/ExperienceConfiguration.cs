@@ -27,20 +27,26 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasMaxLength(ExperienceConstraints.LocationMaxLength);
 
             builder.Property(e => e.StartDate)
-                .IsRequired();
+                .HasColumnType("date");
 
             builder.Property(e => e.EndDate)
-                .IsRequired();
+                .HasColumnType("date");
 
             builder.Property(e => e.Description)
                 .HasMaxLength(ExperienceConstraints.DescriptionMaxLength);
 
             builder.Property(e => e.CreatedAt)
                 .IsRequired()
+                .HasColumnType("timestamptz")
                 .HasDefaultValueSql("NOW()");
 
+            builder.Property(e => e.UpdatedAt)
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
+
             builder.Property(e => e.DeletedAt)
-                .IsRequired(false);
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
 
             builder.HasOne(e => e.CV)
                 .WithMany(c => c.Experiences)

@@ -49,7 +49,7 @@ namespace ServicePerfectCV.Application.Services
                 return _mapper.Map<SummaryResponse>(newSummary);
             }
 
-            existingSummary.UpdateIfPresent(s => s.Context, request.SummaryContext);
+            existingSummary.UpdateIfPresent(s => s.Content, request.SummaryContent);
 
             _summaryRepository.Update(existingSummary);
             await _summaryRepository.SaveChangesAsync();

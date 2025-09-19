@@ -27,7 +27,7 @@ namespace ServicePerfectCV.Domain.ValueObjects
 
     public class SummaryInfo
     {
-        public string Context { get; set; } = string.Empty;
+        public required string Content { get; set; }
     }
 
     public class EducationInfo
@@ -43,22 +43,22 @@ namespace ServicePerfectCV.Domain.ValueObjects
 
     public class ExperienceInfo
     {
-        public string JobTitle { get; set; } = string.Empty;
-        public Guid? EmploymentTypeId { get; set; }
-        public string Organization { get; set; } = string.Empty;
+        public required string JobTitle { get; set; }
+        public required Guid EmploymentTypeId { get; set; }
+        public required string Organization { get; set; }
         public string? Location { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
         public string? Description { get; set; }
     }
 
     public class ProjectInfo
     {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
+        public required string Title { get; set; }
+        public required string Description { get; set; }
         public string? Link { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateOnly? StartDate { get; set; }
+        public DateOnly? EndDate { get; set; }
     }
 
     public class SkillInfo
@@ -69,9 +69,9 @@ namespace ServicePerfectCV.Domain.ValueObjects
 
     public class CertificationInfo
     {
-        public string Name { get; set; } = string.Empty;
-        public string Organization { get; set; } = string.Empty;
-        public DateTime? IssuedDate { get; set; }
+        public required string Name { get; set; }
+        public required string Organization { get; set; }
+        public DateOnly? IssuedDate { get; set; }
         public string? Description { get; set; }
     }
 }

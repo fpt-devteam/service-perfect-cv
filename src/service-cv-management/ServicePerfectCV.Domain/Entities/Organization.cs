@@ -12,9 +12,9 @@ namespace ServicePerfectCV.Domain.Entities
         public string? LogoUrl { get; set; }
         public string? Description { get; set; }
         public required OrganizationType OrganizationType { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
 
     }
 }

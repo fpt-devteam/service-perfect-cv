@@ -10,9 +10,9 @@ namespace ServicePerfectCV.Domain.Entities
         public required Guid UserId { get; set; }
         public required string Token { get; set; }
         public DevicePlatform Platform { get; set; }
-        public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
+        public DateTimeOffset RegisteredAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
 
         public virtual User User { get; set; } = default!;
     }

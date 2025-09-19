@@ -10,7 +10,7 @@ namespace ServicePerfectCV.Domain.Entities
     {
         public required Guid Id { get; set; }
         public required Guid CVId { get; set; }
-        public required string Context { get; set; }
+        public required string Content { get; set; }
 
         // Navigation property
         public virtual CV CV { get; set; } = null!;

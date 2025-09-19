@@ -34,6 +34,19 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(property => property.Gpa)
                 .HasColumnType(typeName: "decimal(3, 2)");
 
+            builder.Property(property => property.CreatedAt)
+                .IsRequired()
+                .HasColumnType("timestamptz")
+                .HasDefaultValueSql("NOW()");
+
+            builder.Property(property => property.UpdatedAt)
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
+
+            builder.Property(property => property.DeletedAt)
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
+
             builder.HasOne(e => e.CV)
                 .WithMany(cv => cv.Educations)
                 .HasForeignKey(e => e.CVId)

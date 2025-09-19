@@ -21,6 +21,19 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.HasIndex(e => new { e.Code, e.Name })
                 .IsUnique()
                 .HasFilter("\"DeletedAt\" IS NULL");
+
+            builder.Property(e => e.CreatedAt)
+                .IsRequired()
+                .HasColumnType("timestamptz")
+                .HasDefaultValueSql("NOW()");
+
+            builder.Property(e => e.UpdatedAt)
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
+
+            builder.Property(e => e.DeletedAt)
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
         }
     }
 }

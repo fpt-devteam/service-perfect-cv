@@ -19,9 +19,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -34,9 +34,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -49,9 +49,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -67,9 +67,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     LogoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     OrganizationType = table.Column<string>(type: "text", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -86,9 +86,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     AvatarUrl = table.Column<string>(type: "text", nullable: true),
                     FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
                     Status = table.Column<string>(type: "text", nullable: false),
                     Role = table.Column<string>(type: "text", nullable: false),
                     AuthMethod = table.Column<string>(type: "text", nullable: false)
@@ -107,9 +107,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     VersionId = table.Column<Guid>(type: "uuid", nullable: true),
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Content = table.Column<CVContent>(type: "jsonb", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "NULL"),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "NULL")
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true, defaultValueSql: "NULL"),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true, defaultValueSql: "NULL")
                 },
                 constraints: table =>
                 {
@@ -129,9 +129,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
                     Platform = table.Column<int>(type: "integer", nullable: false),
-                    RegisteredAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    RegisteredAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -152,11 +152,11 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     CVId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Organization = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    IssuedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IssuedDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -205,9 +205,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     Gpa = table.Column<decimal>(type: "numeric(3,2)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -229,12 +229,12 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     EmploymentTypeId = table.Column<Guid>(type: "uuid", nullable: false),
                     Organization = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Location = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -283,11 +283,11 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false),
                     Link = table.Column<string>(type: "text", nullable: true),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "NULL"),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "NULL"),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true, defaultValueSql: "NULL"),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true, defaultValueSql: "NULL"),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -305,11 +305,11 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CVId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Content = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Category = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    Content = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: false, defaultValueSql: "NOW()"),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true),
+                    DeletedAt = table.Column<DateTimeOffset>(type: "timestamptz", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -327,7 +327,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CVId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Context = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false)
+                    Content = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false)
                 },
                 constraints: table =>
                 {

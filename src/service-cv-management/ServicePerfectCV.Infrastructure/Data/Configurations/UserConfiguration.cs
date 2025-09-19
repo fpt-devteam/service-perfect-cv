@@ -36,13 +36,16 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(u => u.CreatedAt)
                 .IsRequired()
+                .HasColumnType("timestamptz")
                 .HasDefaultValueSql("NOW()");
 
             builder.Property(u => u.UpdatedAt)
-                .IsRequired(false);
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
 
             builder.Property(u => u.DeletedAt)
-                .IsRequired(false);
+                .IsRequired(false)
+                .HasColumnType("timestamptz");
 
             builder.Property(u => u.Status)
                 .IsRequired()

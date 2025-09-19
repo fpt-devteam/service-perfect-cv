@@ -48,12 +48,47 @@ Migration helps update the database schema (tables, columns, indexes, etc.) base
 
 The project has been migrated from SQL Server to PostgreSQL. If you have existing migrations from SQL Server, follow these steps to clean up:
 
-#### Clean Up Old Migrations (One-time setup)
+#### Clean Up Old Migrations (One-time Setup)
 
-1. **Remove existing migrations folder:**
+There are two main approaches to reset your migrations and database after switching to PostgreSQL:
+
+---
+
+### Option 1: Remove Migrations and Delete Database
+
+1. **Remove existing migrations folder (PowerShell):**
    ```bash
-   del /q src/service-cv-management/ServicePerfectCV.Infrastructure/Migrations
+   Get-ChildItem "src\service-cv-management\ServicePerfectCV.Infrastructure\Migrations" -File | Remove-Item -Force
    ```
+
+2. **Delete all tables in the database (SQL):**
+   ```sql
+   DO
+   $$
+   DECLARE
+      r RECORD;
+   BEGIN
+      FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+         EXECUTE 'DROP TABLE IF EXISTS public."' || r.tablename || '" CASCADE';
+      END LOOP;
+   END;
+   $$;
+   ```
+
+---
+
+### Option 2: Rollback Database to Migration 0
+
+1. **Rollback to migration 0 (if you have existing migrations):**
+   ```bash
+   dotnet ef database update 0 --project ./src/service-cv-management/ServicePerfectCV.Infrastructure --startup-project ./src/service-cv-management/ServicePerfectCV.WebApi
+   ```
+
+---
+
+### Create Initial Migration and Update Database
+
+After cleaning up with either option above:
 
 2. **Create initial migration for PostgreSQL:**
    ```bash
@@ -86,33 +121,6 @@ This command creates or updates the database schema to the latest migration.
 ```bash
 dotnet ef migrations remove --project ./src/service-cv-management/ServicePerfectCV.Infrastructure --startup-project ./src/service-cv-management/ServicePerfectCV.WebApi
 ```
-
-## Seed Data
-
-Seed data inserts sample or initial data into the database for testing or bootstrapping.
-
-### Configure Seed Data
-
-Open appsettings.json
-
-Find the Seed section and set Enabled to true to enable seeding on project start.
-
-Example:
-
-```bash
-"Seed": {
-  "Enabled": true
-}
-
-```
-
-### Run Project to Seed Data
-
-When running the project with Seed.Enabled = true, sample data will be automatically inserted into the database.
-
-### Disable Seed Data
-
-To disable seeding, set Seed.Enabled to false and restart the project.
 
 ## Documentation
 
