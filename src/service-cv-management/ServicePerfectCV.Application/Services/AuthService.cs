@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -39,7 +40,8 @@ namespace ServicePerfectCV.Application.Services
                              IMapper mapper,
                              IRefreshTokenService refreshTokenService,
                              IOAuthService oauthService,
-                             IDeviceTokenRepository deviceTokenRepository)
+                             IServiceScopeFactory serviceScopeFactory,
+                             ILogger<AuthService> logger)
     {
 
         public async Task<RegisterResponse> RegisterAsync(RegisterRequest registerRequest)
@@ -56,8 +58,19 @@ namespace ServicePerfectCV.Application.Services
             newUser.AuthMethod = Domain.Enums.AuthenticationMethod.JWT;
             await userRepository.CreateAsync(newUser);
             await userRepository.SaveChangesAsync();
-            //TODO: implement job queue for sending emails
-            await SendActivationEmailAsync(newUser.Email);
+            _ = Task.Run(async () =>
+            {
+                using var scope = serviceScopeFactory.CreateScope();
+                var authService = scope.ServiceProvider.GetRequiredService<AuthService>();
+                try
+                {
+                    await authService.SendActivationEmailAsync(newUser.Email);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error sending activation email to {Email}", newUser.Email);
+                }
+            });
             var response = mapper.Map<RegisterResponse>(newUser);
             return response;
         }
@@ -149,29 +162,6 @@ namespace ServicePerfectCV.Application.Services
             });
             await refreshTokenService.SaveAsync(tokens.RefreshToken, user.Id.ToString());
 
-            if (!string.IsNullOrWhiteSpace(loginRequest.DeviceToken))
-            {
-                var existing = await deviceTokenRepository.GetByTokenAsync(loginRequest.DeviceToken);
-                if (existing == null)
-                {
-                    await deviceTokenRepository.CreateAsync(new DeviceToken
-                    {
-                        Id = Guid.NewGuid(),
-                        UserId = user.Id,
-                        Token = loginRequest.DeviceToken,
-                        Platform = loginRequest.Platform ?? DevicePlatform.Web,
-                        RegisteredAt = DateTime.UtcNow
-                    });
-                }
-                else if (existing.UserId != user.Id)
-                {
-                    existing.UserId = user.Id;
-                    existing.Platform = loginRequest.Platform ?? existing.Platform;
-                    existing.RegisteredAt = DateTime.UtcNow;
-                    deviceTokenRepository.Update(existing);
-                }
-                await deviceTokenRepository.SaveChangesAsync();
-            }
             return new LoginResponse
             {
                 AccessToken = tokens.AccessToken,

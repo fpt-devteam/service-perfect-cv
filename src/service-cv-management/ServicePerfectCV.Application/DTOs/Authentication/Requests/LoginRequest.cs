@@ -15,9 +15,5 @@ namespace ServicePerfectCV.Application.DTOs.Authentication.Requests
 
         [Required(ErrorMessage = "Password is required.")]
         public required string Password { get; init; }
-
-        public string? DeviceToken { get; init; }
-
-        public DevicePlatform? Platform { get; init; }
     }
 }
