@@ -59,23 +59,6 @@ namespace ServicePerfectCV.Infrastructure.Repositories
                 .FirstOrDefaultAsync(cv => cv.Id == cvId && cv.UserId == userId && cv.DeletedAt == null);
         }
 
-        public async Task<CV?> GetFullContentByCVIdAndUserIdAsync(Guid cvId, Guid userId)
-        {
-            return await _context.CVs
-                .Where(c => c.Id == cvId && c.UserId == userId && c.DeletedAt == null)
-                .Include(c => c.Contact)
-                .Include(c => c.Summary)
-                .Include(c => c.Skills.Where(skill => skill.DeletedAt == null))
-                .Include(c => c.Educations.Where(education => education.DeletedAt == null))
-                .Include(c => c.Experiences.Where(experience => experience.DeletedAt == null))
-                    .ThenInclude(e => e.EmploymentType)
-                .Include(c => c.Projects.Where(project => project.DeletedAt == null))
-                .Include(c => c.Certifications.Where(certification => certification.DeletedAt == null))
-                .AsSplitQuery()
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
-        }
-
         public async Task<bool> DeleteByCVIdAndUserIdAsync(Guid cvId, Guid userId)
         {
             var cv = await _context.CVs

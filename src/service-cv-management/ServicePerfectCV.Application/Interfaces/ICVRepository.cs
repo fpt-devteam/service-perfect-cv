@@ -14,7 +14,6 @@ namespace ServicePerfectCV.Application.Interfaces
     {
         Task<FilterView<CV>> GetByUserIdAsync(CVQuery cvQuery, Guid userId);
         Task<CV?> GetByCVIdAndUserIdAsync(Guid cvId, Guid userId);
-        Task<CV?> GetFullContentByCVIdAndUserIdAsync(Guid cvId, Guid userId);
         Task<bool> DeleteByCVIdAndUserIdAsync(Guid cvId, Guid userId);
     }
 }

@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+using ServicePerfectCV.Domain.ValueObjects;
 
 #nullable disable
 
@@ -11,21 +12,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Categories",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Degrees",
                 columns: table => new
@@ -119,9 +105,8 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     VersionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    AnalysisId = table.Column<Guid>(type: "uuid", nullable: true),
                     Title = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    FullContent = table.Column<string>(type: "text", nullable: true),
+                    Content = table.Column<CVContent>(type: "jsonb", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "NULL"),
                     DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "NULL")
@@ -268,21 +253,21 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "JobDescription",
+                name: "JobDescriptions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     CVId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    CompanyName = table.Column<string>(type: "text", nullable: false),
-                    Responsibility = table.Column<string>(type: "text", nullable: false),
-                    Qualification = table.Column<string>(type: "text", nullable: false)
+                    Title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CompanyName = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
+                    Responsibility = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false),
+                    Qualification = table.Column<string>(type: "character varying(5000)", maxLength: 5000, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_JobDescription", x => x.Id);
+                    table.PrimaryKey("PK_JobDescriptions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JobDescription_CVs_CVId",
+                        name: "FK_JobDescriptions_CVs_CVId",
                         column: x => x.CVId,
                         principalTable: "CVs",
                         principalColumn: "Id",
@@ -323,8 +308,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     SkillItems = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    CategoryId = table.Column<Guid>(type: "uuid", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -333,11 +317,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         name: "FK_Skills_CVs_CVId",
                         column: x => x.CVId,
                         principalTable: "CVs",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Skills_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
                         principalColumn: "Id");
                 });
 
@@ -358,13 +337,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         principalTable: "CVs",
                         principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Categories_Name",
-                table: "Categories",
-                column: "Name",
-                unique: true,
-                filter: "\"DeletedAt\" IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Certifications_CVId",
@@ -417,8 +389,8 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 column: "EmploymentTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JobDescription_CVId",
-                table: "JobDescription",
+                name: "IX_JobDescriptions_CVId",
+                table: "JobDescriptions",
                 column: "CVId",
                 unique: true);
 
@@ -440,11 +412,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 name: "IX_Projects_CVId",
                 table: "Projects",
                 column: "CVId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Skills_CategoryId",
-                table: "Skills",
-                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Skills_CVId",
@@ -486,7 +453,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 name: "Experiences");
 
             migrationBuilder.DropTable(
-                name: "JobDescription");
+                name: "JobDescriptions");
 
             migrationBuilder.DropTable(
                 name: "JobTitles");
@@ -505,9 +472,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "EmploymentTypes");
-
-            migrationBuilder.DropTable(
-                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "CVs");

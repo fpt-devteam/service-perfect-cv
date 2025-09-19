@@ -15,18 +15,38 @@ namespace ServicePerfectCV.Application.Services
 {
     public class CVService(
         ICVRepository cvRepository,
+        IJobDescriptionRepository jobDescriptionRepository,
         IMapper mapper
     )
     {
         public async Task<CVResponse> CreateAsync(CreateCVRequest request, Guid userId)
         {
-            CV newCV = mapper.Map<CV>(request);
-            newCV.UserId = userId;
+            CV newCV = new CV
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Title = request.Title,
+                CreatedAt = DateTime.UtcNow
+            };
 
             await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();
 
+            JobDescription jobDescription = new JobDescription
+            {
+                Id = Guid.NewGuid(),
+                CVId = newCV.Id,
+                Title = request.JobDescription.Title,
+                CompanyName = request.JobDescription.CompanyName,
+                Responsibility = request.JobDescription.Responsibility,
+                Qualification = request.JobDescription.Qualification
+            };
 
+            await jobDescriptionRepository.CreateAsync(jobDescription);
+            await jobDescriptionRepository.SaveChangesAsync();
+
+            // Set the JobDescription navigation property for mapping
+            newCV.JobDescription = jobDescription;
             return mapper.Map<CVResponse>(newCV);
         }
         public async Task<PaginationData<CVResponse>> ListAsync(CVQuery query, Guid userId)
@@ -44,50 +64,46 @@ namespace ServicePerfectCV.Application.Services
             var cv = await cvRepository.GetByCVIdAndUserIdAsync(cvId, userId) ??
                 throw new DomainException(CVErrors.CVNotFound);
 
-            if (request.Title != null)
-            {
-                cv.Title = request.Title;
-            }
+            cv.Title = request.Title ?? cv.Title;
+            cv.UpdatedAt = DateTime.UtcNow;
 
             if (request.JobDescription != null)
             {
-                cv.JobDescription = mapper.Map<JobDescription>(request.JobDescription);
-            }
+                var jobDescription = await jobDescriptionRepository.GetByCVIdAsync(cvId) ??
+                    throw new DomainException(CVErrors.JobDescriptionNotFound);
 
-            if (request.AnalysisId.HasValue)
-            {
-                cv.AnalysisId = request.AnalysisId.Value;
+                jobDescription.Title = request.JobDescription.Title ?? jobDescription.Title;
+                jobDescription.CompanyName = request.JobDescription.CompanyName ?? jobDescription.CompanyName;
+                jobDescription.Responsibility = request.JobDescription.Responsibility ?? jobDescription.Responsibility;
+                jobDescription.Qualification = request.JobDescription.Qualification ?? jobDescription.Qualification;
+
+                cv.JobDescription = jobDescription;
             }
 
             cvRepository.Update(cv);
             await cvRepository.SaveChangesAsync();
 
-
             return mapper.Map<CVResponse>(cv);
         }
-
         public async Task<CVResponse> GetByIdAndUserIdAsync(Guid cvId, Guid userId)
         {
             var cv = await cvRepository.GetByCVIdAndUserIdAsync(cvId, userId) ??
                 throw new DomainException(CVErrors.CVNotFound);
 
+            var jobDescription = await jobDescriptionRepository.GetByCVIdAsync(cvId) ??
+                throw new DomainException(CVErrors.JobDescriptionNotFound);
+            cv.JobDescription = jobDescription;
+
             return mapper.Map<CVResponse>(cv);
 
         }
-
-        public async Task<CVFullContentResponse> GetFullContentAsync(Guid cvId, Guid userId)
-        {
-            var cv = await cvRepository.GetFullContentByCVIdAndUserIdAsync(cvId, userId) ??
-                throw new DomainException(CVErrors.CVNotFound);
-
-            return mapper.Map<CVFullContentResponse>(cv);
-        }
-
         public async Task DeleteAsync(Guid cvId, Guid userId)
         {
             var deleted = await cvRepository.DeleteByCVIdAndUserIdAsync(cvId, userId);
             if (!deleted)
                 throw new DomainException(CVErrors.CVNotFound);
+
+            await jobDescriptionRepository.DeleteByCVIdAsync(cvId);
         }
     }
 }

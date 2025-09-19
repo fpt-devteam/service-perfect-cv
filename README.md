@@ -52,7 +52,7 @@ The project has been migrated from SQL Server to PostgreSQL. If you have existin
 
 1. **Remove existing migrations folder:**
    ```bash
-   rm -rf src/service-cv-management/ServicePerfectCV.Infrastructure/Migrations
+   del /q src/service-cv-management/ServicePerfectCV.Infrastructure/Migrations
    ```
 
 2. **Create initial migration for PostgreSQL:**

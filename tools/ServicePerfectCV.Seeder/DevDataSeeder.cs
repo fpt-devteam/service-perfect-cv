@@ -14,6 +14,7 @@ namespace ServicePerfectCV.Seeder
     {
         private List<Guid> _userIds = new List<Guid>();
         private List<Guid> _cvIds = new List<Guid>();
+        private List<Guid> _jobDescriptionIds = new List<Guid>();
         private List<Guid> _jobTitleIds = new List<Guid>();
         private List<Guid> _employmentTypeIds = new List<Guid>();
         private List<Guid> _organizationIds = new List<Guid>();
@@ -39,6 +40,7 @@ namespace ServicePerfectCV.Seeder
             await SeedJobsTitleAsync(ct);
             await SeedDegreesAsync(ct);
             await SeedCVsAsync(ct);
+            await SeedJobDescriptionsAsync(ct);
             await SeedExperiencesAsync(ct);
             await SeedProjectsAsync(ct);
             await SeedCertificationsAsync(ct);
@@ -167,6 +169,86 @@ namespace ServicePerfectCV.Seeder
 
             Console.WriteLine($"Seeded CVs: {cvs.Count}");
             Console.WriteLine($"CV IDs generated: {string.Join(", ", _cvIds)}");
+        }
+
+        private async Task SeedJobDescriptionsAsync(CancellationToken ct)
+        {
+            if (await dbContext.JobDescriptions.AnyAsync(ct))
+            {
+                Console.WriteLine("JobDescriptions already seeded.");
+                _jobDescriptionIds = await dbContext.JobDescriptions.AsNoTracking().Select(jd => jd.Id).ToListAsync(ct);
+                return;
+            }
+
+            if (!_cvIds.Any())
+            {
+                Console.WriteLine("Cannot seed job descriptions: CVs not seeded yet.");
+                return;
+            }
+
+            var jobDescriptions = new List<JobDescription>();
+            var faker = new Faker();
+
+            // Create exactly one JobDescription per CV
+            foreach (var cvId in _cvIds)
+            {
+                var jobDescriptionId = Guid.NewGuid();
+                _jobDescriptionIds.Add(jobDescriptionId);
+
+                var jobDescription = new JobDescription
+                {
+                    Id = jobDescriptionId,
+                    CVId = cvId,
+                    Title = faker.PickRandom(new[]
+                    {
+                        "Senior Software Developer",
+                        "Full Stack Developer",
+                        "Frontend Developer",
+                        "Backend Developer",
+                        "DevOps Engineer",
+                        "Software Engineer",
+                        "Senior Software Engineer",
+                        "Lead Developer",
+                        "Technical Lead",
+                        "Software Architect",
+                        "Data Engineer",
+                        "Machine Learning Engineer",
+                        "Mobile App Developer",
+                        "Cloud Engineer",
+                        "QA Engineer"
+                    }),
+                    CompanyName = faker.Company.CompanyName(),
+                    Responsibility = faker.PickRandom(new[]
+                    {
+                        "Develop and maintain web applications using modern technologies. Collaborate with cross-functional teams to deliver high-quality software solutions.",
+                        "Design and implement scalable backend systems. Work closely with frontend developers to create seamless user experiences.",
+                        "Build responsive and interactive user interfaces. Optimize application performance and ensure cross-browser compatibility.",
+                        "Manage cloud infrastructure and deployment pipelines. Implement monitoring and logging solutions for production systems.",
+                        "Lead software development projects and mentor junior developers. Drive technical decisions and architectural improvements.",
+                        "Analyze data requirements and build ETL pipelines. Develop data models and ensure data quality and integrity.",
+                        "Design and implement machine learning models. Work with large datasets and optimize model performance.",
+                        "Develop mobile applications for iOS and Android platforms. Ensure app performance and user experience optimization."
+                    }),
+                    Qualification = faker.PickRandom(new[]
+                    {
+                        "Bachelor's degree in Computer Science or related field. 3+ years of experience in software development. Strong knowledge of programming languages and frameworks.",
+                        "Master's degree in Computer Science preferred. 5+ years of experience in full-stack development. Experience with cloud platforms and microservices architecture.",
+                        "Bachelor's degree in Software Engineering. 2+ years of experience in frontend development. Proficiency in JavaScript, React, and CSS frameworks.",
+                        "Degree in Computer Science or equivalent experience. 4+ years of experience in backend development. Strong database design and API development skills.",
+                        "Bachelor's degree in Engineering. 3+ years of DevOps experience. Knowledge of containerization, CI/CD, and cloud infrastructure management.",
+                        "Computer Science degree or equivalent. 6+ years of software development experience. Leadership experience and strong communication skills.",
+                        "Advanced degree in Data Science or related field. 3+ years of experience with big data technologies and data processing frameworks.",
+                        "Bachelor's degree in Computer Science. 4+ years of experience in machine learning and AI. Proficiency in Python, TensorFlow, and statistical analysis."
+                    })
+                };
+
+                jobDescriptions.Add(jobDescription);
+            }
+
+            dbContext.JobDescriptions.AddRange(jobDescriptions);
+            await dbContext.SaveChangesAsync(ct);
+
+            Console.WriteLine($"Seeded JobDescriptions: {jobDescriptions.Count}");
         }
 
         private async Task SeedExperiencesAsync(CancellationToken ct)
@@ -732,6 +814,7 @@ namespace ServicePerfectCV.Seeder
             var cvs = await dbContext.CVs
                 .Include(c => c.Contact)
                 .Include(c => c.Summary)
+                .Include(c => c.JobDescription)
                 .Include(c => c.Educations)
                 .Include(c => c.Experiences)
                     .ThenInclude(e => e.EmploymentType)
@@ -838,6 +921,9 @@ namespace ServicePerfectCV.Seeder
             await dbContext.Summaries.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared Summaries");
 
+            await dbContext.JobDescriptions.ExecuteDeleteAsync(ct);
+            Console.WriteLine("Cleared JobDescriptions");
+
             await dbContext.CVs.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared CVs");
 
@@ -853,14 +939,12 @@ namespace ServicePerfectCV.Seeder
             await dbContext.Degrees.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared Degrees");
 
-            await dbContext.Categories.ExecuteDeleteAsync(ct);
-            Console.WriteLine("Cleared Categories");
-
             await dbContext.Users.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared Users");
 
             _userIds.Clear();
             _cvIds.Clear();
+            _jobDescriptionIds.Clear();
             _jobTitleIds.Clear();
             _employmentTypeIds.Clear();
             _organizationIds.Clear();

@@ -15,11 +15,41 @@ using System.Threading.Tasks;
 namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/cvs")]
     public class CVController(CVService cvService) : ControllerBase
     {
-        [Authorize]
+        /// <summary>
+        /// Creates a new CV with job description
+        /// </summary>
+        /// <param name="request">CV creation request containing title and job description details</param>
+        /// <remarks>
+        /// Creates a new CV for the authenticated user. The request must include:
+        /// - title: The CV title (required, max 200 characters)
+        /// - jobDescription: Object containing job details (required)
+        ///   - title: Job title (required)
+        ///   - companyName: Company name (required)
+        ///   - responsibility: Job responsibilities (required)
+        ///   - qualification: Required qualifications (required)
+        ///
+        /// Example request:
+        /// ```json
+        /// {
+        ///   "title": "Software Developer CV",
+        ///   "jobDescription": {
+        ///     "title": "Senior Software Developer",
+        ///     "companyName": "Tech Corp",
+        ///     "responsibility": "Develop and maintain web applications",
+        ///     "qualification": "Bachelor's degree in Computer Science"
+        ///   }
+        /// }
+        /// ```
+        /// </remarks>
+        /// <returns>Created CV with job description details</returns>
         [HttpPost]
+        [ProducesResponseType(typeof(CVResponse), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> CreateAsync([FromBody] CreateCVRequest request)
         {
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -40,10 +70,9 @@ namespace ServicePerfectCV.WebApi.Controllers
         /// - offset: Number of items to skip (default: 0)
         /// - sort.updatedAt: Sort by updated date (0 = ascending, 1 = descending)
         /// 
-        /// Example: GET /api/cvs?searchTerm=software&limit=5&offset=0&sort.updatedAt=1
+        /// Example: GET /api/cvs?searchTerm=software&amp;limit=5&amp;offset=0&amp;sort.updatedAt=1
         /// </remarks>
         /// <returns>Paginated list of CVs matching the search criteria</returns>
-        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(PaginationData<CVResponse>), 200)]
         [ProducesResponseType(401)]
@@ -56,7 +85,7 @@ namespace ServicePerfectCV.WebApi.Controllers
             var result = await cvService.ListAsync(query, userId);
             return Ok(result);
         }
-        [Authorize]
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] UpdateCVRequest request)
         {
@@ -66,8 +95,23 @@ namespace ServicePerfectCV.WebApi.Controllers
             var result = await cvService.UpdateAsync(cvId: id, request: request, userId: userId);
             return Ok(result);
         }
-        [Authorize]
+
+        /// <summary>
+        /// Retrieves a specific CV by ID including job description
+        /// </summary>
+        /// <param name="id">The unique identifier of the CV</param>
+        /// <remarks>
+        /// Returns the CV details including:
+        /// - CV basic information (id, title, content, last edited date)
+        /// - Associated job description (title, company name, responsibilities, qualifications)
+        ///
+        /// Only returns CVs owned by the authenticated user.
+        /// </remarks>
+        /// <returns>CV details with job description</returns>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(CVResponse), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> GetByIdAndUserIdAsync(Guid id)
         {
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -77,27 +121,16 @@ namespace ServicePerfectCV.WebApi.Controllers
             return Ok(result);
         }
 
-        [Authorize]
-        [HttpGet("{id}/full-content")]
-        public async Task<IActionResult> GetFullContentAsync(Guid id)
-        {
-            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(nameIdentifier, out var userId))
-                throw new DomainException(UserErrors.NotFound);
-            var result = await cvService.GetFullContentAsync(cvId: id, userId: userId);
-            return Ok(result);
-        }
-
         /// <summary>
-        /// Soft deletes a CV by setting DeletedAt to current timestamp
+        /// Deletes a CV and its associated job description
         /// </summary>
         /// <param name="id">The unique identifier of the CV to delete</param>
         /// <remarks>
-        /// This endpoint performs a soft delete by setting the DeletedAt field to the current timestamp.
+        /// This endpoint performs a soft delete on the CV by setting the DeletedAt field to the current timestamp,
+        /// and permanently removes the associated job description from the database.
         /// The CV will no longer appear in search results or list operations.
         /// </remarks>
         /// <returns>Success response if CV was deleted</returns>
-        [Authorize]
         [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]

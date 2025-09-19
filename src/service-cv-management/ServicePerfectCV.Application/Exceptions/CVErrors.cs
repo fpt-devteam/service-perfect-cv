@@ -33,5 +33,10 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "CVDeleteFailed",
             Message: "Failed to delete CV.",
             HttpStatusCode.InternalServerError);
+
+        public static readonly Error JobDescriptionNotFound = new(
+            Code: "JobDescriptionNotFound",
+            Message: "Job description not found.",
+            HttpStatusCode.NotFound);
     }
 }

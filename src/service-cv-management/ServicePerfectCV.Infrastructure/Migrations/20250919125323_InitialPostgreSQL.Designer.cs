@@ -13,8 +13,8 @@ using ServicePerfectCV.Infrastructure.Data;
 namespace ServicePerfectCV.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250919092601_UpdateJsonbForCVContent")]
-    partial class UpdateJsonbForCVContent
+    [Migration("20250919125323_InitialPostgreSQL")]
+    partial class InitialPostgreSQL
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,9 +30,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("AnalysisId")
                         .HasColumnType("uuid");
 
                     b.Property<CVContent>("Content")
@@ -69,35 +66,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("CVs");
-                });
-
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Category", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique()
-                        .HasFilter("\"DeletedAt\" IS NULL");
-
-                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
@@ -405,26 +373,30 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
 
                     b.Property<string>("Qualification")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<string>("Responsibility")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CVId")
                         .IsUnique();
 
-                    b.ToTable("JobDescription");
+                    b.ToTable("JobDescriptions");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.JobTitle", b =>
@@ -558,9 +530,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.Property<Guid>("CVId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CategoryId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -578,8 +547,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CVId");
-
-                    b.HasIndex("CategoryId");
 
                     b.ToTable("Skills");
                 });
@@ -768,10 +735,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("ServicePerfectCV.Domain.Entities.Category", null)
-                        .WithMany("Skills")
-                        .HasForeignKey("CategoryId");
-
                     b.Navigation("CV");
                 });
 
@@ -797,7 +760,8 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.Navigation("Experiences");
 
-                    b.Navigation("JobDescription");
+                    b.Navigation("JobDescription")
+                        .IsRequired();
 
                     b.Navigation("Projects");
 
@@ -805,11 +769,6 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.Navigation("Summary")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Category", b =>
-                {
-                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.EmploymentType", b =>

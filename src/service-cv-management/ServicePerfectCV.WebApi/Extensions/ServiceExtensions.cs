@@ -42,12 +42,12 @@ namespace ServicePerfectCV.WebApi.Extensions
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICVRepository, CVRepository>();
+            services.AddScoped<IJobDescriptionRepository, JobDescriptionRepository>();
             services.AddScoped<IEducationRepository, EducationRepository>();
             services.AddScoped<IContactRepository, ContactRepository>();
             services.AddScoped<IExperienceRepository, ExperienceRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<ISkillRepository, SkillRepository>();
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IJobTitleRepository, JobTitleRepository>();
             services.AddScoped<IOrganizationRepository, OrganizationRepository>();
             services.AddScoped<IDegreeRepository, DegreeRepository>();
@@ -67,7 +67,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<ExperienceService>();
             services.AddScoped<ProjectService>();
             services.AddScoped<SkillService>();
-            services.AddScoped<CategoryService>();
             services.AddScoped<JobTitleService>();
             services.AddScoped<OrganizationService>();
             services.AddScoped<DegreeService>();

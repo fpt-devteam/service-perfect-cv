@@ -17,13 +17,13 @@ namespace ServicePerfectCV.Infrastructure.Data
         public DbSet<Certification> Certifications { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<CV> CVs { get; set; }
+        public DbSet<JobDescription> JobDescriptions { get; set; }
         public DbSet<Education> Educations { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Degree> Degrees { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<JobTitle> JobTitles { get; set; }
         public DbSet<EmploymentType> EmploymentTypes { get; set; }
-        public DbSet<Category> Categories { get; set; }
         public DbSet<DeviceToken> DeviceTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,11 +33,11 @@ namespace ServicePerfectCV.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new ExperienceConfiguration());
             modelBuilder.ApplyConfiguration(new SkillConfiguration());
-            modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new SummaryConfiguration());
             modelBuilder.ApplyConfiguration(new CertificationConfiguration());
             modelBuilder.ApplyConfiguration(new ContactConfiguration());
             modelBuilder.ApplyConfiguration(new CVConfiguration());
+            modelBuilder.ApplyConfiguration(new JobDescriptionConfiguration());
             modelBuilder.ApplyConfiguration(new EducationConfiguration());
             modelBuilder.ApplyConfiguration(new ProjectConfiguration());
             modelBuilder.ApplyConfiguration(new OrganizationConfiguration());
