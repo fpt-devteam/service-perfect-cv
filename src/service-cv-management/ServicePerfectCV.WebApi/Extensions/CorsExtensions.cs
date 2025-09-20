@@ -16,21 +16,15 @@ namespace ServicePerfectCV.WebApi.Extensions
                 .Get<CorsSettings>()
                 ?? throw new InvalidOperationException("Missing CorsSettings");
 
-            // Convert configuration comma-separated strings into arrays.
-            var allowedOrigins = corsOptions.AllowedOrigins.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            var allowedHeaders = corsOptions.AllowedHeaders.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            var allowedMethods = corsOptions.AllowedMethods.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            var exposedHeaders = corsOptions.ExposedHeaders.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
             services.AddCors(options =>
             {
                 options.AddPolicy("AppCorsPolicy", policyBuilder =>
                 {
                     policyBuilder
-                        .WithOrigins(allowedOrigins)
-                        .WithHeaders(allowedHeaders)
-                        .WithMethods(allowedMethods)
-                        .WithExposedHeaders(exposedHeaders);
+                        .WithOrigins(corsOptions.AllowedOrigins)
+                        .WithHeaders(corsOptions.AllowedHeaders)
+                        .WithMethods(corsOptions.AllowedMethods)
+                        .WithExposedHeaders(corsOptions.ExposedHeaders);
 
                     if (corsOptions.AllowCredentials)
                         policyBuilder.AllowCredentials();
