@@ -25,7 +25,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddValidatorsFromAssemblyContaining<CreateExperienceRequest>();
             services.AddScoped<IFirebaseStorageService>(sp =>
             {
-                var settings = sp.GetRequiredService<IOptions<FirebaseCloudStorageSettings>>().Value;
+                var settings = sp.GetRequiredService<IOptions<FirebaseStorageSettings>>().Value;
                 var logger = sp.GetRequiredService<ILogger<FirebaseStorageService>>();
                 return new FirebaseStorageService(settings, logger);
             });

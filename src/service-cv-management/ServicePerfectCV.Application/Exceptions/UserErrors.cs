@@ -29,5 +29,10 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "NoFileUploaded",
             Message: "No file uploaded.",
             HttpStatusCode.BadRequest);
+
+        public static readonly Error InvalidUserId = new(
+            Code: "InvalidUserId",
+            Message: "Invalid user identifier format.",
+            HttpStatusCode.BadRequest);
     }
 }

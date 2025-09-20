@@ -12,20 +12,8 @@ namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    public class UserController : ControllerBase
+    public class UserController(UserService userService) : ControllerBase
     {
-        private readonly UserService userService;
-        private readonly IFirebaseStorageService _firebaseStorageService;
-
-        public UserController(
-            UserService userService,
-            IFirebaseStorageService firebaseStorageService
-            )
-        {
-            this.userService = userService;
-            _firebaseStorageService = firebaseStorageService;
-        }
-
         [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> GetMeAsync()
@@ -33,6 +21,7 @@ namespace ServicePerfectCV.WebApi.Controllers
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
+
             var response = await userService.GetMeAsync(userId: userId);
             return Ok(response);
         }

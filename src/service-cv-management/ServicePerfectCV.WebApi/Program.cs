@@ -30,7 +30,7 @@ namespace ServicePerfectCV.WebApi
             builder.Services.Configure<UrlSettings>(builder.Configuration.GetSection("UrlSettings"));
             builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
             builder.Services.Configure<FcmSettings>(builder.Configuration.GetSection("FcmSettings"));
-            builder.Services.Configure<FirebaseCloudStorageSettings>(builder.Configuration.GetSection("FirebaseCloudStorageSettings"));
+            builder.Services.Configure<FirebaseStorageSettings>(builder.Configuration.GetSection("FirebaseStorageSettings"));
 
             builder.AddDatabase();
             builder.Services.AddRedis(builder.Configuration);

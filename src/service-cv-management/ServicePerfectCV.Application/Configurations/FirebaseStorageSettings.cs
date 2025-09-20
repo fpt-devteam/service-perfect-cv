@@ -1,6 +1,6 @@
 namespace ServicePerfectCV.Application.Configurations
 {
-    public class FirebaseCloudStorageSettings
+    public class FirebaseStorageSettings
     {
         public required string Type { get; set; }
         public required string ProjectId { get; set; }

@@ -26,10 +26,12 @@ namespace ServicePerfectCV.WebApi.Controllers
     public class SkillController : ControllerBase
     {
         private readonly SkillService _skillService;
+        private readonly ILogger<SkillController> _logger;
 
-        public SkillController(SkillService skillService)
+        public SkillController(SkillService skillService, ILogger<SkillController> logger)
         {
             _skillService = skillService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -101,6 +103,7 @@ namespace ServicePerfectCV.WebApi.Controllers
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
+            _logger.LogInformation("User ID: {UserId}", userId);
 
             var result = await _skillService.GetByCVIdAsync(cvId: cvId, userId: userId, query: query);
             return Ok(result);

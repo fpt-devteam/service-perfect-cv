@@ -1,15 +1,11 @@
 using FirebaseAdmin;
-using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.Interfaces;
-using System;
-using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Infrastructure.Services
 {
@@ -20,40 +16,54 @@ namespace ServicePerfectCV.Infrastructure.Services
         private readonly string _bucketName;
         private readonly string _storageUrl;
 
-        public FirebaseStorageService(FirebaseCloudStorageSettings settings, ILogger<FirebaseStorageService> logger)
+        public FirebaseStorageService(FirebaseStorageSettings settings, ILogger<FirebaseStorageService> logger)
         {
-            _logger = logger;
-            var credentialJson = new
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
+
+            try
             {
-                type = settings.Type,
-                project_id = settings.ProjectId,
-                private_key_id = settings.PrivateKeyId,
-                private_key = settings.PrivateKey.Replace("\\n", Environment.NewLine),
-                client_email = settings.ClientEmail,
-                client_id = settings.ClientId,
-                auth_uri = settings.AuthUri,
-                token_uri = settings.TokenUri,
-                auth_provider_x509_cert_url = settings.AuthProviderX509CertUrl,
-                client_x509_cert_url = settings.ClientX509CertUrl,
-                universe_domain = settings.UniverseDomain
-            };
-
-            // _logger.LogInformation("Credential JSON: {CredentialJson}", JsonSerializer.Serialize(credentialJson));
-
-            var credentialJsonString = JsonSerializer.Serialize(credentialJson);
-            var credential = GoogleCredential.FromJson(credentialJsonString);
-
-            if (FirebaseApp.DefaultInstance == null)
-            {
-                FirebaseApp.Create(new AppOptions
+                var credentialJson = new
                 {
-                    Credential = credential
-                });
-            }
+                    type = settings.Type,
+                    project_id = settings.ProjectId,
+                    private_key_id = settings.PrivateKeyId,
+                    private_key = settings.PrivateKey.Replace("\\n", Environment.NewLine),
+                    client_email = settings.ClientEmail,
+                    client_id = settings.ClientId,
+                    auth_uri = settings.AuthUri,
+                    token_uri = settings.TokenUri,
+                    auth_provider_x509_cert_url = settings.AuthProviderX509CertUrl,
+                    client_x509_cert_url = settings.ClientX509CertUrl,
+                    universe_domain = settings.UniverseDomain
+                };
 
-            _storageClient = StorageClient.Create(credential);
-            _bucketName = settings.BucketName;
-            _storageUrl = settings.StorageUrl;
+                _logger.LogInformation("Initializing Firebase Storage Service for project: {ProjectId}", settings.ProjectId);
+
+                var credentialJsonString = JsonSerializer.Serialize(credentialJson);
+                var credential = GoogleCredential.FromJson(credentialJsonString);
+
+                if (FirebaseApp.DefaultInstance == null)
+                {
+                    FirebaseApp.Create(new AppOptions
+                    {
+                        Credential = credential
+                    });
+                }
+
+                _storageClient = StorageClient.Create(credential);
+                _bucketName = settings.BucketName;
+                _storageUrl = settings.StorageUrl;
+
+                _logger.LogInformation("Firebase Storage Service initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to initialize Firebase Storage Service");
+                throw;
+            }
         }
 
         public async Task<string> UploadFileAsync(IFormFile file, string folder)

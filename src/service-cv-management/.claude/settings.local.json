@@ -5,7 +5,8 @@
       "Bash(dotnet build)",
       "Read(//c/Users/NHATTHANG/FptUniversity/service-perfect-cv/tools/ServicePerfectCV.Seeder/**)",
       "Bash(dotnet build:*)",
-      "Bash(dotnet ef migrations remove:*)"
+      "Bash(dotnet ef migrations remove:*)",
+      "Bash(dir C:UsersNHATTHANGFptUniversityservice-perfect-cvsrcservice-cv-management*.cs)"
     ],
     "deny": [],
     "ask": []
