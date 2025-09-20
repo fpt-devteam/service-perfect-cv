@@ -7,9 +7,6 @@ namespace ServicePerfectCV.Application.DTOs.Summary.Requests
 {
     public class UpsertSummaryRequest
     {
-        [Required(ErrorMessage = "CV ID is required.")]
-        public required Guid CVId { get; init; }
-
         [Required(ErrorMessage = "Content is required.")]
         [StringLength(2000, MinimumLength = 10, ErrorMessage = "Content must be between 10-2000 characters")]
         public string? Content { get; set; }

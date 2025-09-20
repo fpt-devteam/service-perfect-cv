@@ -13,7 +13,6 @@ namespace ServicePerfectCV.Application.Mappings
             CreateMap<Summary, SummaryResponse>();
 
             CreateMap<UpsertSummaryRequest, Summary>()
-                .ForMember(dest => dest.CVId, opt => opt.MapFrom(src => src.CVId))
                 .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Content))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()));
         }

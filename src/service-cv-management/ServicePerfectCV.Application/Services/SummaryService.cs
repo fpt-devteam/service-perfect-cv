@@ -29,22 +29,19 @@ namespace ServicePerfectCV.Application.Services
             _notificationService = notificationService;
         }
 
-        public async Task<SummaryResponse> UpsertAsync(UpsertSummaryRequest request)
+        public async Task<SummaryResponse> UpsertAsync(Guid cvId, Guid userId, UpsertSummaryRequest request)
         {
-            var cv = await _cvRepository.GetByIdAsync(request.CVId) ?? throw new DomainException(SummaryErrors.CVNotFound);
+            var cv = await _cvRepository.GetByCVIdAndUserIdAsync(cvId, userId) ?? throw new DomainException(SummaryErrors.CVNotFound);
 
-            var existingSummary = await _summaryRepository.GetByCVIdAsync(request.CVId);
+            var existingSummary = await _summaryRepository.GetByCVIdAsync(cvId);
 
             if (existingSummary == null)
             {
                 var newSummary = _mapper.Map<Summary>(request);
+                newSummary.CVId = cvId;
 
                 await _summaryRepository.CreateAsync(newSummary);
                 await _summaryRepository.SaveChangesAsync();
-
-
-                // Send notification
-                await _notificationService.SendSummaryUpdateNotificationAsync(cv.UserId);
 
                 return _mapper.Map<SummaryResponse>(newSummary);
             }
@@ -53,10 +50,6 @@ namespace ServicePerfectCV.Application.Services
 
             _summaryRepository.Update(existingSummary);
             await _summaryRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendSummaryUpdateNotificationAsync(cv.UserId);
 
             return _mapper.Map<SummaryResponse>(existingSummary);
         }

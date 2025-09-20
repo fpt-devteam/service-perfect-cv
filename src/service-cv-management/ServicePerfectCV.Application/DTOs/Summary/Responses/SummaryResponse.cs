@@ -6,6 +6,6 @@ namespace ServicePerfectCV.Application.DTOs.Summary.Responses
     {
         public Guid Id { get; init; }
         public Guid CVId { get; init; }
-        public string Context { get; init; } = default!;
+        public string Content { get; init; } = default!;
     }
 }

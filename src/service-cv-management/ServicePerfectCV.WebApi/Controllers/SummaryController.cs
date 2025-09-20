@@ -4,9 +4,11 @@ using ServicePerfectCV.Application.DTOs.Summary.Requests;
 using ServicePerfectCV.Application.DTOs.Summary.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Services;
+using ServicePerfectCV.Domain.Constants;
 using System;
 using System.Net;
 using System.Net.Mime;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ServicePerfectCV.WebApi.Controllers
@@ -32,6 +34,7 @@ namespace ServicePerfectCV.WebApi.Controllers
         /// <summary>
         /// Creates or updates summary information
         /// </summary>
+        /// <param name="cvId">The unique identifier of the CV</param>
         /// <param name="request">The summary information to create or update</param>
         /// <returns>The newly created or updated summary information</returns>
         /// <remarks>
@@ -45,9 +48,13 @@ namespace ServicePerfectCV.WebApi.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> UpsertAsync([FromBody] UpsertSummaryRequest request)
+        public async Task<IActionResult> UpsertAsync(Guid cvId, [FromBody] UpsertSummaryRequest request)
         {
-            var result = await _summaryService.UpsertAsync(request);
+            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(nameIdentifier, out var userId))
+                throw new DomainException(UserErrors.NotFound);
+
+            var result = await _summaryService.UpsertAsync(cvId: cvId, userId: userId, request: request);
             return Ok(result);
         }
 
