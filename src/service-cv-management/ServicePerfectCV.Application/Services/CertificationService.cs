@@ -15,21 +15,15 @@ namespace ServicePerfectCV.Application.Services
         private readonly ICertificationRepository _certificationRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
-        private readonly IOrganizationRepository _organizationRepository;
-        private readonly NotificationService _notificationService;
 
         public CertificationService(
             ICertificationRepository certificationRepository,
             ICVRepository cvRepository,
-            IMapper mapper,
-            IOrganizationRepository organizationRepository,
-            NotificationService notificationService)
+            IMapper mapper)
         {
             _certificationRepository = certificationRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
-            _organizationRepository = organizationRepository;
-            _notificationService = notificationService;
         }
 
         public async Task<CertificationResponse> CreateAsync(Guid cvId, CreateCertificationRequest request)
@@ -45,10 +39,6 @@ namespace ServicePerfectCV.Application.Services
             await _certificationRepository.CreateAsync(entity: newCertification);
             await _certificationRepository.SaveChangesAsync();
 
-
-            // Send notification
-            await _notificationService.SendCertificationUpdateNotificationAsync(cv.UserId, "added");
-
             return _mapper.Map<CertificationResponse>(source: newCertification);
         }
 
@@ -62,18 +52,14 @@ namespace ServicePerfectCV.Application.Services
             if (cv == null)
                 throw new DomainException(CertificationErrors.CVNotFound);
 
-            existingCertification.Name = request.Name;
-            existingCertification.Organization = request.Organization;
-            existingCertification.IssuedDate = request.IssuedDate;
-            existingCertification.Description = request.Description;
+            existingCertification.Name = request.Name ?? existingCertification.Name;
+            existingCertification.Organization = request.Organization ?? existingCertification.Organization;
+            existingCertification.IssuedDate = request.IssuedDate ?? existingCertification.IssuedDate;
+            existingCertification.Description = request.Description ?? existingCertification.Description;
             existingCertification.UpdatedAt = DateTime.UtcNow;
 
             _certificationRepository.Update(entity: existingCertification);
             await _certificationRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendCertificationUpdateNotificationAsync(cv.UserId, "updated");
 
             return _mapper.Map<CertificationResponse>(source: existingCertification);
         }
@@ -118,9 +104,6 @@ namespace ServicePerfectCV.Application.Services
             certification.DeletedAt = DateTime.UtcNow;
             _certificationRepository.Update(entity: certification);
             await _certificationRepository.SaveChangesAsync();
-
-            // Send notification
-            await _notificationService.SendCertificationUpdateNotificationAsync(userId, "deleted");
         }
     }
 }

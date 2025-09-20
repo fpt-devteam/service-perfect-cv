@@ -6,8 +6,8 @@ namespace ServicePerfectCV.Application.DTOs.Certification.Requests
 {
     public class UpdateCertificationRequest
     {
-        public required string Name { get; set; }
-        public required string Organization { get; set; }
+        public string? Name { get; set; }
+        public string? Organization { get; set; }
         public DateOnly? IssuedDate { get; set; }
         public string? Description { get; set; }
 
@@ -16,7 +16,6 @@ namespace ServicePerfectCV.Application.DTOs.Certification.Requests
             public Validator()
             {
                 RuleFor(x => x.Name)
-                    .NotEmpty().WithMessage("Certification name is required.")
                     .MaximumLength(CertificationConstraints.NameMaxLength)
                     .WithMessage($"Certification name cannot exceed {CertificationConstraints.NameMaxLength} characters");
 
