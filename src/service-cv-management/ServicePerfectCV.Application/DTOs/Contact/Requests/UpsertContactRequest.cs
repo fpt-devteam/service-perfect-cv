@@ -7,15 +7,11 @@ namespace ServicePerfectCV.Application.DTOs.Contact.Requests
 {
     public class UpsertContactRequest
     {
-        [Required(ErrorMessage = "CV ID is required.")]
-        public required Guid CVId { get; init; }
-
         public string? PhoneNumber { get; set; }
 
         [JsonIgnore]
         public Optional<string?> Phone => PhoneNumber != null ? Optional<string?>.From(PhoneNumber) : Optional<string?>.None();
 
-        [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email address format.")]
         public string? Email { get; set; }
 

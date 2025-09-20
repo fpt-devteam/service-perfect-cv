@@ -13,7 +13,6 @@ namespace ServicePerfectCV.Application.Mappings
             CreateMap<Contact, ContactResponse>();
 
             CreateMap<UpsertContactRequest, Contact>()
-                .ForMember(dest => dest.CVId, opt => opt.MapFrom(src => src.CVId))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.LinkedInUrl, opt => opt.MapFrom(src => src.LinkedInUrl))

@@ -4,8 +4,12 @@ using ServicePerfectCV.Application.DTOs.Contact.Requests;
 using ServicePerfectCV.Application.DTOs.Contact.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Services;
+using ServicePerfectCV.Domain.Constants;
+using System;
 using System.Net;
 using System.Net.Mime;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ServicePerfectCV.WebApi.Controllers
 {
@@ -24,6 +28,7 @@ namespace ServicePerfectCV.WebApi.Controllers
         /// <summary>
         /// Creates or updates contact information
         /// </summary>
+        /// <param name="cvId">The unique identifier of the CV</param>
         /// <param name="request">The contact information to create or update</param>
         /// <returns>The newly created or updated contact information</returns>
         /// <remarks>
@@ -37,9 +42,13 @@ namespace ServicePerfectCV.WebApi.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> UpsertAsync([FromBody] UpsertContactRequest request)
+        public async Task<IActionResult> UpsertAsync(Guid cvId, [FromBody] UpsertContactRequest request)
         {
-            var result = await _contactService.UpsertAsync(request);
+            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(nameIdentifier, out var userId))
+                throw new DomainException(UserErrors.NotFound);
+
+            var result = await _contactService.UpsertAsync(cvId: cvId, userId: userId, request: request);
             return Ok(result);
         }
 

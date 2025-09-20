@@ -5,8 +5,6 @@ using ServicePerfectCV.Application.DTOs.Contact.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
-using System;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Services
 {
@@ -15,38 +13,30 @@ namespace ServicePerfectCV.Application.Services
         private readonly IContactRepository _contactRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
-        private readonly NotificationService _notificationService;
 
         public ContactService(
             IContactRepository contactRepository,
             ICVRepository cvRepository,
-            IMapper mapper,
-            NotificationService notificationService)
+            IMapper mapper)
         {
             _contactRepository = contactRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
-            _notificationService = notificationService;
         }
 
-        public async Task<ContactResponse> UpsertAsync(UpsertContactRequest request)
+        public async Task<ContactResponse> UpsertAsync(Guid cvId, Guid userId, UpsertContactRequest request)
         {
-            var cv = await _cvRepository.GetByIdAsync(request.CVId);
-            if (cv == null)
-                throw new DomainException(ContactErrors.CVNotFound);
+            var cv = await _cvRepository.GetByCVIdAndUserIdAsync(cvId, userId) ?? throw new DomainException(ContactErrors.CVNotFound);
 
-            var existingContact = await _contactRepository.GetByCVIdAsync(request.CVId);
+            var existingContact = await _contactRepository.GetByCVIdAsync(cvId);
 
             if (existingContact == null)
             {
                 var newContact = _mapper.Map<Contact>(request);
+                newContact.CVId = cvId;
 
                 await _contactRepository.CreateAsync(newContact);
                 await _contactRepository.SaveChangesAsync();
-
-
-                // Send notification
-                await _notificationService.SendContactUpdateNotificationAsync(cv.UserId);
 
                 return _mapper.Map<ContactResponse>(newContact);
             }
@@ -61,10 +51,6 @@ namespace ServicePerfectCV.Application.Services
 
             _contactRepository.Update(existingContact);
             await _contactRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendContactUpdateNotificationAsync(cv.UserId);
 
             return _mapper.Map<ContactResponse>(existingContact);
         }
