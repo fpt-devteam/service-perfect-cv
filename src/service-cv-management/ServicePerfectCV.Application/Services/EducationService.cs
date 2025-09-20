@@ -15,24 +15,15 @@ namespace ServicePerfectCV.Application.Services
         private readonly IEducationRepository _educationRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
-        private readonly IDegreeRepository _degreeRepository;
-        private readonly IOrganizationRepository _organizationRepository;
-        private readonly NotificationService _notificationService;
 
         public EducationService(
             IEducationRepository educationRepository,
             ICVRepository cvRepository,
-            IMapper mapper,
-            IDegreeRepository degreeRepository,
-            IOrganizationRepository organizationRepository,
-            NotificationService notificationService)
+            IMapper mapper)
         {
             _educationRepository = educationRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
-            _degreeRepository = degreeRepository;
-            _organizationRepository = organizationRepository;
-            _notificationService = notificationService;
         }
 
         public async Task<EducationResponse> CreateAsync(Guid cvId, CreateEducationRequest request)

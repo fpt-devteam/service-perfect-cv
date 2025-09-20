@@ -17,18 +17,15 @@ namespace ServicePerfectCV.Application.Services
         private readonly ISkillRepository _skillRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
-        private readonly NotificationService _notificationService;
 
         public SkillService(
             ISkillRepository skillRepository,
             ICVRepository cvRepository,
-            IMapper mapper,
-            NotificationService notificationService)
+            IMapper mapper)
         {
             _skillRepository = skillRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
-            _notificationService = notificationService;
         }
 
         public async Task<SkillResponse> CreateAsync(Guid cvId, Guid userId, CreateSkillRequest request)

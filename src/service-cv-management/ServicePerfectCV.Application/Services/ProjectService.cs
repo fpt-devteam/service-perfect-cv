@@ -17,18 +17,15 @@ namespace ServicePerfectCV.Application.Services
         private readonly IProjectRepository _projectRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
-        private readonly NotificationService _notificationService;
 
         public ProjectService(
             IProjectRepository projectRepository,
             ICVRepository cvRepository,
-            IMapper mapper,
-            NotificationService notificationService)
+            IMapper mapper)
         {
             _projectRepository = projectRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
-            _notificationService = notificationService;
         }
 
         public async Task<ProjectResponse> CreateAsync(Guid cvId, Guid userId, CreateProjectRequest request)
@@ -42,10 +39,6 @@ namespace ServicePerfectCV.Application.Services
 
             await _projectRepository.CreateAsync(newProject);
             await _projectRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendProjectUpdateNotificationAsync(cv.UserId, "added");
 
             return _mapper.Map<ProjectResponse>(newProject);
         }
@@ -68,10 +61,6 @@ namespace ServicePerfectCV.Application.Services
 
             _projectRepository.Update(existingProject);
             await _projectRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendProjectUpdateNotificationAsync(cv.UserId, "updated");
 
             return _mapper.Map<ProjectResponse>(existingProject);
         }
@@ -100,9 +89,6 @@ namespace ServicePerfectCV.Application.Services
             project.DeletedAt = DateTimeOffset.UtcNow;
             _projectRepository.Update(project);
             await _projectRepository.SaveChangesAsync();
-
-            // Send notification
-            await _notificationService.SendProjectUpdateNotificationAsync(userId, "deleted");
         }
     }
 }
