@@ -21,6 +21,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             return await _context.Experiences
                 .AsNoTracking()
                 .Include(e => e.CV)
+                .Include(e => e.EmploymentType)
                 .Where(e => e.CVId == cvId && e.CV.UserId == userId &&
                             e.DeletedAt == null)
                 .ToListAsync();
@@ -31,6 +32,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             return await _context.Experiences
                 .AsNoTracking()
                 .Include(e => e.CV)
+                .Include(e => e.EmploymentType)
                 .FirstOrDefaultAsync(e =>
                     e.CVId == cvId && e.CV.UserId == userId && e.Id == id && e.DeletedAt == null);
         }

@@ -15,27 +15,18 @@ namespace ServicePerfectCV.Application.Services
         private readonly IExperienceRepository _experienceRepository;
         private readonly ICVRepository _cvRepository;
         private readonly IMapper _mapper;
-        private readonly IJobTitleRepository _jobTitleRepository;
         private readonly IEmploymentTypeRepository _employmentTypeRepository;
-        private readonly IOrganizationRepository _organizationRepository;
-        private readonly NotificationService _notificationService;
 
         public ExperienceService(
             IExperienceRepository experienceRepository,
             ICVRepository cvRepository,
             IMapper mapper,
-            IJobTitleRepository jobTitleRepository,
-            IEmploymentTypeRepository employmentTypeRepository,
-            IOrganizationRepository organizationRepository,
-            NotificationService notificationService)
+            IEmploymentTypeRepository employmentTypeRepository)
         {
             _experienceRepository = experienceRepository;
             _cvRepository = cvRepository;
             _mapper = mapper;
-            _jobTitleRepository = jobTitleRepository;
             _employmentTypeRepository = employmentTypeRepository;
-            _organizationRepository = organizationRepository;
-            _notificationService = notificationService;
         }
 
         public async Task<ExperienceResponse> CreateAsync(Guid cvId, CreateExperienceRequest request)
@@ -54,10 +45,6 @@ namespace ServicePerfectCV.Application.Services
             await _experienceRepository.CreateAsync(newExperience);
             await _experienceRepository.SaveChangesAsync();
 
-
-            // Send notification
-            await _notificationService.SendExperienceUpdateNotificationAsync(cv.UserId, "added");
-
             return _mapper.Map<ExperienceResponse>(newExperience);
         }
 
@@ -67,29 +54,22 @@ namespace ServicePerfectCV.Application.Services
             if (existingExperience == null)
                 throw new DomainException(ExperienceErrors.NotFound);
 
-            var cv = await _cvRepository.GetByIdAsync(existingExperience.CVId);
-            if (cv == null)
-                throw new DomainException(ExperienceErrors.CVNotFound);
+            _ = await _cvRepository.GetByIdAsync(existingExperience.CVId) ?? throw new DomainException(ExperienceErrors.CVNotFound);
 
-            var employmentType = await _employmentTypeRepository.GetByIdAsync(request.EmploymentTypeId);
-            if (employmentType == null)
-                throw new DomainException(EmploymentTypeErrors.NotFound);
+            if (request.EmploymentTypeId != null)
+                _ = await _employmentTypeRepository.GetByIdAsync(request.EmploymentTypeId.Value) ?? throw new DomainException(EmploymentTypeErrors.NotFound);
 
-            existingExperience.JobTitle = request.JobTitle;
-            existingExperience.EmploymentTypeId = employmentType.Id;
-            existingExperience.Organization = request.Organization;
-            existingExperience.Location = request.Location;
-            existingExperience.StartDate = request.StartDate;
-            existingExperience.EndDate = request.EndDate;
-            existingExperience.Description = request.Description;
+            existingExperience.JobTitle = request.JobTitle ?? existingExperience.JobTitle;
+            existingExperience.EmploymentTypeId = request.EmploymentTypeId ?? existingExperience.EmploymentTypeId;
+            existingExperience.Organization = request.Organization ?? existingExperience.Organization;
+            existingExperience.Location = request.Location ?? existingExperience.Location;
+            existingExperience.StartDate = request.StartDate ?? existingExperience.StartDate;
+            existingExperience.EndDate = request.EndDate ?? existingExperience.EndDate;
+            existingExperience.Description = request.Description ?? existingExperience.Description;
             existingExperience.UpdatedAt = DateTime.UtcNow;
 
             _experienceRepository.Update(existingExperience);
             await _experienceRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendExperienceUpdateNotificationAsync(cv.UserId, "updated");
 
             return _mapper.Map<ExperienceResponse>(existingExperience);
         }
@@ -122,10 +102,6 @@ namespace ServicePerfectCV.Application.Services
             experience.DeletedAt = DateTime.UtcNow;
             _experienceRepository.Update(experience);
             await _experienceRepository.SaveChangesAsync();
-
-
-            // Send notification
-            await _notificationService.SendExperienceUpdateNotificationAsync(userId, "deleted");
         }
     }
 }
