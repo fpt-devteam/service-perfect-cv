@@ -6,7 +6,6 @@ namespace ServicePerfectCV.Application.DTOs.Project.Requests
 {
     public class CreateProjectRequest
     {
-        public required Guid CVId { get; init; }
         public required string Title { get; set; }
         public required string Description { get; set; }
         public string? Link { get; set; }
@@ -29,8 +28,6 @@ namespace ServicePerfectCV.Application.DTOs.Project.Requests
                     .MaximumLength(ProjectConstraints.LinkMaxLength)
                     .WithMessage($"Link cannot exceed {ProjectConstraints.LinkMaxLength} characters");
 
-                RuleFor(x => x.CVId)
-                    .NotEmpty().WithMessage("CV ID is required.");
 
                 RuleFor(x => x.EndDate)
                     .GreaterThanOrEqualTo(x => x.StartDate)

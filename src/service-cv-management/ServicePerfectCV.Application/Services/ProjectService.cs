@@ -31,13 +31,14 @@ namespace ServicePerfectCV.Application.Services
             _notificationService = notificationService;
         }
 
-        public async Task<ProjectResponse> CreateAsync(CreateProjectRequest request)
+        public async Task<ProjectResponse> CreateAsync(Guid cvId, Guid userId, CreateProjectRequest request)
         {
-            var cv = await _cvRepository.GetByIdAsync(request.CVId);
+            var cv = await _cvRepository.GetByCVIdAndUserIdAsync(cvId, userId);
             if (cv == null)
                 throw new DomainException(ProjectErrors.CVNotFound);
 
             var newProject = _mapper.Map<Project>(request);
+            newProject.CVId = cvId;
 
             await _projectRepository.CreateAsync(newProject);
             await _projectRepository.SaveChangesAsync();
@@ -60,10 +61,10 @@ namespace ServicePerfectCV.Application.Services
 
             existingProject.Title = request.Title ?? existingProject.Title;
             existingProject.Description = request.Description ?? existingProject.Description;
-            existingProject.Link = request.Link;
-            existingProject.StartDate = request.StartDate;
-            existingProject.EndDate = request.EndDate;
-            existingProject.UpdatedAt = DateTime.UtcNow;
+            existingProject.Link = request.Link ?? existingProject.Link;
+            existingProject.StartDate = request.StartDate ?? existingProject.StartDate;
+            existingProject.EndDate = request.EndDate ?? existingProject.EndDate;
+            existingProject.UpdatedAt = DateTimeOffset.UtcNow;
 
             _projectRepository.Update(existingProject);
             await _projectRepository.SaveChangesAsync();
@@ -96,7 +97,7 @@ namespace ServicePerfectCV.Application.Services
             if (project == null)
                 throw new DomainException(ProjectErrors.NotFound);
 
-            project.DeletedAt = DateTime.UtcNow;
+            project.DeletedAt = DateTimeOffset.UtcNow;
             _projectRepository.Update(project);
             await _projectRepository.SaveChangesAsync();
 

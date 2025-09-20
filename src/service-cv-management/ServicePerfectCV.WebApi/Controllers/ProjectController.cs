@@ -35,6 +35,7 @@ namespace ServicePerfectCV.WebApi.Controllers
         /// <summary>
         /// Creates a new project for a CV
         /// </summary>
+        /// <param name="cvId">The unique identifier of the CV</param>
         /// <param name="request">The project information to create</param>
         /// <returns>The newly created project information</returns>
         [HttpPost]
@@ -44,9 +45,13 @@ namespace ServicePerfectCV.WebApi.Controllers
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateProjectRequest request)
+        public async Task<IActionResult> CreateAsync(Guid cvId, [FromBody] CreateProjectRequest request)
         {
-            var result = await _projectService.CreateAsync(request: request);
+            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(nameIdentifier, out var userId))
+                throw new DomainException(UserErrors.NotFound);
+
+            var result = await _projectService.CreateAsync(cvId: cvId, userId: userId, request: request);
             return Ok(result);
         }
 
