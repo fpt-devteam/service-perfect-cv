@@ -151,6 +151,8 @@ namespace ServicePerfectCV.Application.Services
         {
             User user = await userRepository.GetByEmailAsync(loginRequest.Email)
                 ?? throw new DomainException(AuthErrors.InvalidCredential);
+            if (user.AuthMethod != AuthenticationMethod.JWT)
+                throw new DomainException(AuthErrors.AccountExistsWithDifferentMethod);
             if (user.Status != UserStatus.Active)
                 throw new DomainException(UserErrors.AccountNotActivated);
             if (!passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
