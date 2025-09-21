@@ -51,8 +51,7 @@ namespace ServicePerfectCV.Application.Services
         }
         public async Task<PaginationData<CVResponse>> ListAsync(CVQuery query, Guid userId)
         {
-            var cvs = await cvRepository.GetByUserIdAsync(
-                query, userId);
+            var cvs = await cvRepository.GetByUserIdAsync(query, userId);
             return new PaginationData<CVResponse>
             {
                 Total = cvs.Count,

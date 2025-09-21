@@ -27,7 +27,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             // Apply search filter if search term is provided
             if (!string.IsNullOrWhiteSpace(query.SearchTerm))
             {
-                baseQuery = baseQuery.Where(cv => cv.Title.Contains(query.SearchTerm));
+                baseQuery = baseQuery.Where(cv => cv.Title.ToLower().Contains(query.SearchTerm.ToLower()));
             }
 
             var sorted = query.Sort != null ? ApplySort(baseQuery, query.Sort) : baseQuery.OrderBy(cv => cv.UpdatedAt ?? cv.CreatedAt);
