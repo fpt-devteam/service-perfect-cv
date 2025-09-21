@@ -26,7 +26,8 @@ namespace ServicePerfectCV.Application.Services
                 Id = Guid.NewGuid(),
                 UserId = userId,
                 Title = request.Title,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             await cvRepository.CreateAsync(newCV);

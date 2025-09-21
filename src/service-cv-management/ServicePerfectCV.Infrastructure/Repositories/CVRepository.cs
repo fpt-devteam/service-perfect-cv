@@ -22,6 +22,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         {
             var baseQuery = _context.CVs
                 .AsNoTracking()
+                .Include(cv => cv.JobDescription)
                 .Where(cv => cv.UserId == userId && cv.DeletedAt == null);
 
             // Apply search filter if search term is provided
