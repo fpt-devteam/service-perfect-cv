@@ -9,7 +9,7 @@ namespace ServicePerfectCV.Application.DTOs.Pagination.Requests
     public class PaginationQuery
     {
         [Range(1, int.MaxValue, ErrorMessage = "Limit must be at least 1.")]
-        public int Limit { get; set; } = 10;
+        public int Limit { get; set; } = 100;
         [Range(0, int.MaxValue, ErrorMessage = "Offset must be at least 0.")]
         public int Offset { get; set; } = 0;
 

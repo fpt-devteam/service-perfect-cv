@@ -6,16 +6,29 @@ using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.ValueObjects;
+using ServicePerfectCV.Application.DTOs.Education.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ServicePerfectCV.Application.DTOs.Skill.Requests;
+using ServicePerfectCV.Application.DTOs.Project.Requests;
+using System.Runtime.ConstrainedExecution;
+using ServicePerfectCV.Application.DTOs.Certification.Requests;
 
 namespace ServicePerfectCV.Application.Services
 {
     public class CVService(
         ICVRepository cvRepository,
         IJobDescriptionRepository jobDescriptionRepository,
+        IEducationRepository educationRepository,
+        IExperienceRepository experienceRepository,
+        ISkillRepository skillRepository,
+        IProjectRepository projectRepository,
+        ICertificationRepository certificationRepository,
+        IContactRepository contactRepository,
+        ISummaryRepository summaryRepository,
         IMapper mapper
     )
     {
@@ -93,9 +106,9 @@ namespace ServicePerfectCV.Application.Services
             var jobDescription = await jobDescriptionRepository.GetByCVIdAsync(cvId) ??
                 throw new DomainException(CVErrors.JobDescriptionNotFound);
             cv.JobDescription = jobDescription;
+            cv.Content = await GenerateCVContentAsync(cvId, userId);
 
             return mapper.Map<CVResponse>(cv);
-
         }
         public async Task DeleteAsync(Guid cvId, Guid userId)
         {
@@ -104,6 +117,27 @@ namespace ServicePerfectCV.Application.Services
                 throw new DomainException(CVErrors.CVNotFound);
 
             await jobDescriptionRepository.DeleteByCVIdAsync(cvId);
+        }
+        private async Task<CVContent> GenerateCVContentAsync(Guid cvId, Guid userId)
+        {
+            var contact = await contactRepository.GetByCVIdAsync(cvId);
+            var summary = await summaryRepository.GetByCVIdAsync(cvId);
+            var educations = await educationRepository.GetByCVIdAndUserIdAsync(cvId, userId, new EducationQuery());
+            var experiences = await experienceRepository.GetByCVIdAndUserIdAsync(cvId, userId);
+            var skills = await skillRepository.GetByCVIdAndUserIdAsync(cvId, userId, new SkillQuery());
+            var projects = await projectRepository.GetByCVIdAndUserIdAsync(cvId, userId, new ProjectQuery());
+            var certifications = await certificationRepository.GetByCVIdAndUserIdAsync(cvId, userId, new CertificationQuery());
+
+            return new CVContent
+            {
+                Contact = contact?.ToContactInfo(),
+                Summary = summary?.ToSummaryInfo(),
+                Educations = educations?.Select(e => e.ToEducationInfo()).ToList() ?? new List<EducationInfo>(),
+                Experiences = experiences?.Select(e => e.ToExperienceInfo()).ToList() ?? new List<ExperienceInfo>(),
+                Skills = skills?.Select(s => s.ToSkillInfo()).ToList() ?? new List<SkillInfo>(),
+                Projects = projects?.Select(p => p.ToProjectInfo()).ToList() ?? new List<ProjectInfo>(),
+                Certifications = certifications?.Select(c => c.ToCertificationInfo()).ToList() ?? new List<CertificationInfo>()
+            };
         }
     }
 }

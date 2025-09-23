@@ -23,7 +23,6 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             var queryable = _context.Skills
                 .AsNoTracking()
                 .Include(s => s.CV)
-                // .Include(s => s.CategoryNavigation)
                 .Where(s => s.CVId == cvId && s.CV.UserId == userId &&
                             s.DeletedAt == null);
 
@@ -36,7 +35,6 @@ namespace ServicePerfectCV.Infrastructure.Repositories
             return await _context.Skills
                 .AsNoTracking()
                 .Include(s => s.CV)
-                // .Include(s => s.CategoryNavigation)
                 .FirstOrDefaultAsync(s =>
                     s.CVId == cvId && s.CV.UserId == userId && s.Id == id && s.DeletedAt == null);
         }
@@ -44,7 +42,6 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         public async Task<Skill?> GetByIdWithCategoryAsync(Guid id)
         {
             return await _context.Skills
-                // .Include(s => s.CategoryNavigation)
                 .Where(s => s.Id == id && s.DeletedAt == null)
                 .FirstOrDefaultAsync();
         }

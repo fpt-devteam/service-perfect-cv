@@ -6,6 +6,7 @@ using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.ValueObjects;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Repositories.Common;
 using System;
