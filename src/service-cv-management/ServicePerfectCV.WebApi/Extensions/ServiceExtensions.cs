@@ -2,17 +2,19 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Options;
 using ServicePerfectCV.Application.Configurations;
-using ServicePerfectCV.Application.DTOs.AI;
 using ServicePerfectCV.Application.DTOs.Experience.Requests;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Interfaces.AI;
+using ServicePerfectCV.Application.Interfaces.Jobs;
 using ServicePerfectCV.Application.Mappings;
 using ServicePerfectCV.Application.Services;
+using ServicePerfectCV.Application.Services.Jobs;
 using ServicePerfectCV.Infrastructure.Helpers;
 using ServicePerfectCV.Infrastructure.Repositories;
 using ServicePerfectCV.Infrastructure.Repositories.Common;
 using ServicePerfectCV.Infrastructure.Services;
 using ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
+using ServicePerfectCV.Infrastructure.Services.Jobs;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace ServicePerfectCV.WebApi.Extensions
@@ -83,7 +85,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<NotificationService>();
             services.AddScoped<JwtSecurityTokenHandler>();
 
-
             services.AddScoped<GoogleOAuthService>();
             services.AddScoped<LinkedInOAuthService>();
             services.AddSingleton<OAuthServiceFactory>();
@@ -94,9 +95,13 @@ namespace ServicePerfectCV.WebApi.Extensions
                 client.Timeout = TimeSpan.FromMinutes(10);
             });
 
-            // Register job services for async AI processing
-            services.AddSingleton<IJobStore<CvAnalysisFinalOutput>, InMemoryJobStore<CvAnalysisFinalOutput>>();
-            services.AddScoped<IJobProcessingService, JobProcessingService>();
+            services.AddSingleton<IJobQueue, InMemoryJobQueue>();
+            services.AddScoped<IJobRepository, JobRepository>();
+            services.AddScoped<IJobHandler, ScoreCvJobHandler>();
+            services.AddScoped<ILlmClient, StubLlmClient>();
+            services.AddScoped<JobRouter>();
+            services.AddScoped<JobService>();
+            services.AddHostedService<JobWorker>();
 
             services.AddScoped<PromptSanitizeHelper>();
             services.AddScoped<ISectionRubricBuilder, SectionRubricBuilder>();

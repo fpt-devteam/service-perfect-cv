@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore.Migrations;
 using ServicePerfectCV.Domain.ValueObjects;
 
@@ -41,6 +42,27 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_EmploymentTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Jobs",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    type = table.Column<string>(type: "text", nullable: false),
+                    status = table.Column<string>(type: "text", nullable: false),
+                    created_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
+                    started_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    completed_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    input = table.Column<JsonDocument>(type: "jsonb", nullable: false),
+                    output = table.Column<JsonDocument>(type: "jsonb", nullable: true),
+                    error_code = table.Column<string>(type: "text", nullable: true),
+                    error_message = table.Column<string>(type: "text", nullable: true),
+                    priority = table.Column<int>(type: "integer", nullable: false, defaultValue: 0)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Jobs", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -396,6 +418,11 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_jobs_status",
+                table: "Jobs",
+                column: "status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_JobTitles_Name",
                 table: "JobTitles",
                 column: "Name",
@@ -455,6 +482,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "JobDescriptions");
+
+            migrationBuilder.DropTable(
+                name: "Jobs");
 
             migrationBuilder.DropTable(
                 name: "JobTitles");
