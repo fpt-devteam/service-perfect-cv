@@ -1,4 +1,5 @@
 using ServicePerfectCV.Domain.Common;
+using ServicePerfectCV.Domain.ValueObjects;
 using System;
 
 namespace ServicePerfectCV.Domain.Entities
@@ -11,6 +12,7 @@ namespace ServicePerfectCV.Domain.Entities
         public required string CompanyName { get; set; }
         public required string Responsibility { get; set; }
         public required string Qualification { get; set; }
+        public SectionRubricDictionary? SectionRubrics { get; set; }
 
         // Navigation property
         public virtual CV CV { get; set; } = default!;

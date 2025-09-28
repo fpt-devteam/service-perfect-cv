@@ -1,7 +1,6 @@
-using System;
-using System.Text.Json;
 using ServicePerfectCV.Domain.Common;
 using ServicePerfectCV.Domain.Enums;
+using System.Text.Json;
 
 namespace ServicePerfectCV.Domain.Entities
 {

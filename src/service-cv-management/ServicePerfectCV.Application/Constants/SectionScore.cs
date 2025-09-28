@@ -1,4 +1,6 @@
-﻿namespace ServicePerfectCV.Application.Constants
+﻿using System.Text.Json.Serialization;
+
+namespace ServicePerfectCV.Application.Constants
 {
     public sealed class SectionScore
     {

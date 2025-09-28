@@ -1,5 +1,6 @@
 using FluentValidation;
 using ServicePerfectCV.Domain.Constants;
+using ServicePerfectCV.Domain.Constraints;
 using System;
 
 namespace ServicePerfectCV.Application.DTOs.Certification.Requests

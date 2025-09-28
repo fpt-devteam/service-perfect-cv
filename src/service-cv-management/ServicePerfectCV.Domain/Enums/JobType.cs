@@ -5,6 +5,7 @@ namespace ServicePerfectCV.Domain.Enums
     public enum JobType
     {
         ScoreCV,
+        BuildCvSectionRubric,
         // Add more job types here as needed
         // GenerateResume,
         // OptimizeCV,

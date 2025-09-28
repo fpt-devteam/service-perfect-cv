@@ -2,8 +2,6 @@ using ServicePerfectCV.Application.Constants;
 
 namespace ServicePerfectCV.Application.DTOs.AI;
 
-public record JobDescription(string Title, string Level, List<string> Requirements);
-
 public record ContactVO(string Name, string Position, string Phone, string Email, string Linkedin, string Github, string Location);
 
 public record ExperienceItem(string Company, string Position, List<string> Details);

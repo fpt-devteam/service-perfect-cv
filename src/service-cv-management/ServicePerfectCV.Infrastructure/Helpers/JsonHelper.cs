@@ -48,6 +48,33 @@ namespace ServicePerfectCV.Infrastructure.Helpers
             return JsonSerializer.Deserialize(json, type, DefaultSettings);
         }
 
+        /// <summary>
+        /// Deserialize JsonElement to an object of type T.
+        /// </summary>
+        public T? DeserializeFromElement<T>(JsonElement element)
+        {
+            return JsonSerializer.Deserialize<T>(element.GetRawText(), DefaultSettings);
+        }
+
+        /// <summary>
+        /// Serialize an object to JsonElement.
+        /// </summary>
+        public JsonElement SerializeToElement<T>(T obj)
+        {
+            var json = JsonSerializer.Serialize(obj, DefaultSettings);
+            var document = JsonDocument.Parse(json);
+            return document.RootElement;
+        }
+
+        /// <summary>
+        /// Serialize an object to JsonDocument.
+        /// </summary>
+        public JsonDocument SerializeToDocument<T>(T obj)
+        {
+            var json = JsonSerializer.Serialize(obj, DefaultSettings);
+            return JsonDocument.Parse(json);
+        }
+
         // =========================
         // JSON SCHEMA (JsonSchema.Net)
         // =========================

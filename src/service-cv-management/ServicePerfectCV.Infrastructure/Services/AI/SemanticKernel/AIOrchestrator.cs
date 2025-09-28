@@ -1,15 +1,17 @@
 using Microsoft.Extensions.Logging;
-using ServicePerfectCV.Application.Constants;
 using ServicePerfectCV.Application.DTOs.AI;
+using ServicePerfectCV.Application.DTOs.JobDescription;
 using ServicePerfectCV.Application.Extensions;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Interfaces.AI;
+using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.ValueObjects;
 
 namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
 
 public sealed class AIOrchestrator : IAIOrchestrator
 {
-    private readonly ISectionRubricBuilder _rubricBuilder;
+    private readonly SectionRubricService _rubricService;
     private readonly SectionScoreService _sectionScoreService;
     private readonly IJsonHelper _jsonHelper;
 
@@ -18,20 +20,20 @@ public sealed class AIOrchestrator : IAIOrchestrator
         .CreateLogger<AIOrchestrator>();
 
     public AIOrchestrator(
-        ISectionRubricBuilder rubricBuilder,
+        SectionRubricService rubricService,
         SectionScoreService sectionScoreService,
         IJsonHelper jsonHelper)
     {
-        _rubricBuilder = rubricBuilder;
+        _rubricService = rubricService;
         _sectionScoreService = sectionScoreService;
         _jsonHelper = jsonHelper;
     }
 
     public async Task<SectionRubricDictionary> BuildCvSectionRubricsAsync(
-        JobDescription jd,
+        JobDescriptionRubricInputDto jd,
         CancellationToken ct = default)
     {
-        return await _rubricBuilder.BuildSectionRubricsAsync(jd, ct);
+        return await _rubricService.BuildSectionRubricsAsync(jd, ct);
     }
 
     public async Task<CvAnalysisFinalOutput> ScoreCvSectionsAgainstRubricAsync(

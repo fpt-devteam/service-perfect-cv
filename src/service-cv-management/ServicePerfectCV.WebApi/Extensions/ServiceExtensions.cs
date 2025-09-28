@@ -98,17 +98,19 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddSingleton<IJobQueue, InMemoryJobQueue>();
             services.AddScoped<IJobRepository, JobRepository>();
             services.AddScoped<IJobHandler, ScoreCvJobHandler>();
+            services.AddScoped<IJobHandler, BuildCvSectionRubricHandler>();
             services.AddScoped<ILlmClient, StubLlmClient>();
             services.AddScoped<JobRouter>();
             services.AddScoped<JobService>();
             services.AddHostedService<JobWorker>();
 
             services.AddScoped<PromptSanitizeHelper>();
-            services.AddScoped<ISectionRubricBuilder, SectionRubricBuilder>();
+            services.AddScoped<SectionRubricService>();
+            services.AddScoped<SectionScoreService>();
+            services.AddScoped<JobDescriptionService>();
 
             services.AddScoped<IAIOrchestrator, AIOrchestrator>();
 
-            services.AddScoped<SectionScoreService>();
         }
     }
 }

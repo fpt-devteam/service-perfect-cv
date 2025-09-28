@@ -29,6 +29,7 @@ namespace ServicePerfectCV.Application.Services
         ICertificationRepository certificationRepository,
         IContactRepository contactRepository,
         ISummaryRepository summaryRepository,
+        JobDescriptionService jobDescriptionService,
         IMapper mapper
     )
     {
@@ -46,21 +47,21 @@ namespace ServicePerfectCV.Application.Services
             await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();
 
-            JobDescription jobDescription = new JobDescription
-            {
-                Id = Guid.NewGuid(),
-                CVId = newCV.Id,
-                Title = request.JobDescription.Title,
-                CompanyName = request.JobDescription.CompanyName,
-                Responsibility = request.JobDescription.Responsibility,
-                Qualification = request.JobDescription.Qualification
-            };
+            JobDescription createdJobDescription = await jobDescriptionService.CreateAsync(
+                jobDescription: new JobDescription
+                {
+                    Id = Guid.NewGuid(),
+                    CVId = newCV.Id,
+                    Title = request.JobDescription.Title,
+                    CompanyName = request.JobDescription.CompanyName,
+                    Responsibility = request.JobDescription.Responsibility,
+                    Qualification = request.JobDescription.Qualification
+                }
+            );
 
-            await jobDescriptionRepository.CreateAsync(jobDescription);
-            await jobDescriptionRepository.SaveChangesAsync();
+            newCV.JobDescription = createdJobDescription;
+            await jobDescriptionService.EnqueueBuildRubricJobAsync(newCV.Id);
 
-            // Set the JobDescription navigation property for mapping
-            newCV.JobDescription = jobDescription;
             return mapper.Map<CVResponse>(newCV);
         }
         public async Task<PaginationData<CVResponse>> ListAsync(CVQuery query, Guid userId)
@@ -139,5 +140,6 @@ namespace ServicePerfectCV.Application.Services
                 Certifications = certifications?.Select(c => c.ToCertificationInfo()).ToList() ?? new List<CertificationInfo>()
             };
         }
+
     }
 }

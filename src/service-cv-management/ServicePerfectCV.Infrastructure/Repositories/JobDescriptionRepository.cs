@@ -10,6 +10,18 @@ namespace ServicePerfectCV.Infrastructure.Repositories
 {
     public class JobDescriptionRepository(ApplicationDbContext context) : CrudRepositoryBase<JobDescription, Guid>(context), IJobDescriptionRepository
     {
+        public override async Task<JobDescription?> GetByIdAsync(Guid id)
+        {
+            return await _context.JobDescriptions
+                .FirstOrDefaultAsync(jd => jd.Id == id);
+        }
+
+        public override bool Update(JobDescription entity)
+        {
+            _context.JobDescriptions.Update(entity);
+            return true;
+        }
+
         public Task<JobDescription?> GetByCVIdAsync(Guid cvId)
         {
             return _context.JobDescriptions

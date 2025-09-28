@@ -5,12 +5,10 @@ using System.Text.Json;
 
 namespace ServicePerfectCV.Application.Services.Jobs
 {
-    public sealed class JobService(IJobRepository jobRepository, IJobQueue jobQueue, JobRouter jobRouter)
+    public sealed class JobService(IJobRepository jobRepository, IJobQueue jobQueue)
     {
         public async Task<Job> CreateAsync(JobType jobType, JsonDocument input, int priority, CancellationToken cancellationToken)
         {
-            jobRouter.Resolve(jobType);
-
             var job = Job.Create(
                 id: Guid.NewGuid(),
                 type: jobType,

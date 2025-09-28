@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.ValueObjects;
 
 namespace ServicePerfectCV.Infrastructure.Data.Configurations
 {
@@ -25,6 +26,9 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(jd => jd.Qualification)
                 .IsRequired()
                 .HasMaxLength(5000);
+
+            builder.Property(jd => jd.SectionRubrics)
+                .HasColumnType("jsonb");
 
             // 1-1 relationship with CV
             builder.HasOne(jd => jd.CV)

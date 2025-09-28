@@ -38,5 +38,30 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "JobDescriptionNotFound",
             Message: "Job description not found.",
             HttpStatusCode.NotFound);
+
+        public static readonly Error JobDescriptionValidationFailed = new(
+            Code: "JobDescriptionValidationFailed",
+            Message: "Job description validation failed.",
+            HttpStatusCode.BadRequest);
+
+        public static readonly Error JobDescriptionAlreadyExists = new(
+            Code: "JobDescriptionAlreadyExists",
+            Message: "A job description already exists for this CV.",
+            HttpStatusCode.Conflict);
+
+        public static readonly Error JobDescriptionCreationFailed = new(
+            Code: "JobDescriptionCreationFailed",
+            Message: "Failed to create job description.",
+            HttpStatusCode.InternalServerError);
+
+        public static readonly Error JobDescriptionUpdateFailed = new(
+            Code: "JobDescriptionUpdateFailed",
+            Message: "Failed to update job description.",
+            HttpStatusCode.InternalServerError);
+
+        public static readonly Error InvalidJobDescriptionId = new(
+            Code: "InvalidJobDescriptionId",
+            Message: "Invalid job description ID provided.",
+            HttpStatusCode.BadRequest);
     }
 }

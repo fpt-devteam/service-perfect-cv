@@ -5,6 +5,8 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using OpenAI.Chat;
 using ServicePerfectCV.Application.Constants;
 using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Domain.Enums;
+using ServicePerfectCV.Infrastructure.Constants;
 using ServicePerfectCV.Infrastructure.Helpers;
 using System.Text.Json;
 
@@ -25,15 +27,15 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
             _jsonHelper = jsonHelper;
         }
         public async Task<SectionScoreDictionary> ScoreAllSectionsAsync(
-           Dictionary<Section, string> rubricDictionary,
-           Dictionary<Section, string> contentDictionary,
+           Dictionary<SectionType, string> rubricDictionary,
+           Dictionary<SectionType, string> contentDictionary,
            CancellationToken ct)
         {
             var scoringTasks = contentDictionary.Keys.Select(async sectionKey =>
             {
                 var sectionRubric = rubricDictionary.TryGetValue(sectionKey, out string? value) ? value : string.Empty;
 
-                var tmp = new KeyValuePair<Section, SectionScore>(
+                var tmp = new KeyValuePair<SectionType, SectionScore>(
                     sectionKey,
                     await ScoreSectionAsync(sectionRubric, contentDictionary[sectionKey], sectionKey.ToString().ToLower(), ct)
                 );
@@ -77,6 +79,10 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
                 }, ct);
 
                 var sectionScoreResultJson = sectionScoreResult.ToString();
+
+                // Clean JSON response by removing markdown code blocks if present
+                sectionScoreResultJson = CleanJsonResponse(sectionScoreResultJson);
+
                 var sectionScore = _jsonHelper.Deserialize<SectionScore>(sectionScoreResultJson)
                     ?? new SectionScore();
                 sectionScore.TotalScore0To5 = (int)sectionScore.CriteriaScores.Sum(c => c.Score0To5 * c.Weight0To1);
@@ -92,6 +98,31 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
                 _logger.LogError("Unexpected error scoring section {Section}: {Error}", sectionName, ex.Message);
                 return new SectionScore();
             }
+        }
+
+        private static string CleanJsonResponse(string? jsonResponse)
+        {
+            if (string.IsNullOrEmpty(jsonResponse))
+                return string.Empty;
+
+            var cleaned = jsonResponse.Trim();
+
+            // Remove markdown code blocks if present
+            if (cleaned.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
+            {
+                cleaned = cleaned.Substring(7); // Remove ```json
+            }
+            else if (cleaned.StartsWith("```", StringComparison.OrdinalIgnoreCase))
+            {
+                cleaned = cleaned.Substring(3); // Remove ```
+            }
+
+            if (cleaned.EndsWith("```", StringComparison.OrdinalIgnoreCase))
+            {
+                cleaned = cleaned.Substring(0, cleaned.Length - 3); // Remove closing ```
+            }
+
+            return cleaned.Trim();
         }
     }
 }

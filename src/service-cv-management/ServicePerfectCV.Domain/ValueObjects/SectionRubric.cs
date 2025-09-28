@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace ServicePerfectCV.Infrastructure.Constants
+namespace ServicePerfectCV.Domain.ValueObjects
 {
+
     public class ScoringScale
     {
         [JsonPropertyName("0")]

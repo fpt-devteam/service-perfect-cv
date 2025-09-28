@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace ServicePerfectCV.Application.Interfaces;
 
 public interface IJsonHelper
@@ -26,4 +28,19 @@ public interface IJsonHelper
     /// Generate JSON Schema from a runtime type.
     /// </summary>
     string GenerateJsonSchema(Type type);
+
+    /// <summary>
+    /// Deserialize JsonElement to an object of type T.
+    /// </summary>
+    T? DeserializeFromElement<T>(JsonElement element);
+
+    /// <summary>
+    /// Serialize an object to JsonElement.
+    /// </summary>
+    JsonElement SerializeToElement<T>(T obj);
+
+    /// <summary>
+    /// Serialize an object to JsonDocument.
+    /// </summary>
+    JsonDocument SerializeToDocument<T>(T obj);
 }

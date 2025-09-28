@@ -22,9 +22,9 @@ namespace ServicePerfectCV.Application.Services.Jobs
             return new JobHandlerResult(true, output, null, null);
         }
 
-        public static JobHandlerResult Failure(string? errorCode, string? errorMessage)
+        public static JobHandlerResult Failure(string? errorCode, string? errorMessage, JsonDocument? output = null)
         {
-            return new JobHandlerResult(false, null, errorCode, errorMessage);
+            return new JobHandlerResult(false, output, errorCode, errorMessage);
         }
     }
 }
