@@ -58,6 +58,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         {
             return _context.CVs
                 .AsNoTracking()
+                .Include(cv => cv.JobDescription)
                 .FirstOrDefaultAsync(cv => cv.Id == cvId && cv.UserId == userId && cv.DeletedAt == null);
         }
 

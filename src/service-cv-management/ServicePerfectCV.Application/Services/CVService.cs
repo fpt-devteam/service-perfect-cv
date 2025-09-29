@@ -60,7 +60,6 @@ namespace ServicePerfectCV.Application.Services
             );
 
             newCV.JobDescription = createdJobDescription;
-            await jobDescriptionService.EnqueueBuildRubricJobAsync(newCV.Id);
 
             return mapper.Map<CVResponse>(newCV);
         }
@@ -81,21 +80,14 @@ namespace ServicePerfectCV.Application.Services
             cv.Title = request.Title ?? cv.Title;
             cv.UpdatedAt = DateTime.UtcNow;
 
-            if (request.JobDescription != null)
-            {
-                var jobDescription = await jobDescriptionRepository.GetByCVIdAsync(cvId) ??
-                    throw new DomainException(CVErrors.JobDescriptionNotFound);
-
-                jobDescription.Title = request.JobDescription.Title ?? jobDescription.Title;
-                jobDescription.CompanyName = request.JobDescription.CompanyName ?? jobDescription.CompanyName;
-                jobDescription.Responsibility = request.JobDescription.Responsibility ?? jobDescription.Responsibility;
-                jobDescription.Qualification = request.JobDescription.Qualification ?? jobDescription.Qualification;
-
-                cv.JobDescription = jobDescription;
-            }
-
             cvRepository.Update(cv);
             await cvRepository.SaveChangesAsync();
+
+            if (request.JobDescription != null)
+            {
+                var updatedJobDescription = await jobDescriptionService.UpdateAsync(cv.JobDescription.Id, request.JobDescription);
+                cv.JobDescription = updatedJobDescription;
+            }
 
             return mapper.Map<CVResponse>(cv);
         }

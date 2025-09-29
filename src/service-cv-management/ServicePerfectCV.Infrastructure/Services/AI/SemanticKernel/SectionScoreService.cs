@@ -80,7 +80,6 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
 
                 var sectionScoreResultJson = sectionScoreResult.ToString();
 
-                // Clean JSON response by removing markdown code blocks if present
                 sectionScoreResultJson = CleanJsonResponse(sectionScoreResultJson);
 
                 var sectionScore = _jsonHelper.Deserialize<SectionScore>(sectionScoreResultJson)
@@ -107,19 +106,18 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
 
             var cleaned = jsonResponse.Trim();
 
-            // Remove markdown code blocks if present
             if (cleaned.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
             {
-                cleaned = cleaned.Substring(7); // Remove ```json
+                cleaned = cleaned.Substring(7);
             }
             else if (cleaned.StartsWith("```", StringComparison.OrdinalIgnoreCase))
             {
-                cleaned = cleaned.Substring(3); // Remove ```
+                cleaned = cleaned.Substring(3);
             }
 
             if (cleaned.EndsWith("```", StringComparison.OrdinalIgnoreCase))
             {
-                cleaned = cleaned.Substring(0, cleaned.Length - 3); // Remove closing ```
+                cleaned = cleaned.Substring(0, cleaned.Length - 3);
             }
 
             return cleaned.Trim();

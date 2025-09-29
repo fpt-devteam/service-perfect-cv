@@ -9,6 +9,8 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ServicePerfectCV.Application.DTOs.CV.Requests;
+using Microsoft.Extensions.Logging;
 
 namespace ServicePerfectCV.Application.Services
 {
@@ -17,49 +19,49 @@ namespace ServicePerfectCV.Application.Services
         private readonly IJobDescriptionRepository _jobDescriptionRepository;
         private readonly JobService _jobService;
         private readonly IJsonHelper _jsonHelper;
+        private readonly ILogger<JobDescriptionService> _logger;
 
-        public JobDescriptionService(IJobDescriptionRepository jobDescriptionRepository, JobService jobService, IJsonHelper jsonHelper)
+        public JobDescriptionService(IJobDescriptionRepository jobDescriptionRepository, JobService jobService, IJsonHelper jsonHelper, ILogger<JobDescriptionService> logger)
         {
             _jobDescriptionRepository = jobDescriptionRepository;
             _jobService = jobService;
             _jsonHelper = jsonHelper;
+            _logger = logger;
         }
 
         public async Task<JobDescription> CreateAsync(JobDescription jobDescription)
         {
-            if (jobDescription == null)
-                throw new DomainException(CVErrors.JobDescriptionValidationFailed with { Message = "Job description cannot be null." });
-
             var existingJobDescription = await _jobDescriptionRepository.GetByCVIdAsync(jobDescription.CVId);
             if (existingJobDescription != null)
                 throw new DomainException(CVErrors.JobDescriptionAlreadyExists with { Message = $"A job description already exists for CV with ID {jobDescription.CVId}." });
 
-            if (jobDescription.Id == Guid.Empty)
-                jobDescription.Id = Guid.NewGuid();
-
             var createdJobDescription = await _jobDescriptionRepository.CreateAsync(jobDescription);
+
             await _jobDescriptionRepository.SaveChangesAsync();
+
+            await EnqueueBuildRubricJobAsync(createdJobDescription.Id);
 
             return createdJobDescription;
         }
 
-        public async Task<JobDescription> UpdateAsync(Guid id, JobDescription jobDescription)
+        public async Task<JobDescription> UpdateAsync(Guid id, UpdateJobDescriptionRequest request)
         {
-            if (id == Guid.Empty)
-                throw new DomainException(CVErrors.InvalidJobDescriptionId with { Message = "Job description ID cannot be empty." });
-
-            if (jobDescription.Id != id)
-                throw new DomainException(CVErrors.InvalidJobDescriptionId with { Message = "Job description ID must match the provided ID." });
-
-            var existingJobDescription = await _jobDescriptionRepository.GetByIdAsync(id);
-            if (existingJobDescription == null)
+            var jobDescription = await _jobDescriptionRepository.GetByIdAsync(id);
+            if (jobDescription == null)
                 throw new DomainException(CVErrors.JobDescriptionNotFound with { Message = $"Job description with ID {id} not found." });
+
+            jobDescription.Title = request.Title ?? jobDescription.Title;
+            jobDescription.CompanyName = request.CompanyName ?? jobDescription.CompanyName;
+            jobDescription.Responsibility = request.Responsibility ?? jobDescription.Responsibility;
+            jobDescription.Qualification = request.Qualification ?? jobDescription.Qualification;
 
             var updateResult = _jobDescriptionRepository.Update(jobDescription);
             if (!updateResult)
                 throw new DomainException(CVErrors.JobDescriptionUpdateFailed with { Message = "Failed to update job description." });
 
             await _jobDescriptionRepository.SaveChangesAsync();
+
+            await EnqueueBuildRubricJobAsync(jobDescription.Id);
 
             return jobDescription;
         }
@@ -78,6 +80,8 @@ namespace ServicePerfectCV.Application.Services
                 _jsonHelper.SerializeToDocument(jobDescription.ToRubricInputDto()),
                 priority,
                 cancellationToken);
+
+            _logger.LogInformation("Enqueued BuildCvSectionRubric job with ID {JobId} for JobDescription ID {JobDescriptionId}", job.Id, jobDescriptionId);
 
             return job;
         }

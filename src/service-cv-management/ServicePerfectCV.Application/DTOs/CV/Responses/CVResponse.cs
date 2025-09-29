@@ -25,6 +25,7 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
         public string CompanyName { get; init; } = null!;
         public string Responsibility { get; init; } = null!;
         public string Qualification { get; init; } = null!;
+        public SectionRubricDictionary? SectionRubrics { get; init; }
     }
 
 }

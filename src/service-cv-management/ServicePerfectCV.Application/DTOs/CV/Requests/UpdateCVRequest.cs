@@ -11,7 +11,7 @@ namespace ServicePerfectCV.Application.DTOs.CV.Requests
     public class UpdateCVRequest
     {
         [MaxLength(200, ErrorMessage = "Title cannot exceed 200 characters.")]
-        public string? Title { get; init; } = null!;
+        public string? Title { get; init; }
         public UpdateJobDescriptionRequest? JobDescription { get; init; }
     }
 
