@@ -11,6 +11,7 @@ namespace ServicePerfectCV.Domain.Entities
         public required string Token { get; set; }
         public DevicePlatform Platform { get; set; }
         public DateTimeOffset RegisteredAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? DeletedAt { get; set; }
 

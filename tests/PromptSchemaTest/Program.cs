@@ -1,4 +1,3 @@
-using ServicePerfectCV.Application.Constants;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.ValueObjects;
 using ServicePerfectCV.Infrastructure.Helpers;

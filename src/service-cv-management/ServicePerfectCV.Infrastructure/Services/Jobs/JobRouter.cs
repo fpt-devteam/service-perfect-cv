@@ -1,7 +1,7 @@
 using ServicePerfectCV.Application.Interfaces.Jobs;
 using ServicePerfectCV.Domain.Enums;
 
-namespace ServicePerfectCV.Application.Services.Jobs
+namespace ServicePerfectCV.Infrastructure.Services.Jobs
 {
     public sealed class JobRouter
     {

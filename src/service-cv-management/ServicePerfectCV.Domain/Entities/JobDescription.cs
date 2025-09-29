@@ -14,6 +14,10 @@ namespace ServicePerfectCV.Domain.Entities
         public required string Qualification { get; set; }
         public SectionRubricDictionary? SectionRubrics { get; set; }
 
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
+
         // Navigation property
         public virtual CV CV { get; set; } = default!;
     }

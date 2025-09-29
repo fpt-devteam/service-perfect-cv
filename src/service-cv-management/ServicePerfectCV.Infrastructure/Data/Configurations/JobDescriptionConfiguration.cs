@@ -30,6 +30,16 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(jd => jd.SectionRubrics)
                 .HasColumnType("jsonb");
 
+            builder.Property(jd => jd.CreatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("NOW()");
+
+            builder.Property(jd => jd.UpdatedAt)
+                .IsRequired(false);
+
+            builder.Property(jd => jd.DeletedAt)
+                .IsRequired(false);
+
             // 1-1 relationship with CV
             builder.HasOne(jd => jd.CV)
                 .WithOne(c => c.JobDescription)
@@ -40,6 +50,13 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             // Unique constraint to ensure 1-1 relationship
             builder.HasIndex(jd => jd.CVId)
                 .IsUnique();
+
+            // Index for soft delete queries
+            builder.HasIndex(jd => jd.DeletedAt)
+                .HasDatabaseName("IX_JobDescriptions_DeletedAt");
+
+            // Query filter for soft delete
+            builder.HasQueryFilter(jd => jd.DeletedAt == null);
         }
     }
 }

@@ -48,7 +48,7 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
                 promptTemplate: PromptManager.GetPrompt(promptType: PromptType.SectionRubricBuilding),
                 executionSettings: rubricSettings
             );
-            _logger.LogDebug("Start prompt to {Provider} model: {Model}", _options.Provider, _options.OllamaAIModel);
+            _logger.LogInformation("Start prompt to {Provider} model: {Model}", _options.Provider, _options.OllamaAIModel);
             try
             {
                 var rubricResult = await _kernel.InvokeAsync(rubricBuilderFn, new KernelArguments
@@ -61,7 +61,7 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
                 }, ct);
 
                 var rubricResultJson = rubricResult.ToString();
-                _logger.LogDebug("Rubric JSON: {RubricJson}", rubricResultJson);
+                _logger.LogInformation("Rubric result JSON: {RubricJson}", rubricResultJson);
 
                 rubricResultJson = CleanJsonResponse(rubricResultJson);
 

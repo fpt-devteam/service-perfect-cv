@@ -17,10 +17,27 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(s => s.Content)
                 .HasMaxLength(2000).IsRequired();
 
+            builder.Property(s => s.CreatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("NOW()");
+
+            builder.Property(s => s.UpdatedAt)
+                .IsRequired(false);
+
+            builder.Property(s => s.DeletedAt)
+                .IsRequired(false);
+
             builder.HasOne(s => s.CV)
                 .WithOne(c => c.Summary)
                 .HasForeignKey<Summary>(s => s.CVId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // Index for soft delete queries
+            builder.HasIndex(s => s.DeletedAt)
+                .HasDatabaseName("IX_Summaries_DeletedAt");
+
+            // Query filter for soft delete
+            builder.HasQueryFilter(s => s.DeletedAt == null);
         }
     }
 }

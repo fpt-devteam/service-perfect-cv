@@ -34,17 +34,13 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
 
                 try
                 {
+                    logger.LogInformation("Starting job {JobId} of type {JobType}", job.Id, job.Type);
                     job.MarkRunning(DateTimeOffset.UtcNow);
                     await jobRepository.SaveChangesAsync(stoppingToken);
 
-                    // Tạo CancellationToken riêng cho job với timeout dài hơn
-                    // Vẫn link với stoppingToken để có thể cancel khi service shutdown
                     using var jobTokenSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
                     var jobTimeout = GetJobTimeout(job.Type);
                     jobTokenSource.CancelAfter(jobTimeout);
-                    
-                    logger.LogDebug("Starting job {JobId} of type {JobType} with timeout {Timeout}", 
-                        job.Id, job.Type, jobTimeout);
 
                     var result = await handler.HandleAsync(job, jobTokenSource.Token);
                     logger.LogInformation("Job {JobId} of type {JobType} completed with status: isSuccess {Succeeded}, isFailed {Failed}", job.Id, job.Type, result.Succeeded, result.ErrorMessage);
@@ -52,19 +48,18 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
                     if (result.Succeeded && result.Output != null)
                     {
                         job.MarkSucceeded(result.Output, DateTimeOffset.UtcNow);
-                        await jobRepository.SaveChangesAsync(stoppingToken);
-                        continue;
+                    }
+                    else
+                    {
+                        job.MarkFailed(result.ErrorCode, result.ErrorMessage, DateTimeOffset.UtcNow);
                     }
 
-                    job.MarkFailed(result.ErrorCode, result.ErrorMessage, DateTimeOffset.UtcNow);
                     await jobRepository.SaveChangesAsync(stoppingToken);
                 }
                 catch (OperationCanceledException ex)
                 {
-                    // Kiểm tra xem cancellation từ đâu
                     if (stoppingToken.IsCancellationRequested)
                     {
-                        // Service đang shutdown
                         job.MarkCanceled(DateTimeOffset.UtcNow);
                         await jobRepository.SaveChangesAsync(stoppingToken);
                         logger.LogWarning("Job {JobId} of type {JobType} was canceled due to service shutdown: {Reason}", job.Id, job.Type, ex.Message);
@@ -72,12 +67,10 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
                     }
                     else
                     {
-                        // Job timeout
                         job.MarkFailed("job.timeout", $"Job timed out after {GetJobTimeout(job.Type)}: {ex.Message}", DateTimeOffset.UtcNow);
                         await jobRepository.SaveChangesAsync(stoppingToken);
-                        logger.LogWarning("Job {JobId} of type {JobType} timed out after {Timeout}: {Reason}", 
+                        logger.LogWarning("Job {JobId} of type {JobType} timed out after {Timeout}: {Reason}",
                             job.Id, job.Type, GetJobTimeout(job.Type), ex.Message);
-                        // Không break, tiếp tục xử lý job khác
                     }
                 }
                 catch (Exception ex)
@@ -124,9 +117,9 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
         {
             return jobType switch
             {
-                JobType.BuildCvSectionRubric => TimeSpan.FromMinutes(15), // Tăng timeout lên 15 phút
-                JobType.ScoreCV => TimeSpan.FromMinutes(12),             // Tăng timeout lên 12 phút
-                _ => TimeSpan.FromMinutes(8)                             // Tăng default timeout
+                JobType.BuildCvSectionRubric => TimeSpan.FromMinutes(15),
+                JobType.ScoreCV => TimeSpan.FromMinutes(12),
+                _ => TimeSpan.FromMinutes(8)
             };
         }
     }

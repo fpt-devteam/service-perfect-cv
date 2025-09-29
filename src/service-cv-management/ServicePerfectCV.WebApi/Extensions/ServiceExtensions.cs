@@ -99,7 +99,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IJobRepository, JobRepository>();
             services.AddScoped<IJobHandler, ScoreCvJobHandler>();
             services.AddScoped<IJobHandler, BuildCvSectionRubricHandler>();
-            services.AddScoped<ILlmClient, StubLlmClient>();
             services.AddScoped<JobRouter>();
             services.AddScoped<JobService>();
             services.AddHostedService<JobWorker>();

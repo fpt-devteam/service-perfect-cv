@@ -26,6 +26,7 @@ namespace ServicePerfectCV.Infrastructure.Data
         public DbSet<EmploymentType> EmploymentTypes { get; set; }
         public DbSet<DeviceToken> DeviceTokens { get; set; }
         public DbSet<Job> Jobs { get; set; }
+        public DbSet<SectionScoreResult> SectionScoreResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +48,7 @@ namespace ServicePerfectCV.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new DegreeConfiguration());
             modelBuilder.ApplyConfiguration(new DeviceTokenConfiguration());
             modelBuilder.ApplyConfiguration(new JobConfiguration());
+            modelBuilder.ApplyConfiguration(new SectionScoreResultConfiguration());
         }
     }
 }

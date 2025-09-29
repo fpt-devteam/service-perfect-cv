@@ -1,6 +1,6 @@
 ﻿using ServicePerfectCV.Domain.Enums;
 
-namespace ServicePerfectCV.Application.Constants
+namespace ServicePerfectCV.Domain.ValueObjects
 {
     public class SectionScoreDictionary : Dictionary<SectionType, SectionScore>
     {

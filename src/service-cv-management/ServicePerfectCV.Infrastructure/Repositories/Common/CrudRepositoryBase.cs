@@ -25,6 +25,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
 
         public virtual async Task<TEntity> CreateAsync(TEntity entity)
         {
+            entity.CreatedAt = DateTimeOffset.UtcNow;
             await _dbSet.AddAsync(entity);
             return entity;
         }
@@ -52,6 +53,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories.Common
 
         public virtual bool Update(TEntity entity)
         {
+            entity.UpdatedAt = DateTimeOffset.UtcNow;
             _dbSet.Update(entity);
             return true;
         }

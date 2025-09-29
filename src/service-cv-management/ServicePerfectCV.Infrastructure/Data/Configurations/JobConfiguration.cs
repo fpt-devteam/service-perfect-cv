@@ -56,8 +56,21 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .HasDefaultValue(0)
                 .IsRequired();
 
+            builder.Property(job => job.UpdatedAt)
+                .HasColumnName("updated_at");
+
+            builder.Property(job => job.DeletedAt)
+                .HasColumnName("deleted_at");
+
             builder.HasIndex(job => job.Status)
                 .HasDatabaseName("ix_jobs_status");
+
+            // Index for soft delete queries
+            builder.HasIndex(job => job.DeletedAt)
+                .HasDatabaseName("IX_Jobs_DeletedAt");
+
+            // Query filter for soft delete
+            builder.HasQueryFilter(job => job.DeletedAt == null);
         }
     }
 }

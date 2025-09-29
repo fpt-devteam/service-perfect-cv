@@ -9,7 +9,7 @@ namespace ServicePerfectCV.Domain.Entities
         public Guid Id { get; set; }
         public JobType Type { get; private set; }
         public JobStatus Status { get; private set; }
-        public DateTimeOffset CreatedAt { get; private set; }
+        public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset? StartedAt { get; private set; }
         public DateTimeOffset? CompletedAt { get; private set; }
         public JsonDocument Input { get; private set; } = null!;
@@ -17,6 +17,9 @@ namespace ServicePerfectCV.Domain.Entities
         public string? ErrorCode { get; private set; }
         public string? ErrorMessage { get; private set; }
         public int Priority { get; private set; }
+
+        public DateTimeOffset? UpdatedAt { get; set; }
+        public DateTimeOffset? DeletedAt { get; set; }
 
         public static Job Create(
             Guid id,

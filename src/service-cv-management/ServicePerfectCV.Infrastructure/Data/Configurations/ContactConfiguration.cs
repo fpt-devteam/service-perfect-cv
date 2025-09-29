@@ -35,11 +35,28 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(x => x.City)
             .HasMaxLength(50);
 
+            builder.Property(x => x.CreatedAt)
+                .IsRequired()
+                .HasDefaultValueSql("NOW()");
+
+            builder.Property(x => x.UpdatedAt)
+                .IsRequired(false);
+
+            builder.Property(x => x.DeletedAt)
+                .IsRequired(false);
+
             builder.HasOne(x => x.CV)
             .WithOne(c => c.Contact)
             .HasForeignKey<Contact>(x => x.CVId)
             .IsRequired()
-            .IsRequired().OnDelete(DeleteBehavior.NoAction);
+            .OnDelete(DeleteBehavior.NoAction);
+
+            // Index for soft delete queries
+            builder.HasIndex(x => x.DeletedAt)
+                .HasDatabaseName("IX_Contacts_DeletedAt");
+
+            // Query filter for soft delete
+            builder.HasQueryFilter(x => x.DeletedAt == null);
         }
     }
 }

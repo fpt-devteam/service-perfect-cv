@@ -1,4 +1,5 @@
-using ServicePerfectCV.Application.Constants;
+
+using ServicePerfectCV.Domain.ValueObjects;
 
 namespace ServicePerfectCV.Application.DTOs.AI;
 
