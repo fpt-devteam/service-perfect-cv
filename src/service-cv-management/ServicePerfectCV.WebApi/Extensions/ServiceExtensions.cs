@@ -56,6 +56,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IEmploymentTypeRepository, EmploymentTypeRepository>();
             services.AddScoped<ICertificationRepository, CertificationRepository>();
             services.AddScoped<ISummaryRepository, SummaryRepository>();
+            services.AddScoped<ISectionScoreResultRepository, SectionScoreResultRepository>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
 
@@ -76,6 +77,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<CertificationService>();
             services.AddScoped<SummaryService>();
             services.AddScoped<EmploymentTypeService>();
+            services.AddScoped<SectionScoreResultService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICacheService, RedisCacheService>();
@@ -97,7 +99,7 @@ namespace ServicePerfectCV.WebApi.Extensions
 
             services.AddSingleton<IJobQueue, InMemoryJobQueue>();
             services.AddScoped<IJobRepository, JobRepository>();
-            services.AddScoped<IJobHandler, ScoreCvJobHandler>();
+            services.AddScoped<IJobHandler, ScoreCvSectionHandler>();
             services.AddScoped<IJobHandler, BuildCvSectionRubricHandler>();
             services.AddScoped<JobRouter>();
             services.AddScoped<JobService>();
@@ -107,6 +109,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<SectionRubricService>();
             services.AddScoped<SectionScoreService>();
             services.AddScoped<JobDescriptionService>();
+            services.AddScoped<IJsonHelper, JsonHelper>();
+            services.AddScoped<IObjectHasher, SHA256ObjectHasher>();
 
             services.AddScoped<IAIOrchestrator, AIOrchestrator>();
 

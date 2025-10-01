@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace ServicePerfectCV.Application.Services.Jobs
+namespace ServicePerfectCV.Application.DTOs.Job
 {
     public sealed class JobHandlerResult
     {

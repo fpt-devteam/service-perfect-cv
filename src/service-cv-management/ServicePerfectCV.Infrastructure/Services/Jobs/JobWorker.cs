@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ServicePerfectCV.Application.DTOs.Job;
 using ServicePerfectCV.Application.Interfaces.Jobs;
 using ServicePerfectCV.Application.Services.Jobs;
 using ServicePerfectCV.Domain.Entities;

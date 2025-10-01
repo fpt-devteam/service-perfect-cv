@@ -1,15 +1,47 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ServicePerfectCV.Application.DTOs.CV.Requests;
 using ServicePerfectCV.Application.Services.Jobs;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/jobs")]
     public class JobsController(JobService jobService) : ControllerBase
     {
+        /// <summary>
+        /// Creates a job to score a CV
+        /// </summary>
+        /// <param name="request">The CV scoring request containing the CV ID</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Job details for tracking the scoring process</returns>
+        [HttpPost("score-cv")]
+        [ProducesResponseType(typeof(object), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> ScoreCvAsync([FromBody] ScoreCvRequest request, CancellationToken cancellationToken)
+        {
+            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(nameIdentifier, out var userId))
+                return Unauthorized();
+
+            var input = new
+            {
+                CvId = request.CvId,
+                UserId = userId
+            };
+
+            var inputJson = JsonSerializer.SerializeToDocument(input);
+            var job = await jobService.CreateAsync(JobType.ScoreCV, inputJson, 0, cancellationToken);
+            var response = MapToJobResultResponse(job);
+            return Ok(response);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync(CancellationToken cancellationToken)
         {

@@ -79,12 +79,13 @@ namespace ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel
                 }, ct);
 
                 var sectionScoreResultJson = sectionScoreResult.ToString();
+                _logger.LogInformation("Raw section score for {Section}: {Score}", sectionName, sectionScoreResultJson);
 
                 sectionScoreResultJson = CleanJsonResponse(sectionScoreResultJson);
 
                 var sectionScore = _jsonHelper.Deserialize<SectionScore>(sectionScoreResultJson)
                     ?? new SectionScore();
-                sectionScore.TotalScore0To5 = (int)sectionScore.CriteriaScores.Sum(c => c.Score0To5 * c.Weight0To1);
+                sectionScore.TotalScore0To5 = sectionScore.CriteriaScores.Sum(c => c.Score0To5 * c.Weight0To1);
                 return sectionScore;
             }
             catch (JsonException ex)

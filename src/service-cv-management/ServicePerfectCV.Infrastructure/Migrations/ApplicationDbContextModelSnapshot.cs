@@ -63,7 +63,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CVs");
+                    b.ToTable("CVs", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Certification", b =>
@@ -107,7 +107,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Certifications");
+                    b.ToTable("Certifications", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Contact", b =>
@@ -166,7 +166,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("DeletedAt")
                         .HasDatabaseName("IX_Contacts_DeletedAt");
 
-                    b.ToTable("Contacts");
+                    b.ToTable("Contacts", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Degree", b =>
@@ -202,7 +202,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("\"DeletedAt\" IS NULL");
 
-                    b.ToTable("Degrees");
+                    b.ToTable("Degrees", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.DeviceToken", b =>
@@ -244,7 +244,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DeviceTokens");
+                    b.ToTable("DeviceTokens", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Education", b =>
@@ -298,7 +298,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Educations");
+                    b.ToTable("Educations", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.EmploymentType", b =>
@@ -329,7 +329,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("\"DeletedAt\" IS NULL");
 
-                    b.ToTable("EmploymentTypes");
+                    b.ToTable("EmploymentTypes", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Experience", b =>
@@ -385,7 +385,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("EmploymentTypeId");
 
-                    b.ToTable("Experiences");
+                    b.ToTable("Experiences", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Job", b =>
@@ -512,7 +512,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("DeletedAt")
                         .HasDatabaseName("IX_JobDescriptions_DeletedAt");
 
-                    b.ToTable("JobDescriptions");
+                    b.ToTable("JobDescriptions", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.JobTitle", b =>
@@ -543,7 +543,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("\"DeletedAt\" IS NULL");
 
-                    b.ToTable("JobTitles");
+                    b.ToTable("JobTitles", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Organization", b =>
@@ -586,7 +586,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("\"DeletedAt\" IS NULL");
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Project", b =>
@@ -636,7 +636,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.SectionScoreResult", b =>
@@ -693,7 +693,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_SectionScoreResults_CVId_SectionType_Hashes");
 
-                    b.ToTable("SectionScoreResults");
+                    b.ToTable("SectionScoreResults", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Skill", b =>
@@ -730,7 +730,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
 
                     b.HasIndex("CVId");
 
-                    b.ToTable("Skills");
+                    b.ToTable("Skills", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.Summary", b =>
@@ -766,7 +766,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("DeletedAt")
                         .HasDatabaseName("IX_Summaries_DeletedAt");
 
-                    b.ToTable("Summaries");
+                    b.ToTable("Summaries", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.User", b =>
@@ -824,7 +824,7 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ServicePerfectCV.Domain.Entities.CV", b =>

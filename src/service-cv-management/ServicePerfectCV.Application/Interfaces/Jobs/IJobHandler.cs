@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using ServicePerfectCV.Application.Services.Jobs;
+using ServicePerfectCV.Application.DTOs.Job;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
 

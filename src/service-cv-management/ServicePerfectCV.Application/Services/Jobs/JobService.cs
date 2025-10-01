@@ -1,3 +1,4 @@
+using ServicePerfectCV.Application.DTOs.Job;
 using ServicePerfectCV.Application.Interfaces.Jobs;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;

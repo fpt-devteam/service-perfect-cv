@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.Enums;
 using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.Repositories.Common;
 using System;
@@ -13,7 +14,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
     public class SectionScoreResultRepository(ApplicationDbContext context)
         : CrudRepositoryBase<SectionScoreResult, Guid>(context), ISectionScoreResultRepository
     {
-        public async Task<SectionScoreResult?> GetByCVIdAndSectionTypeAsync(Guid cvId, string sectionType)
+        public async Task<SectionScoreResult?> GetByCVIdAndSectionTypeAsync(Guid cvId, SectionType sectionType)
         {
             return await _context.SectionScoreResults
                 .FirstOrDefaultAsync(ssr => ssr.CVId == cvId
@@ -29,7 +30,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<SectionScoreResult?> GetByHashesAsync(Guid cvId, string sectionType, string jdHash, string sectionContentHash)
+        public async Task<SectionScoreResult?> GetByHashesAsync(Guid cvId, SectionType sectionType, string jdHash, string sectionContentHash)
         {
             return await _context.SectionScoreResults
                 .FirstOrDefaultAsync(ssr => ssr.CVId == cvId

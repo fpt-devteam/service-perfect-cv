@@ -4,6 +4,7 @@ using ServicePerfectCV.Application.DTOs.CV.Requests;
 using ServicePerfectCV.Application.DTOs.CV.Responses;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
+using ServicePerfectCV.Application.DTOs.Section.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Services;
 using System;
@@ -17,7 +18,7 @@ namespace ServicePerfectCV.WebApi.Controllers
     [ApiController]
     [Authorize]
     [Route("api/cvs")]
-    public class CVController(CVService cvService) : ControllerBase
+    public class CVController(CVService cvService, SectionScoreResultService sectionScoreResultService) : ControllerBase
     {
         /// <summary>
         /// Creates a new CV with job description
@@ -118,6 +119,35 @@ namespace ServicePerfectCV.WebApi.Controllers
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 throw new DomainException(UserErrors.NotFound);
             var result = await cvService.GetByIdAndUserIdAsync(cvId: id, userId: userId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Retrieves all section score results for a specific CV with calculated totals
+        /// </summary>
+        /// <param name="id">The unique identifier of the CV</param>
+        /// <remarks>
+        /// Returns all section score results associated with the specified CV along with calculated total scores.
+        /// Only returns results for CVs owned by the authenticated user.
+        ///
+        /// The response includes:
+        /// - SectionScores: Individual section scores
+        /// - TotalScore: Weighted sum of all section scores
+        /// - MaxPossibleScore: Maximum possible weighted score
+        /// - ScorePercentage: Percentage of total score achieved
+        /// </remarks>
+        /// <returns>Section score results with calculated totals for the CV</returns>
+        [HttpGet("{id}/section-scores")]
+        [ProducesResponseType(typeof(CVSectionScoresResponse), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetSectionScoreResultsAsync(Guid id)
+        {
+            var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(nameIdentifier, out var userId))
+                throw new DomainException(UserErrors.NotFound);
+
+            var result = await sectionScoreResultService.GetByCVIdAsync(cvId: id, userId: userId);
             return Ok(result);
         }
 

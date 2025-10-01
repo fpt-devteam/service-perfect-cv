@@ -1,4 +1,4 @@
-namespace ServicePerfectCV.Domain.Constants
+namespace ServicePerfectCV.Domain.Constraints
 {
     public static class CertificationConstraints
     {

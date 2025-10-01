@@ -3,7 +3,7 @@
     public sealed class SectionScore
     {
         public List<CriteriaScore> CriteriaScores { get; set; } = new();
-        public int TotalScore0To5 { get; set; } = 0;
+        public double TotalScore0To5 { get; set; } = 0;
         public double Weight0To1 { get; set; } = 0;
     }
 

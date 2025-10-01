@@ -16,6 +16,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
 
             builder.Property(ssr => ssr.SectionType)
                 .IsRequired()
+                .HasConversion<string>()
                 .HasMaxLength(50);
 
             builder.Property(ssr => ssr.JdHash)

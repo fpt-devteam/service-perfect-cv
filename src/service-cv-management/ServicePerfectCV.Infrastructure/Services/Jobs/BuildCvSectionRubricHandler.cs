@@ -1,13 +1,15 @@
+using ServicePerfectCV.Application.DTOs.Job;
 using ServicePerfectCV.Application.DTOs.JobDescription;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Interfaces.AI;
 using ServicePerfectCV.Application.Interfaces.Jobs;
+using ServicePerfectCV.Application.Services;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
 using ServicePerfectCV.Domain.ValueObjects;
 using System.Text.Json;
 
-namespace ServicePerfectCV.Application.Services.Jobs
+namespace ServicePerfectCV.Infrastructure.Services.Jobs
 {
     public sealed class BuildCvSectionRubricHandler(
         IAIOrchestrator aiOrchestrator,

@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ServicePerfectCV.Application.DTOs.Job;
 using ServicePerfectCV.Application.Interfaces.Jobs;
-using ServicePerfectCV.Application.Services.Jobs;
 
 namespace ServicePerfectCV.Infrastructure.Services.Jobs
 {
