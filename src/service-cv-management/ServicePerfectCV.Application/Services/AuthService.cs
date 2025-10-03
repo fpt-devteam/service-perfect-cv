@@ -203,5 +203,40 @@ namespace ServicePerfectCV.Application.Services
         {
             return await oauthService.HandleOAuthAsync(request);
         }
+
+        /// <summary>
+        /// Admin login for cookie-based authentication (no refresh token needed)
+        /// </summary>
+        /// <param name="loginRequest">Login credentials</param>
+        /// <returns>User entity for session creation</returns>
+        public async Task<User> LoginAdminAsync(LoginRequest loginRequest)
+        {
+            // Validate user exists
+            User user = await userRepository.GetByEmailAsync(loginRequest.Email)
+                ?? throw new DomainException(AuthErrors.InvalidCredential);
+
+            // Verify authentication method
+            if (user.AuthMethod != AuthenticationMethod.JWT)
+                throw new DomainException(AuthErrors.AccountExistsWithDifferentMethod);
+
+            // Verify account is active
+            if (user.Status != UserStatus.Active)
+                throw new DomainException(UserErrors.AccountNotActivated);
+
+            // Verify admin role
+            if (user.Role != UserRole.Admin)
+                throw new DomainException(new Error(
+                    Code: "AccessDenied",
+                    Message: "Access denied. Admin privileges required.",
+                    System.Net.HttpStatusCode.Forbidden));
+
+            // Verify password
+            if (!passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
+                throw new DomainException(AuthErrors.InvalidCredential);
+
+            logger.LogInformation("Admin user {Email} authenticated successfully", user.Email);
+
+            return user;
+        }
     }
 }
