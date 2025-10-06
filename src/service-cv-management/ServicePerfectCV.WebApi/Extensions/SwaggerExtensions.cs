@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
 namespace ServicePerfectCV.WebApi.Extensions
@@ -20,6 +21,10 @@ namespace ServicePerfectCV.WebApi.Extensions
                     Version = "v1",
                     Description = "API for Service Perfect CV application"
                 });
+
+                // Configure file upload operation filter
+                c.OperationFilter<SwaggerFileOperationFilter>();
+
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",

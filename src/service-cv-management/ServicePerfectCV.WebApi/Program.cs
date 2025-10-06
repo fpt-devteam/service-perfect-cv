@@ -31,6 +31,7 @@ namespace ServicePerfectCV.WebApi
             builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
             builder.Services.Configure<FcmSettings>(builder.Configuration.GetSection("FcmSettings"));
             builder.Services.Configure<FirebaseStorageSettings>(builder.Configuration.GetSection("FirebaseStorageSettings"));
+            builder.Services.Configure<AzureDocumentIntelligenceSettings>(builder.Configuration.GetSection("AzureDocumentIntelligenceSettings"));
 
             builder.AddDatabase();
             builder.Services.AddRedis(builder.Configuration);

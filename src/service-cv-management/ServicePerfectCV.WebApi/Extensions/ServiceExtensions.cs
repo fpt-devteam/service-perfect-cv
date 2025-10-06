@@ -114,6 +114,14 @@ namespace ServicePerfectCV.WebApi.Extensions
 
             services.AddScoped<IAIOrchestrator, AIOrchestrator>();
 
+            // Azure Document Intelligence OCR Service
+            services.AddScoped<IOCRService>(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<AzureDocumentIntelligenceSettings>>().Value;
+                var logger = sp.GetRequiredService<ILogger<OCRService>>();
+                return new OCRService(settings, logger);
+            });
+
         }
     }
 }

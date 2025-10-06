@@ -10,11 +10,11 @@ using ServicePerfectCV.Domain.ValueObjects;
 using ServicePerfectCV.Application.DTOs.Education.Requests;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ServicePerfectCV.Application.DTOs.Skill.Requests;
 using ServicePerfectCV.Application.DTOs.Project.Requests;
-using System.Runtime.ConstrainedExecution;
 using ServicePerfectCV.Application.DTOs.Certification.Requests;
 
 namespace ServicePerfectCV.Application.Services
@@ -43,6 +43,12 @@ namespace ServicePerfectCV.Application.Services
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
+
+            // Handle PDF file upload if provided
+            if (request.PdfFile != null)
+            {
+                await HandlePdfFileUploadAsync(newCV, request.PdfFile);
+            }
 
             await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();
@@ -131,6 +137,32 @@ namespace ServicePerfectCV.Application.Services
                 Projects = projects?.Select(p => p.ToProjectInfo()).ToList() ?? new List<ProjectInfo>(),
                 Certifications = certifications?.Select(c => c.ToCertificationInfo()).ToList() ?? new List<CertificationInfo>()
             };
+        }
+
+        private async Task HandlePdfFileUploadAsync(CV cv, Microsoft.AspNetCore.Http.IFormFile pdfFile)
+        {
+            // Validate file size (limit to 10MB)
+            const long maxFileSize = 10 * 1024 * 1024; // 10MB
+            if (pdfFile.Length > maxFileSize)
+            {
+                throw new DomainException(CVErrors.ExceedMaxAllowedSize);
+            }
+
+            // Validate content type
+            if (!pdfFile.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new DomainException(CVErrors.InvalidFileType);
+            }
+
+            // Read file content into byte array
+            using var memoryStream = new MemoryStream();
+            await pdfFile.CopyToAsync(memoryStream);
+            var fileBytes = memoryStream.ToArray();
+
+            // Store file information
+            cv.PdfFile = fileBytes;
+            cv.PdfFileName = pdfFile.FileName;
+            cv.PdfContentType = pdfFile.ContentType;
         }
 
     }

@@ -63,5 +63,15 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "InvalidJobDescriptionId",
             Message: "Invalid job description ID provided.",
             HttpStatusCode.BadRequest);
+
+        public static readonly Error ExceedMaxAllowedSize = new(
+            Code: "ExceedMaxAllowedSize",
+            Message: "The uploaded file exceeds the maximum allowed size (10MB).",
+            HttpStatusCode.BadRequest);
+
+        public static readonly Error InvalidFileType = new(
+            Code: "InvalidFileType",
+            Message: "Invalid file type. Only PDF files are allowed.",
+            HttpStatusCode.BadRequest);
     }
 }

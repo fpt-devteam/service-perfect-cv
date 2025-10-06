@@ -14,6 +14,9 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
         public required JobDescriptionResponse JobDescription { get; init; }
         public required CVContent Content { get; init; } = default!;
         public required DateTimeOffset LastEditedAt { get; init; }
+        public bool HasPdfFile { get; init; }
+        public string? PdfFileName { get; init; }
+        public string? PdfContentType { get; init; }
     }
 
 
