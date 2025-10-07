@@ -27,7 +27,7 @@ namespace ServicePerfectCV.Application.Services
                 UserId = request.UserId,
                 PackageId = request.PackageId,
                 Amount = request.Amount,
-                Status = PaymentStatus.Pending,
+                Status = request.Status,
                 GatewayTransactionId = request.GatewayTransactionId,
                 CreatedAt = DateTimeOffset.UtcNow
             };
@@ -102,19 +102,27 @@ namespace ServicePerfectCV.Application.Services
             };
         }
 
-        public async Task<bool> UpdateAsync(Guid id, UpdateBillingHistoryRequest request)
+        public async Task<BillingHistoryResponse?> UpdateAsync(Guid id, UpdateBillingHistoryRequest request)
         {
             var entity = await _billingHistoryRepository.GetByIdAsync(id);
-            if (entity == null) return false;
+            if (entity == null) return null;
 
             entity.Status = request.Status;
-
             entity.UpdatedAt = DateTimeOffset.UtcNow;
 
             _billingHistoryRepository.Update(entity);
             await _billingHistoryRepository.SaveChangesAsync();
 
-            return true;
+            return new BillingHistoryResponse
+            {
+                Id = entity.Id,
+                UserId = entity.UserId,
+                PackageId = entity.PackageId,
+                Amount = entity.Amount,
+                Status = entity.Status,
+                GatewayTransactionId = entity.GatewayTransactionId ?? string.Empty,
+                CreatedAt = entity.CreatedAt
+            };
         }
 
         public async Task<bool> DeleteAsync(Guid id)

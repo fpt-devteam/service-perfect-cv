@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Net.payOS.Types;
 using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.DTOs.Payment.Requests;
 using ServicePerfectCV.Application.DTOs.Payment.Responses;
@@ -19,11 +20,13 @@ namespace ServicePerfectCV.WebApi.Controllers
     {
         private readonly PaymentService _paymentService;
         private readonly PaymentUrlSettings _paymentUrlSettings;
+        private readonly ILogger<PaymentController> _logger;
 
-        public PaymentController(PaymentService paymentService, IOptions<PaymentUrlSettings> paymentUrlSettings)
+        public PaymentController(PaymentService paymentService, IOptions<PaymentUrlSettings> paymentUrlSettings, ILogger<PaymentController> logger)
         {
             _paymentService = paymentService;
             _paymentUrlSettings = paymentUrlSettings.Value;
+            _logger = logger;
         }
 
         /// <summary>
@@ -116,15 +119,16 @@ namespace ServicePerfectCV.WebApi.Controllers
         [ProducesResponseType(typeof(WebhookResponse), 200)]
         [ProducesResponseType(typeof(object), 400, "application/json")] // WebhookProcessingFailed
         [ProducesResponseType(typeof(object), 500, "application/json")] // PaymentServiceUnavailable
-        public async Task<ActionResult<WebhookResponse>> ProcessWebhook([FromBody] object webhookData)
+        public async Task<ActionResult<WebhookResponse>> ProcessWebhook([FromBody] WebhookType webhookData)
         {
+            _logger.LogInformation("Received payment webhook: {@WebhookData}", webhookData);
             if (webhookData == null)
             {
                 throw new DomainException(PaymentErrors.WebhookProcessingFailed);
             }
 
             var response = await _paymentService.ProcessWebhookAsync(webhookData);
-            return Ok(webhookData);
+            return Ok(response);
         }
 
         /// <summary>

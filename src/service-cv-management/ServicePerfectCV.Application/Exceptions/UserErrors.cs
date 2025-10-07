@@ -34,5 +34,10 @@ namespace ServicePerfectCV.Application.Exceptions
             Code: "InvalidUserId",
             Message: "Invalid user identifier format.",
             HttpStatusCode.BadRequest);
+
+        public static readonly Error InsufficientCredits = new(
+            Code: "InsufficientCredits",
+            Message: "User does not have enough credits to perform this action.",
+            HttpStatusCode.BadRequest);
     }
 }

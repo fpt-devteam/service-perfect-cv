@@ -15,6 +15,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Cryptography.Xml;
 using ServicePerfectCV.Application.DTOs.Billing.Requests;
+using Microsoft.Extensions.Logging;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 
 namespace ServicePerfectCV.Application.Services
 {
@@ -23,21 +25,25 @@ namespace ServicePerfectCV.Application.Services
         private readonly PayOS _payOS;
         private readonly IPackageRepository _packageRepository;
         private readonly PaymentUrlSettings _paymentUrlSettings;
-        private readonly System.Net.Http.IHttpClientFactory _httpClientFactory;
         private readonly BillingHistoryService _billingHistoryService;
+        private readonly ILogger<PaymentService> _logger;
+        private readonly IUserRepository _userRepository;
 
         public PaymentService(
-            PayOS payOS, IPackageRepository packageRepository,
+            PayOS payOS,
+            IPackageRepository packageRepository,
             IOptions<PaymentUrlSettings> paymentUrlSettings,
-            System.Net.Http.IHttpClientFactory httpClientFactory,
-            BillingHistoryService billingHistoryService
+            ILogger<PaymentService> logger,
+            BillingHistoryService billingHistoryService,
+            IUserRepository userRepository
               )
         {
             _payOS = payOS;
             _packageRepository = packageRepository;
             _paymentUrlSettings = paymentUrlSettings.Value;
-            _httpClientFactory = httpClientFactory;
             _billingHistoryService = billingHistoryService;
+            _logger = logger;
+            _userRepository = userRepository;
         }
 
         public async Task<CreatePaymentResponse> CreatePaymentLinkAsync(CreatePaymentRequest request, Guid userId)
@@ -57,6 +63,17 @@ namespace ServicePerfectCV.Application.Services
                 )
             };
 
+            // Create billing history record with Pending status
+            await _billingHistoryService.CreateAsync(
+                new CreateBillingHistoryRequest
+                {
+                    UserId = userId,
+                    PackageId = request.PackageId,
+                    Amount = package.Price,
+                    Status = PaymentStatus.Pending,
+                    GatewayTransactionId = orderCode.ToString()
+                }
+            );
 
             // Build cancel/return URLs by replacing the {orderCode} placeholder
             var cancelUrl = BuildCallbackUrl(_paymentUrlSettings.BaseUrl, _paymentUrlSettings.CancelEndpoint, orderCode);
@@ -75,23 +92,12 @@ namespace ServicePerfectCV.Application.Services
             // Create payment link via PayOS
             CreatePaymentResult createPayment = await _payOS.createPaymentLink(paymentData);
 
-            await _billingHistoryService.CreateAsync(
-                new CreateBillingHistoryRequest
-                {
-                    UserId = userId,
-                    PackageId = request.PackageId,
-                    Amount = package.Price,
-                    GatewayTransactionId = orderCode.ToString()
-                }
-            );
-
             // Map to response DTO
             return new CreatePaymentResponse
             {
                 OrderCode = orderCode,
                 CheckoutUrl = createPayment.checkoutUrl,
-                QrCode = createPayment.qrCode,
-                Status = PaymentStatus.Pending
+                QrCode = createPayment.qrCode
             };
         }
 
@@ -123,76 +129,81 @@ namespace ServicePerfectCV.Application.Services
             };
         }
 
-        public async Task<(bool Success, string? Response)> HandlePaymentSuccessAsync(int? orderCode, string? status, bool? cancel)
+        public async Task<(bool Success, string? Response)> HandlePaymentSuccessAsync(long orderCode)
         {
             try
             {
-                if (!orderCode.HasValue)
-                {
-                    return (false, "Order code is required");
-                }
-
-                // Find billing history by GatewayTransactionId (which stores the orderCode)
-                var billingHistory = await _billingHistoryService.GetByGatewayTransactionIdAsync(orderCode.Value.ToString());
+                // Find existing billing history by GatewayTransactionId (which stores the orderCode)
+                var billingHistory = await _billingHistoryService.GetByGatewayTransactionIdAsync(orderCode.ToString());
 
                 if (billingHistory == null)
                 {
                     return (false, $"Billing history not found for order code: {orderCode}");
                 }
 
-                // Update billing history status to Completed
-                await _billingHistoryService.UpdateAsync(billingHistory.Id, new UpdateBillingHistoryRequest
+                // Update billing history status to Success
+                var billingUpdate = await _billingHistoryService.UpdateAsync(billingHistory.Id, new UpdateBillingHistoryRequest
                 {
-                    Status = PaymentStatus.Completed
+                    Status = PaymentStatus.Success
                 });
 
                 // Get package details to add credits to user
                 var package = await _packageRepository.GetByIdAsync(billingHistory.PackageId);
                 if (package != null)
                 {
-                    // TODO: Implement user credit update logic
-                    // This requires IUserRepository to update TotalCredit
-                    // await _userRepository.AddCreditsAsync(billingHistory.UserId, package.NumCredits);
+                    // Get user and update their total credits
+                    var user = await _userRepository.GetByIdAsync(billingHistory.UserId);
+                    if (user != null)
+                    {
+                        user.TotalCredit += package.NumCredits;
+                        user.UpdatedAt = DateTimeOffset.UtcNow;
+
+                        _userRepository.Update(user);
+                        await _userRepository.SaveChangesAsync();
+
+                        _logger.LogInformation(
+                            "Added {Credits} credits to user {UserId}. New total: {TotalCredits}",
+                            package.NumCredits, user.Id, user.TotalCredit);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("User {UserId} not found for credit update", billingHistory.UserId);
+                    }
                 }
 
                 return (true, "Payment processed successfully");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error processing payment success for order code: {OrderCode}", orderCode);
                 return (false, $"Error processing payment success: {ex.Message}");
             }
         }
 
-        public async Task<(bool Success, string? Response)> HandlePaymentFailAsync(int? orderCode, string? status, bool? cancel)
+        public async Task<(bool Success, string? Response)> HandlePaymentFailAsync(long orderCode)
         {
             try
             {
-                if (!orderCode.HasValue)
-                {
-                    return (false, "Order code is required");
-                }
 
-                // Find billing history by GatewayTransactionId (which stores the orderCode)
-                var billingHistory = await _billingHistoryService.GetByGatewayTransactionIdAsync(orderCode.Value.ToString());
+                // Find existing billing history by GatewayTransactionId (which stores the orderCode)
+                var billingHistory = await _billingHistoryService.GetByGatewayTransactionIdAsync(orderCode.ToString());
 
                 if (billingHistory == null)
                 {
                     return (false, $"Billing history not found for order code: {orderCode}");
                 }
 
-                // Determine the appropriate failure status
-                PaymentStatus failureStatus = cancel == true ? PaymentStatus.Canceled : PaymentStatus.Failed;
-
-                // Update billing history status to Failed or Canceled
+                // Update billing history status to Failed
                 await _billingHistoryService.UpdateAsync(billingHistory.Id, new UpdateBillingHistoryRequest
                 {
-                    Status = failureStatus
+                    Status = PaymentStatus.Failed
                 });
 
-                return (true, $"Payment marked as {failureStatus.ToString().ToLower()}");
+                return (true, "Payment failure recorded successfully");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error processing payment failure for order code: {OrderCode}", orderCode);
                 return (false, $"Error processing payment failure: {ex.Message}");
             }
         }
@@ -209,68 +220,35 @@ namespace ServicePerfectCV.Application.Services
             };
         }
 
-        public Task<WebhookResponse> ProcessWebhookAsync(object webhookData)
+        public async Task<bool> ProcessWebhookAsync(WebhookType webhookData)
         {
             // Verify webhook data
-            WebhookData verifiedData = _payOS.verifyPaymentWebhookData((WebhookType)webhookData);
+            _logger.LogInformation("Processed webhook: {@Webhook}", webhookData);
+            WebhookData verifiedData = _payOS.verifyPaymentWebhookData(webhookData);
 
             // Parse payment status from PayOS data
+            _logger.LogInformation("Verified webhook data: {@VerifiedData}", verifiedData);
+            _logger.LogInformation("Payment code: {Code}", verifiedData.code);
             PaymentStatus paymentStatus = ParsePaymentStatus(verifiedData.code);
 
-            // TODO: Add business logic here based on payment status
-            // - Update order status in database
-            // - Send notification to user
-            // - Update user credits/subscription (only if status is Completed)
-            // - Log transaction
-
-            WebhookResponse webhook = new WebhookResponse
+            if (paymentStatus == PaymentStatus.Failed)
             {
-                Status = paymentStatus,
-                Message = GetWebhookMessage(paymentStatus),
-                Data = new WebhookDataResponse
-                {
-                    OrderCode = (int)verifiedData.orderCode,
-                    Amount = verifiedData.amount,
-                    Description = verifiedData.description,
-                    AccountNumber = verifiedData.accountNumber,
-                    Reference = verifiedData.reference,
-                    TransactionDateTime = DateTimeOffset.TryParse(verifiedData.transactionDateTime, out var transactionTime)
-                        ? transactionTime
-                        : DateTimeOffset.UtcNow
-                }
-            };
-
-            // Log webhook response for debugging
-            Console.WriteLine($"Webhook Response: Status={webhook.Status}, Message={webhook.Message}, OrderCode={webhook.Data.OrderCode}");
-
-            return Task.FromResult(webhook);
+                await HandlePaymentFailAsync(verifiedData.orderCode);
+            }
+            else if (paymentStatus == PaymentStatus.Success)
+            {
+                await HandlePaymentSuccessAsync(verifiedData.orderCode);
+            }
+            return true;
         }
 
         private static PaymentStatus ParsePaymentStatus(string status)
         {
             return status?.ToLower() switch
             {
-                "pending" => PaymentStatus.Pending,
-                "processing" => PaymentStatus.Processing,
-                "paid" or "success" or "completed" => PaymentStatus.Completed,
-                "failed" or "failure" => PaymentStatus.Failed,
-                "cancelled" or "canceled" => PaymentStatus.Canceled,
-                "expired" => PaymentStatus.Expired,
-                _ => PaymentStatus.Pending
-            };
-        }
-
-        private static string GetWebhookMessage(PaymentStatus status)
-        {
-            return status switch
-            {
-                PaymentStatus.Completed => "Payment completed successfully",
-                PaymentStatus.Failed => "Payment failed",
-                PaymentStatus.Canceled => "Payment was cancelled",
-                PaymentStatus.Expired => "Payment has expired",
-                PaymentStatus.Processing => "Payment is being processed",
-                PaymentStatus.Pending => "Payment is pending",
-                _ => "Webhook processed"
+                "00" => PaymentStatus.Success,
+                "01" => PaymentStatus.Failed,
+                _ => PaymentStatus.Failed
             };
         }
 

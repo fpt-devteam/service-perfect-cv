@@ -29,7 +29,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.Property(bh => bh.GatewayTransactionId)
                 .HasMaxLength(255);
 
-
             builder.Property(bh => bh.CreatedAt)
                 .IsRequired()
                 .HasColumnType("timestamptz")
@@ -56,7 +55,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.HasIndex(bh => bh.UserId);
             builder.HasIndex(bh => bh.PackageId);
             builder.HasIndex(bh => bh.Status);
-            // GatewayOrderId removed: using BillingHistory.Id as internal order reference
             builder.HasIndex(bh => bh.GatewayTransactionId);
         }
     }

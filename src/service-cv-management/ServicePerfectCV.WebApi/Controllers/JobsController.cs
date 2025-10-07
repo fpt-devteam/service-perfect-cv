@@ -6,13 +6,15 @@ using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
 using System.Security.Claims;
 using System.Text.Json;
+using ServicePerfectCV.Application.Interfaces.Repositories;
+using ServicePerfectCV.Application.Exceptions;
 
 namespace ServicePerfectCV.WebApi.Controllers
 {
     [ApiController]
     [Authorize]
     [Route("api/jobs")]
-    public class JobsController(JobService jobService) : ControllerBase
+    public class JobsController(JobService jobService, IUserRepository userRepository) : ControllerBase
     {
         /// <summary>
         /// Creates a job to score a CV
@@ -30,6 +32,15 @@ namespace ServicePerfectCV.WebApi.Controllers
             if (!Guid.TryParse(nameIdentifier, out var userId))
                 return Unauthorized();
 
+            // Get user information and check credits
+            var user = await userRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new DomainException(UserErrors.NotFound);
+
+            // Check if user has enough credits (UsedCredit should be less than TotalCredit)
+            if (user.UsedCredit >= user.TotalCredit)
+                throw new DomainException(UserErrors.InsufficientCredits);
+
             var input = new
             {
                 CvId = request.CvId,
@@ -38,6 +49,13 @@ namespace ServicePerfectCV.WebApi.Controllers
 
             var inputJson = JsonSerializer.SerializeToDocument(input);
             var job = await jobService.CreateAsync(JobType.ScoreCV, inputJson, 0, cancellationToken);
+
+            // Increment used credits after successfully creating the job
+            user.UsedCredit += 1;
+            user.UpdatedAt = DateTimeOffset.UtcNow;
+            userRepository.Update(user);
+            await userRepository.SaveChangesAsync();
+
             var response = MapToJobResultResponse(job);
             return Ok(response);
         }

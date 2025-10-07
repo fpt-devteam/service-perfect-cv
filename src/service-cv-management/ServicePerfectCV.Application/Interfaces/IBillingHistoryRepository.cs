@@ -1,3 +1,4 @@
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Entities;
 using System;
 using System.Collections.Generic;

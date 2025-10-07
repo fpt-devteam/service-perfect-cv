@@ -47,25 +47,5 @@ namespace ServicePerfectCV.WebApi.Controllers
             var created = await _billingHistoryService.CreateAsync(request);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
-
-        [HttpPut("{id:guid}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] UpdateBillingHistoryRequest request)
-        {
-            var ok = await _billingHistoryService.UpdateAsync(id, request);
-            if (!ok) throw new DomainException(BillingErrors.NotFound);
-            return Ok();
-        }
-
-        [HttpDelete("{id:guid}")]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(404)]
-        public async Task<ActionResult> Delete([FromRoute] Guid id)
-        {
-            var ok = await _billingHistoryService.DeleteAsync(id);
-            if (!ok) throw new DomainException(BillingErrors.NotFound);
-            return NoContent();
-        }
     }
 }
