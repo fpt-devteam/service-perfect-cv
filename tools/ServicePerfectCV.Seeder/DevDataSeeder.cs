@@ -26,6 +26,7 @@ namespace ServicePerfectCV.Seeder
         private List<Guid> _contactIds = new List<Guid>();
         private List<Guid> _skillIds = new List<Guid>();
         private List<Guid> _summaryIds = new List<Guid>();
+        private List<Guid> _packageIds = new List<Guid>();
         private Guid _thangUserId = Guid.NewGuid();
 
         public async Task RunAsync(CancellationToken ct)
@@ -47,6 +48,7 @@ namespace ServicePerfectCV.Seeder
             await SeedContactsAsync(ct);
             await SeedSkillsAsync(ct);
             await SeedSummariesAsync(ct);
+            await SeedPackagesAsync(ct);
 
             await UpdateCVContentAsync(ct);
         }
@@ -837,6 +839,67 @@ namespace ServicePerfectCV.Seeder
             Console.WriteLine($"Seeded {summaries.Count} summaries.");
         }
 
+        private async Task SeedPackagesAsync(CancellationToken ct)
+        {
+            if (await dbContext.Packages.AnyAsync(ct))
+            {
+                Console.WriteLine("Packages already seeded.");
+                _packageIds = await dbContext.Packages.AsNoTracking().Select(p => p.Id).ToListAsync(ct);
+                return;
+            }
+
+            List<Package> packages = new List<Package>
+            {
+                new Package
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Basic",
+                    Price = 19000,
+                    NumCredits = 3,
+                    IsActive = true,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                },
+                new Package
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Starter",
+                    Price = 29000,
+                    NumCredits = 5,
+                    IsActive = true,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                },
+                new Package
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Pro",
+                    Price = 49000,
+                    NumCredits = 10,
+                    IsActive = true,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                },
+                new Package
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Expert",
+                    Price = 79000,
+                    NumCredits = 20,
+                    IsActive = true,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    UpdatedAt = DateTimeOffset.UtcNow
+                }
+            };
+
+            _packageIds = packages.Select(p => p.Id).ToList();
+
+            dbContext.Packages.AddRange(packages);
+            await dbContext.SaveChangesAsync(ct);
+
+            Console.WriteLine($"Seeded {packages.Count} packages.");
+        }
+
         private async Task UpdateCVContentAsync(CancellationToken ct)
         {
             Console.WriteLine("Updating CV Content...");
@@ -953,6 +1016,9 @@ namespace ServicePerfectCV.Seeder
             await dbContext.Summaries.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared Summaries");
 
+            await dbContext.Packages.ExecuteDeleteAsync(ct);
+            Console.WriteLine("Cleared Packages");
+
             await dbContext.JobDescriptions.ExecuteDeleteAsync(ct);
             Console.WriteLine("Cleared JobDescriptions");
 
@@ -988,6 +1054,7 @@ namespace ServicePerfectCV.Seeder
             _contactIds.Clear();
             _skillIds.Clear();
             _summaryIds.Clear();
+            _packageIds.Clear();
 
             Console.WriteLine("All data cleared successfully!");
         }

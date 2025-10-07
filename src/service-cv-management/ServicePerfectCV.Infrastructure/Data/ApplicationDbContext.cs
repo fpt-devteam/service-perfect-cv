@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Infrastructure.Data.Configurations;
@@ -27,6 +28,8 @@ namespace ServicePerfectCV.Infrastructure.Data
         public DbSet<DeviceToken> DeviceTokens { get; set; }
         public DbSet<Job> Jobs { get; set; }
         public DbSet<SectionScoreResult> SectionScoreResults { get; set; }
+        public DbSet<Package> Packages { get; set; }
+        public DbSet<BillingHistory> BillingHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -49,6 +52,8 @@ namespace ServicePerfectCV.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new DeviceTokenConfiguration());
             modelBuilder.ApplyConfiguration(new JobConfiguration());
             modelBuilder.ApplyConfiguration(new SectionScoreResultConfiguration());
+            modelBuilder.ApplyConfiguration(new PackageConfiguration());
+            modelBuilder.ApplyConfiguration(new BillingHistoryConfiguration());
         }
     }
 }

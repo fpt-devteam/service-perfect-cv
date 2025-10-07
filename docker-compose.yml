@@ -6,9 +6,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=${POSTGRES_DB:-service-perfect-cv}
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres123}
+      - POSTGRES_DB=service-perfect-cv
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres123
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
@@ -34,4 +34,3 @@ networks:
 volumes:
   db-data:
   redis-data:
-  

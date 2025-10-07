@@ -22,8 +22,11 @@ namespace ServicePerfectCV.Domain.Entities
         public UserStatus Status { get; set; } = UserStatus.Inactive;
         public UserRole Role { get; set; } = UserRole.User;
         public AuthenticationMethod AuthMethod { get; set; } = AuthenticationMethod.JWT;
+        public int UsedCredit { get; set; } = 0;
+        public int TotalCredit { get; set; } = 0;
 
         public ICollection<CV> CVs { get; set; } = [];
         public ICollection<DeviceToken> DeviceTokens { get; set; } = [];
+        public ICollection<BillingHistory> BillingHistories { get; set; } = [];
     }
 }

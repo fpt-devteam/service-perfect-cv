@@ -65,9 +65,22 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                     v => v.ToString(),
                     v => (AuthenticationMethod)Enum.Parse(typeof(AuthenticationMethod), v));
 
+            builder.Property(u => u.UsedCredit)
+                .IsRequired()
+                .HasDefaultValue(0);
+
+            builder.Property(u => u.TotalCredit)
+                .IsRequired()
+                .HasDefaultValue(0);
+
             builder.HasMany(u => u.CVs)
                 .WithOne(c => c.User)
                 .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasMany(u => u.BillingHistories)
+                .WithOne(bh => bh.User)
+                .HasForeignKey(bh => bh.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
         }

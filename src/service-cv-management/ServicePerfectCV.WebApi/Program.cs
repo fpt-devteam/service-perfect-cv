@@ -25,6 +25,7 @@ namespace ServicePerfectCV.WebApi
             builder.Services.AddSemanticKernelInfra(builder.Configuration);
             builder.Services.AddAzureAIFoundry(builder.Configuration);
             builder.Services.AddConfiguredSwagger();
+            builder.Services.AddPayOS(builder.Configuration);
 
             WebApplication app = builder.Build();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
