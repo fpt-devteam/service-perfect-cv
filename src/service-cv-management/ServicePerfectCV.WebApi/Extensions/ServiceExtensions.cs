@@ -41,6 +41,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddAutoMapper(typeof(SummaryMappingProfile));
             services.AddAutoMapper(typeof(SkillMappingProfile));
             services.AddAutoMapper(typeof(CategoryMappingProfile));
+            services.AddAutoMapper(typeof(PackageMappingProfile));
+            services.AddAutoMapper(typeof(BillingMappingProfile));
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICVRepository, CVRepository>();
@@ -57,6 +59,8 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<ICertificationRepository, CertificationRepository>();
             services.AddScoped<ISummaryRepository, SummaryRepository>();
             services.AddScoped<ISectionScoreResultRepository, SectionScoreResultRepository>();
+            services.AddScoped<IPackageRepository, PackageRepository>();
+            services.AddScoped<IBillingHistoryRepository, BillingHistoryRepository>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
 
@@ -78,6 +82,9 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<SummaryService>();
             services.AddScoped<EmploymentTypeService>();
             services.AddScoped<SectionScoreResultService>();
+            services.AddScoped<PackageService>();
+            services.AddScoped<BillingHistoryService>();
+            services.AddScoped<PaymentService>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICacheService, RedisCacheService>();

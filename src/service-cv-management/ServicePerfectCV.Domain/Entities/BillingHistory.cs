@@ -1,4 +1,5 @@
 using ServicePerfectCV.Domain.Common;
+using ServicePerfectCV.Domain.Enums;
 using System;
 
 namespace ServicePerfectCV.Domain.Entities
@@ -9,11 +10,8 @@ namespace ServicePerfectCV.Domain.Entities
         public required Guid UserId { get; set; }
         public required Guid PackageId { get; set; }
         public required decimal Amount { get; set; }
-        public required string Currency { get; set; }
-        public required string Status { get; set; }
-        public string? GatewayOrderId { get; set; }
+        public required PaymentStatus Status { get; set; }
         public string? GatewayTransactionId { get; set; }
-        public string? CheckoutUrl { get; set; }
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? DeletedAt { get; set; }

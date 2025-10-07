@@ -31,6 +31,9 @@ namespace ServicePerfectCV.WebApi
             builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
             builder.Services.Configure<FcmSettings>(builder.Configuration.GetSection("FcmSettings"));
             builder.Services.Configure<FirebaseStorageSettings>(builder.Configuration.GetSection("FirebaseStorageSettings"));
+            builder.Services.Configure<PaymentUrlSettings>(builder.Configuration.GetSection("PaymentUrlSettings"));
+
+            builder.Services.AddPayOS(builder.Configuration);
 
             builder.AddDatabase();
             builder.Services.AddRedis(builder.Configuration);

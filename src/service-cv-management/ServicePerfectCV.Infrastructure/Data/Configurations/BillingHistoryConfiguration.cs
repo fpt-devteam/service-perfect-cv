@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ServicePerfectCV.Domain.Entities;
+using ServicePerfectCV.Domain.Enums;
 
 namespace ServicePerfectCV.Infrastructure.Data.Configurations
 {
@@ -20,22 +21,14 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasPrecision(18, 2);
 
-            builder.Property(bh => bh.Currency)
-                .IsRequired()
-                .HasMaxLength(3);
-
             builder.Property(bh => bh.Status)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasConversion<string>();
 
-            builder.Property(bh => bh.GatewayOrderId)
-                .HasMaxLength(255);
 
             builder.Property(bh => bh.GatewayTransactionId)
                 .HasMaxLength(255);
 
-            builder.Property(bh => bh.CheckoutUrl)
-                .HasMaxLength(2000);
 
             builder.Property(bh => bh.CreatedAt)
                 .IsRequired()
@@ -63,7 +56,7 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
             builder.HasIndex(bh => bh.UserId);
             builder.HasIndex(bh => bh.PackageId);
             builder.HasIndex(bh => bh.Status);
-            builder.HasIndex(bh => bh.GatewayOrderId);
+            // GatewayOrderId removed: using BillingHistory.Id as internal order reference
             builder.HasIndex(bh => bh.GatewayTransactionId);
         }
     }

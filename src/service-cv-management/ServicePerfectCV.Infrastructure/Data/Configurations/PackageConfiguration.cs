@@ -18,10 +18,6 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                 .IsRequired()
                 .HasPrecision(18, 2);
 
-            builder.Property(p => p.Currency)
-                .IsRequired()
-                .HasMaxLength(3);
-
             builder.Property(p => p.NumCredits)
                 .IsRequired();
 

@@ -11,12 +11,12 @@ namespace ServicePerfectCV.WebApi.Extensions
         {
             var connString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-            // Build NpgsqlDataSource và BẬT Dynamic JSON
+            // Build NpgsqlDataSource and ENABLE Dynamic JSON
             var dsb = new NpgsqlDataSourceBuilder(connString);
-            dsb.EnableDynamicJson(); // <-- Quan trọng cho POCO -> jsonb
+            dsb.EnableDynamicJson(); // <-- Important for POCO -> jsonb
             var dataSource = dsb.Build();
 
-            // Đăng ký DbContext dùng dataSource
+            // Register DbContext using dataSource
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(dataSource));
         }
