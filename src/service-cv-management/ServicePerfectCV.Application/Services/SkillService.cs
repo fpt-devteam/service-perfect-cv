@@ -3,7 +3,7 @@ using ServicePerfectCV.Application.DTOs.CV.Requests;
 using ServicePerfectCV.Application.DTOs.Skill.Requests;
 using ServicePerfectCV.Application.DTOs.Skill.Responses;
 using ServicePerfectCV.Application.Exceptions;
-using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Entities;
 using System;
 using System.Collections.Generic;

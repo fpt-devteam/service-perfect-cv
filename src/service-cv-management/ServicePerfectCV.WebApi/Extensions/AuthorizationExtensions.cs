@@ -8,32 +8,12 @@ namespace ServicePerfectCV.WebApi.Extensions
 {
     public static class AuthorizationExtensions
     {
-        // public static void AddAuthorizationPolicies(this IServiceCollection services, IConfiguration configuration)
-        // {
-        //     JwtSettings jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>() ??
-        //                               throw new ArgumentNullException(nameof(configuration),
-        //                                   "JwtSettings configuration section is missing or invalid.");
-        //     services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
-        //         JwtBearerDefaults.AuthenticationScheme, options =>
-        //         {
-        //             options.TokenValidationParameters = new TokenValidationParameters
-        //             {
-        //                 ValidateIssuer = true,
-        //                 ValidateAudience = true,
-        //                 ValidateLifetime = true,
-        //                 ValidateIssuerSigningKey = true,
-        //                 ValidIssuer = jwtSettings.Issuer,
-        //                 ValidAudience = jwtSettings.Audience,
-        //                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
-        //                 ClockSkew = TimeSpan.Zero,
-        //                 RequireExpirationTime = true,
-        //                 RequireSignedTokens = true
-        //             };
-        //         });
-        // }
         public static void AddAuthWithJwtAndGoogle(this IServiceCollection services,
             IConfiguration configuration)
         {
+            services.Configure<JwtSettings>(configuration.GetSection("JwtSettings"));
+            services.Configure<GoogleSettings>(configuration.GetSection("GoogleSettings"));
+
             var jwt = configuration.GetSection("JwtSettings").Get<JwtSettings>()
                       ?? throw new ArgumentNullException(nameof(configuration), "JwtSettings missing");
             var google = configuration.GetSection("GoogleSettings").Get<GoogleSettings>()

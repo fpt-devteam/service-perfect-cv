@@ -1,4 +1,5 @@
 using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using System;
 using System.Threading.Tasks;
 

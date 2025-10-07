@@ -12,7 +12,7 @@ using System.Text.Json;
 namespace ServicePerfectCV.Infrastructure.Services.Jobs
 {
     public sealed class BuildCvSectionRubricHandler(
-        IAIOrchestrator aiOrchestrator,
+        ISectionRubricService sectionRubricService,
         IJsonHelper jsonHelper,
         JobDescriptionService jobDescriptionService
         ) : IJobHandler
@@ -32,7 +32,7 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
                     return JobHandlerResult.Failure("build_rubric.invalid_input", "Invalid job description data");
                 }
 
-                result = await aiOrchestrator.BuildCvSectionRubricsAsync(jobDescriptionDto, cancellationToken);
+                result = await sectionRubricService.BuildSectionRubricsAsync(jobDescriptionDto, cancellationToken);
 
                 await jobDescriptionService.UpdateSectionRubricAsync(jobDescriptionDto.JobDescriptionId, result);
 

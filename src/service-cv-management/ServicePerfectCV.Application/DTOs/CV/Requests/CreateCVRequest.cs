@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using ServicePerfectCV.Application.DTOs.CV;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace ServicePerfectCV.Application.DTOs.CV.Requests
         [MaxLength(200, ErrorMessage = "Title cannot exceed 200 characters.")]
         public required string Title { get; init; }
         public required CreateJobDescriptionRequest JobDescription { get; init; }
+        public IFormFile? PdfFile { get; init; }
     }
 
     public class CreateJobDescriptionRequest

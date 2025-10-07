@@ -1,7 +1,7 @@
 using AutoMapper;
 using ServicePerfectCV.Application.DTOs.Organization.Requests;
 using ServicePerfectCV.Application.DTOs.Organization.Responses;
-using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

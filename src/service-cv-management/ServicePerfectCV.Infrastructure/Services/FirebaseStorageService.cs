@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace ServicePerfectCV.Infrastructure.Services
 {
-    public class FirebaseStorageService : IFirebaseStorageService
+    public class FirebaseStorageService : ICloudStorageService
     {
         private readonly ILogger<FirebaseStorageService> _logger;
         private readonly StorageClient _storageClient;

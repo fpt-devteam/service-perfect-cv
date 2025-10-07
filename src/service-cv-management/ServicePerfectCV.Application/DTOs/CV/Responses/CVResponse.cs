@@ -10,10 +10,11 @@ namespace ServicePerfectCV.Application.DTOs.CV.Responses
     public class CVResponse
     {
         public required Guid CVId { get; init; }
-        public required string Title { get; init; } = default!;
-        public required JobDescriptionResponse JobDescription { get; init; }
-        public required CVContent Content { get; init; } = default!;
-        public required DateTimeOffset LastEditedAt { get; init; }
+        public string? Title { get; init; }
+        public JobDescriptionResponse? JobDescription { get; init; }
+        public CVContent? Content { get; init; }
+        public DateTimeOffset? LastEditedAt { get; init; }
+        public bool IsStructuredDone { get; init; }
     }
 
 

@@ -7,19 +7,18 @@ namespace ServicePerfectCV.WebApi.Extensions
 {
     public static class Database
     {
-        public static void AddDatabase(this WebApplicationBuilder builder)
+        public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
-            var connString = builder.Configuration.GetConnectionString("DefaultConnection");
+            services.Configure<DatabaseSettings>(configuration.GetSection("ConnectionStrings"));
 
-            // Build NpgsqlDataSource and ENABLE Dynamic JSON
+            var connString = configuration.GetConnectionString("DefaultConnection");
+
             var dsb = new NpgsqlDataSourceBuilder(connString);
-            dsb.EnableDynamicJson(); // <-- Important for POCO -> jsonb
+            dsb.EnableDynamicJson();
             var dataSource = dsb.Build();
 
-            // Register DbContext using dataSource
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(dataSource));
         }
-
     }
 }

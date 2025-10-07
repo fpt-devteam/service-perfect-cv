@@ -4,18 +4,23 @@ using ServicePerfectCV.Application.DTOs.CV.Responses;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Exceptions;
-using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.ValueObjects;
 using ServicePerfectCV.Application.DTOs.Education.Requests;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using ServicePerfectCV.Application.DTOs.Skill.Requests;
 using ServicePerfectCV.Application.DTOs.Project.Requests;
-using System.Runtime.ConstrainedExecution;
 using ServicePerfectCV.Application.DTOs.Certification.Requests;
+using ServicePerfectCV.Application.Interfaces.AI;
+using ServicePerfectCV.Application.Interfaces.Repositories;
+using ServicePerfectCV.Application.Services.Jobs;
+using ServicePerfectCV.Application.DTOs.CvStructuring;
+using ServicePerfectCV.Domain.Enums;
+using ServicePerfectCV.Application.Interfaces;
 
 namespace ServicePerfectCV.Application.Services
 {
@@ -30,6 +35,9 @@ namespace ServicePerfectCV.Application.Services
         IContactRepository contactRepository,
         ISummaryRepository summaryRepository,
         JobDescriptionService jobDescriptionService,
+        IOCRService ocrService,
+        JobService jobService,
+        IJsonHelper jsonHelper,
         IMapper mapper
     )
     {
@@ -44,8 +52,34 @@ namespace ServicePerfectCV.Application.Services
                 UpdatedAt = DateTime.UtcNow
             };
 
+            if (request.PdfFile != null)
+            {
+                await HandlePdfFileUploadAsync(newCV, request.PdfFile);
+            }
+            if (newCV.PdfFile != null)
+            {
+                newCV.ExtractedText = await ocrService.ExtractTextFromPdfAsync(newCV.PdfFile);
+            }
+
             await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();
+
+            // Enqueue CV structuring job if PDF was uploaded and text extracted
+            if (!string.IsNullOrWhiteSpace(newCV.ExtractedText))
+            {
+                var structureInput = new StructureCvContentInputDto
+                {
+                    CvId = newCV.Id,
+                    UserId = userId,
+                    RawText = newCV.ExtractedText
+                };
+
+                await jobService.CreateAsync(
+                    JobType.StructureCvContent,
+                    jsonHelper.SerializeToDocument(structureInput),
+                    priority: 10,
+                    cancellationToken: default);
+            }
 
             JobDescription createdJobDescription = await jobDescriptionService.CreateAsync(
                 jobDescription: new JobDescription
@@ -96,6 +130,18 @@ namespace ServicePerfectCV.Application.Services
             var cv = await cvRepository.GetByCVIdAndUserIdAsync(cvId, userId) ??
                 throw new DomainException(CVErrors.CVNotFound);
 
+            // If CV structure is not done, return minimal response
+            if (!cv.IsStructuredDone)
+            {
+                return new CVResponse
+                {
+                    CVId = cv.Id,
+                    Title = cv.Title,
+                    IsStructuredDone = false,
+                    LastEditedAt = cv.UpdatedAt ?? cv.CreatedAt
+                };
+            }
+
             var jobDescription = await jobDescriptionRepository.GetByCVIdAsync(cvId) ??
                 throw new DomainException(CVErrors.JobDescriptionNotFound);
             cv.JobDescription = jobDescription;
@@ -131,6 +177,32 @@ namespace ServicePerfectCV.Application.Services
                 Projects = projects?.Select(p => p.ToProjectInfo()).ToList() ?? new List<ProjectInfo>(),
                 Certifications = certifications?.Select(c => c.ToCertificationInfo()).ToList() ?? new List<CertificationInfo>()
             };
+        }
+
+        private async Task HandlePdfFileUploadAsync(CV cv, Microsoft.AspNetCore.Http.IFormFile pdfFile)
+        {
+            // Validate file size (limit to 10MB)
+            const long maxFileSize = 10 * 1024 * 1024; // 10MB
+            if (pdfFile.Length > maxFileSize)
+            {
+                throw new DomainException(CVErrors.ExceedMaxAllowedSize);
+            }
+
+            // Validate content type
+            if (!pdfFile.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new DomainException(CVErrors.InvalidFileType);
+            }
+
+            // Read file content into byte array
+            using var memoryStream = new MemoryStream();
+            await pdfFile.CopyToAsync(memoryStream);
+            var fileBytes = memoryStream.ToArray();
+
+            // Store file information
+            cv.PdfFile = fileBytes;
+            cv.PdfFileName = pdfFile.FileName;
+            cv.PdfContentType = pdfFile.ContentType;
         }
 
     }

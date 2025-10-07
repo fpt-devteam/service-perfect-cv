@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using ServicePerfectCV.Application.DTOs.AI;
 using ServicePerfectCV.Application.DTOs.Certification.Requests;
 using ServicePerfectCV.Application.DTOs.Certification.Responses;
 using ServicePerfectCV.Application.DTOs.Contact.Responses;
@@ -16,18 +15,18 @@ using ServicePerfectCV.Application.DTOs.Summary.Responses;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Interfaces.AI;
 using ServicePerfectCV.Application.Interfaces.Jobs;
-using ServicePerfectCV.Application.Services.Jobs;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
 using ServicePerfectCV.Domain.ValueObjects;
-using ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
+using ServicePerfectCV.Infrastructure.Services.AI;
 using System.Text.Json;
 
 namespace ServicePerfectCV.Infrastructure.Services.Jobs
 {
     public sealed class ScoreCvSectionHandler : IJobHandler
     {
-        private readonly SectionScoreService _sectionScoreService;
+        private readonly ISectionScoreService _sectionScoreService;
         private readonly IJobDescriptionRepository _jobDescriptionRepository;
         private readonly IContactRepository _contactRepository;
         private readonly ISummaryRepository _summaryRepository;
@@ -91,55 +90,48 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
                 var jobDescription = await _jobDescriptionRepository.GetByCVIdAsync(scoreSectionInputDto.CvId);
                 if (jobDescription?.SectionRubrics == null)
                 {
-                    return JobHandlerResult.Failure("score_cv.no_rubric", "No section rubric found for CV",
+                    return JobHandlerResult.Failure("score_cv.no_rubric", "Please create a job description with meaningful rubrics before scoring.",
                         _jsonHelper.SerializeToDocument(allScoreResults));
                 }
 
                 // Step 2: Load existing CvSectionScoreResults
-                var existingResults = await _sectionScoreResultRepository.GetByCVIdAsync(scoreSectionInputDto.CvId);
-                var existingResultsDict = existingResults.ToDictionary(r => r.SectionType, r => r);
+                List<SectionScoreResult> existingResults = await _sectionScoreResultRepository.GetByCVIdAsync(scoreSectionInputDto.CvId);
+                Dictionary<SectionType, SectionScoreResult> existingResultsDict = existingResults.ToDictionary(r => r.SectionType, r => r);
 
                 // Step 3: Process each section
                 foreach (var sectionType in Enum.GetValues<SectionType>())
                 {
-                    // Check if rubric exists for this section
                     if (!jobDescription.SectionRubrics.TryGetValue(sectionType, out var sectionRubric))
                         continue;
 
                     try
                     {
-                        var sectionContent = await GetSectionContentAsync(sectionType, scoreSectionInputDto.CvId, scoreSectionInputDto.UserId);
+                        object? sectionContent = await GetSectionContentAsync(sectionType, scoreSectionInputDto.CvId, scoreSectionInputDto.UserId);
                         if (sectionContent == null)
                             continue;
 
-                        // Compute hashes
-                        var jdHash = _objectHasher.Hash(jobDescription);
-                        var sectionContentHash = _objectHasher.Hash(sectionContent);
+                        string jdHash = _objectHasher.Hash(jobDescription);
+                        string sectionContentHash = _objectHasher.Hash(sectionContent);
 
-                        // Check if we need to update (hash differs)
-                        var needsUpdate = true;
-                        if (existingResultsDict.TryGetValue(sectionType, out var existingResult))
+                        bool needsUpdate = true;
+                        if (existingResultsDict.TryGetValue(sectionType, out SectionScoreResult? existingResult))
                         {
                             needsUpdate = existingResult.JdHash != jdHash ||
                                         existingResult.SectionContentHash != sectionContentHash;
                         }
 
-                        SectionScore scoreResult;
+                        SectionScore scoreResult = existingResult?.SectionScore ?? new();
 
                         if (needsUpdate)
                         {
-                            // Convert section content to string and rubric to string
                             var sectionContentString = _jsonHelper.Serialize(sectionContent);
                             var sectionRubricString = _jsonHelper.Serialize(sectionRubric);
 
-                            // Prompt AI with JobDescription and SectionContent
                             scoreResult = await _sectionScoreService.ScoreSectionAsync(
                                 sectionRubricString, sectionContentString, sectionType.ToString(), cancellationToken);
 
-                            // Update the weight from the rubric
                             scoreResult.Weight0To1 = sectionRubric.Weight0To1;
 
-                            // Upsert to database
                             var sectionScoreResultEntity = new SectionScoreResult
                             {
                                 Id = existingResult?.Id ?? Guid.NewGuid(),
@@ -163,24 +155,12 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
 
                             await _sectionScoreResultRepository.SaveChangesAsync();
                         }
-                        else
-                        {
-                            // Use existing cached result
-                            scoreResult = existingResult!.SectionScore;
-                        }
 
                         allScoreResults[sectionType] = scoreResult;
                     }
                     catch (Exception)
                     {
-                        // Log section-specific error but continue with other sections
-                        // Add empty result for this section
-                        allScoreResults[sectionType] = new SectionScore
-                        {
-                            CriteriaScores = new List<CriteriaScore>(),
-                            TotalScore0To5 = 0,
-                            Weight0To1 = sectionRubric.Weight0To1
-                        };
+                        allScoreResults[sectionType] = new SectionScore();
                     }
                 }
 

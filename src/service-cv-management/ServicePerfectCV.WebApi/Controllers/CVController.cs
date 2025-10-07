@@ -21,7 +21,7 @@ namespace ServicePerfectCV.WebApi.Controllers
     public class CVController(CVService cvService, SectionScoreResultService sectionScoreResultService) : ControllerBase
     {
         /// <summary>
-        /// Creates a new CV with job description
+        /// Creates a new CV with job description and optional PDF file
         /// </summary>
         /// <param name="request">CV creation request containing title and job description details</param>
         /// <remarks>
@@ -32,8 +32,19 @@ namespace ServicePerfectCV.WebApi.Controllers
         ///   - companyName: Company name (required)
         ///   - responsibility: Job responsibilities (required)
         ///   - qualification: Required qualifications (required)
+        /// - pdfFile: Optional PDF file upload (max 10MB, PDF only)
         ///
-        /// Example request:
+        /// This endpoint accepts multipart/form-data for file uploads.
+        ///
+        /// Example request (form-data):
+        /// - title: "Software Developer CV"
+        /// - jobDescription.title: "Senior Software Developer"
+        /// - jobDescription.companyName: "Tech Corp"
+        /// - jobDescription.responsibility: "Develop and maintain web applications"
+        /// - jobDescription.qualification: "Bachelor's degree in Computer Science"
+        /// - pdfFile: [PDF file content]
+        ///
+        /// Example request (JSON without file):
         /// ```json
         /// {
         ///   "title": "Software Developer CV",
@@ -48,10 +59,13 @@ namespace ServicePerfectCV.WebApi.Controllers
         /// </remarks>
         /// <returns>Created CV with job description details</returns>
         [HttpPost]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(CVResponse), 200)]
         [ProducesResponseType(401)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateCVRequest request)
+        [ProducesResponseType(413)] // Payload Too Large
+        [ProducesResponseType(415)] // Unsupported Media Type
+        public async Task<IActionResult> CreateAsync([FromForm] CreateCVRequest request)
         {
             var nameIdentifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(nameIdentifier, out var userId))

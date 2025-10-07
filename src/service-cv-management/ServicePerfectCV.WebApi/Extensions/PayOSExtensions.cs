@@ -14,6 +14,7 @@ namespace ServicePerfectCV.WebApi.Extensions
         public static void AddPayOS(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<PaymentSettings>(configuration.GetSection("EnvironmentPaymentSettings"));
+            services.Configure<PaymentUrlSettings>(configuration.GetSection("PaymentUrlSettings"));
 
             services.AddSingleton<PayOS>(serviceProvider =>
             {

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Common;
 using ServicePerfectCV.Infrastructure.Data;
 using System;

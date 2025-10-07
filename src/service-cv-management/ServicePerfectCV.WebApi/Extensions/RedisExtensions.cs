@@ -1,8 +1,4 @@
 using ServicePerfectCV.Application.Configurations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.WebApi.Extensions
 {
@@ -10,6 +6,8 @@ namespace ServicePerfectCV.WebApi.Extensions
     {
         public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<RedisSettings>(configuration.GetSection("RedisSettings"));
+
             var redisSettings = configuration.GetSection("RedisSettings").Get<RedisSettings>() ?? throw new InvalidOperationException("Missing RedisSettings");
             services.AddStackExchangeRedisCache(options =>
             {
@@ -17,6 +15,5 @@ namespace ServicePerfectCV.WebApi.Extensions
                 options.InstanceName = redisSettings.InstanceName;
             });
         }
-
     }
 }

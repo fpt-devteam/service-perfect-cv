@@ -107,6 +107,21 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasColumnType("timestamptz")
                         .HasDefaultValueSql("NULL");
 
+                    b.Property<string>("ExtractedText")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsStructuredDone")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PdfContentType")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("PdfFile")
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("PdfFileName")
+                        .HasColumnType("text");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)

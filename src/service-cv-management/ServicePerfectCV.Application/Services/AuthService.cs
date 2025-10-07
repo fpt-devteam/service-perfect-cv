@@ -1,5 +1,4 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -8,24 +7,15 @@ using ServicePerfectCV.Application.Configurations;
 using ServicePerfectCV.Application.DTOs.Authentication;
 using ServicePerfectCV.Application.DTOs.Authentication.Requests;
 using ServicePerfectCV.Application.DTOs.Authentication.Responses;
-using ServicePerfectCV.Application.DTOs.User.Requests;
-using ServicePerfectCV.Application.DTOs.User.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace ServicePerfectCV.Application.Services
 {
@@ -202,6 +192,37 @@ namespace ServicePerfectCV.Application.Services
         public async Task<LoginResponse> ExchangeCodeAsync(OauthExchangeCodeRequest request)
         {
             return await oauthService.HandleOAuthAsync(request);
+        }
+
+        /// <summary>
+        /// Admin login for cookie-based authentication (no refresh token needed)
+        /// </summary>
+        /// <param name="loginRequest">Login credentials</param>
+        /// <returns>User entity for session creation</returns>
+        public async Task<User> LoginAdminAsync(LoginRequest loginRequest)
+        {
+            // Validate user exists
+            User user = await userRepository.GetByEmailAsync(loginRequest.Email)
+                ?? throw new DomainException(AuthErrors.InvalidCredential);
+
+            // Verify account is active
+            if (user.Status != UserStatus.Active)
+                throw new DomainException(UserErrors.AccountNotActivated);
+
+            // Verify admin role
+            if (user.Role != UserRole.Admin)
+                throw new DomainException(new Error(
+                    Code: "AccessDenied",
+                    Message: "Access denied. Admin privileges required.",
+                    System.Net.HttpStatusCode.Forbidden));
+
+            // Verify password
+            if (!passwordHasher.VerifyPassword(loginRequest.Password, user.PasswordHash))
+                throw new DomainException(AuthErrors.InvalidCredential);
+
+            logger.LogInformation("Admin user {Email} authenticated successfully", user.Email);
+
+            return user;
         }
     }
 }

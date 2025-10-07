@@ -2,7 +2,7 @@ using AutoMapper;
 using ServicePerfectCV.Application.DTOs.Experience.Requests;
 using ServicePerfectCV.Application.DTOs.Experience.Responses;
 using ServicePerfectCV.Application.Exceptions;
-using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Entities;
 using System;
 using System.Collections.Generic;

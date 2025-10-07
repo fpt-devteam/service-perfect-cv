@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ServicePerfectCV.Application.DTOs.CV.Requests;
 using Microsoft.Extensions.Logging;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 
 namespace ServicePerfectCV.Application.Services
 {
