@@ -3,7 +3,9 @@
     "allow": [
       "Bash(dotnet build)",
       "Bash(dotnet ef migrations add:*)",
-      "Bash(dotnet ef migrations remove:*)"
+      "Bash(dotnet ef migrations remove:*)",
+      "Bash(cat:*)",
+      "Bash(Get-Content \"C:\\Users\\NHATTHANG\\FptUniversity\\service-perfect-cv\\src\\service-cv-management\\ServicePerfectCV.WebApi\\Extensions\\AuthenticationExtensions.cs\")"
     ],
     "deny": [],
     "ask": []

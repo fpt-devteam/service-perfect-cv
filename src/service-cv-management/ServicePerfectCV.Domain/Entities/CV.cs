@@ -25,7 +25,7 @@ namespace ServicePerfectCV.Domain.Entities
         public string? PdfContentType { get; set; }
 
         // Extracted text from PDF using OCR
-        // public string? ExtractedText { get; set; }
+        public string? ExtractedText { get; set; }
 
         // Navigation properties
         public User User { get; set; } = default!;

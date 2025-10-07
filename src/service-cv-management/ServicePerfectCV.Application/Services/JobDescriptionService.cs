@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ServicePerfectCV.Application.DTOs.CV.Requests;
 using Microsoft.Extensions.Logging;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 
 namespace ServicePerfectCV.Application.Services
 {
@@ -39,7 +40,7 @@ namespace ServicePerfectCV.Application.Services
 
             await _jobDescriptionRepository.SaveChangesAsync();
 
-            await EnqueueBuildRubricJobAsync(createdJobDescription.Id);
+            // await EnqueueBuildRubricJobAsync(createdJobDescription.Id);
 
             return createdJobDescription;
         }
@@ -61,7 +62,7 @@ namespace ServicePerfectCV.Application.Services
 
             await _jobDescriptionRepository.SaveChangesAsync();
 
-            await EnqueueBuildRubricJobAsync(jobDescription.Id);
+            // await EnqueueBuildRubricJobAsync(jobDescription.Id);
 
             return jobDescription;
         }

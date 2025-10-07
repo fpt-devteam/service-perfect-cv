@@ -1,9 +1,4 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using ServicePerfectCV.Application.Configurations;
-using System;
-using System.Linq;
 
 namespace ServicePerfectCV.WebApi.Extensions
 {
@@ -11,6 +6,8 @@ namespace ServicePerfectCV.WebApi.Extensions
     {
         public static IServiceCollection AddConfiguredCors(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<CorsSettings>(configuration.GetSection("CorsSettings"));
+
             var corsOptions = configuration
                 .GetSection("CorsSettings")
                 .Get<CorsSettings>()

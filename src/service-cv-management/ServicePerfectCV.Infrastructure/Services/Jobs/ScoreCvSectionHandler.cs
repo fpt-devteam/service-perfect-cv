@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using ServicePerfectCV.Application.DTOs.AI;
 using ServicePerfectCV.Application.DTOs.Certification.Requests;
 using ServicePerfectCV.Application.DTOs.Certification.Responses;
 using ServicePerfectCV.Application.DTOs.Contact.Responses;
@@ -16,18 +15,18 @@ using ServicePerfectCV.Application.DTOs.Summary.Responses;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Interfaces.AI;
 using ServicePerfectCV.Application.Interfaces.Jobs;
-using ServicePerfectCV.Application.Services.Jobs;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;
 using ServicePerfectCV.Domain.ValueObjects;
-using ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
+using ServicePerfectCV.Infrastructure.Services.AI;
 using System.Text.Json;
 
 namespace ServicePerfectCV.Infrastructure.Services.Jobs
 {
     public sealed class ScoreCvSectionHandler : IJobHandler
     {
-        private readonly SectionScoreService _sectionScoreService;
+        private readonly ISectionScoreService _sectionScoreService;
         private readonly IJobDescriptionRepository _jobDescriptionRepository;
         private readonly IContactRepository _contactRepository;
         private readonly ISummaryRepository _summaryRepository;

@@ -6,6 +6,7 @@ using ServicePerfectCV.Application.DTOs.Experience.Requests;
 using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Application.Interfaces.AI;
 using ServicePerfectCV.Application.Interfaces.Jobs;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Application.Mappings;
 using ServicePerfectCV.Application.Services;
 using ServicePerfectCV.Application.Services.Jobs;
@@ -13,24 +14,26 @@ using ServicePerfectCV.Infrastructure.Helpers;
 using ServicePerfectCV.Infrastructure.Repositories;
 using ServicePerfectCV.Infrastructure.Repositories.Common;
 using ServicePerfectCV.Infrastructure.Services;
-using ServicePerfectCV.Infrastructure.Services.AI.SemanticKernel;
+using ServicePerfectCV.Infrastructure.Services.AI;
 using ServicePerfectCV.Infrastructure.Services.Jobs;
+using ServicePerfectCV.Infrastructure.Services.OAuth;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace ServicePerfectCV.WebApi.Extensions
 {
     public static class ServiceExtensions
     {
-        public static void ConfigureServices(this IServiceCollection services)
+        public static void AddServiceConfigurations(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<RefreshTokenConfiguration>(configuration.GetSection("RefreshToken"));
+            services.Configure<DatabaseSettings>(configuration.GetSection("ConnectionStrings"));
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+            services.Configure<UrlSettings>(configuration.GetSection("UrlSettings"));
+            services.Configure<FcmSettings>(configuration.GetSection("FcmSettings"));
+            services.Configure<FirebaseStorageSettings>(configuration.GetSection("FirebaseStorageSettings"));
+
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<CreateExperienceRequest>();
-            services.AddScoped<IFirebaseStorageService>(sp =>
-            {
-                var settings = sp.GetRequiredService<IOptions<FirebaseStorageSettings>>().Value;
-                var logger = sp.GetRequiredService<ILogger<FirebaseStorageService>>();
-                return new FirebaseStorageService(settings, logger);
-            });
             services.AddAutoMapper(typeof(AuthMappingProfile));
             services.AddAutoMapper(typeof(UserMappingProfile));
             services.AddAutoMapper(typeof(CVMappingProfile));
@@ -57,9 +60,6 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<ICertificationRepository, CertificationRepository>();
             services.AddScoped<ISummaryRepository, SummaryRepository>();
             services.AddScoped<ISectionScoreResultRepository, SectionScoreResultRepository>();
-            services.AddTransient<IEmailService, EmailService>();
-            services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
-
             services.AddScoped(typeof(IGenericRepository<,>), typeof(CrudRepositoryBase<,>));
 
             services.AddScoped<AuthService>();
@@ -73,11 +73,13 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<JobTitleService>();
             services.AddScoped<OrganizationService>();
             services.AddScoped<DegreeService>();
-
             services.AddScoped<CertificationService>();
             services.AddScoped<SummaryService>();
             services.AddScoped<EmploymentTypeService>();
             services.AddScoped<SectionScoreResultService>();
+
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<IEmailTemplateHelper, EmailTemplateHelper>();
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ICacheService, RedisCacheService>();
@@ -86,16 +88,15 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IPushNotificationService, FcmPushNotificationService>();
             services.AddScoped<NotificationService>();
             services.AddScoped<JwtSecurityTokenHandler>();
+            services.AddScoped<ICloudStorageService>(sp =>
+            {
+                var settings = sp.GetRequiredService<IOptions<FirebaseStorageSettings>>().Value;
+                var logger = sp.GetRequiredService<ILogger<FirebaseStorageService>>();
+                return new FirebaseStorageService(settings, logger);
+            });
 
-            services.AddScoped<GoogleOAuthService>();
-            services.AddScoped<LinkedInOAuthService>();
             services.AddSingleton<OAuthServiceFactory>();
             services.AddScoped<IOAuthService, GoogleOAuthService>();
-
-            services.AddHttpClient("", client =>
-            {
-                client.Timeout = TimeSpan.FromMinutes(10);
-            });
 
             services.AddSingleton<IJobQueue, InMemoryJobQueue>();
             services.AddScoped<IJobRepository, JobRepository>();
@@ -112,15 +113,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IJsonHelper, JsonHelper>();
             services.AddScoped<IObjectHasher, SHA256ObjectHasher>();
 
-            services.AddScoped<IAIOrchestrator, AIOrchestrator>();
-
-            // Azure Document Intelligence OCR Service
-            services.AddScoped<IOCRService>(sp =>
-            {
-                var settings = sp.GetRequiredService<IOptions<AzureDocumentIntelligenceSettings>>().Value;
-                var logger = sp.GetRequiredService<ILogger<OCRService>>();
-                return new OCRService(settings, logger);
-            });
+            services.AddScoped<IOCRService, OCRService>();
 
         }
     }

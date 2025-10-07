@@ -4,7 +4,6 @@ using ServicePerfectCV.Application.DTOs.CV.Responses;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
 using ServicePerfectCV.Application.Exceptions;
-using ServicePerfectCV.Application.Interfaces;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.ValueObjects;
 using ServicePerfectCV.Application.DTOs.Education.Requests;
@@ -16,6 +15,8 @@ using System.Threading.Tasks;
 using ServicePerfectCV.Application.DTOs.Skill.Requests;
 using ServicePerfectCV.Application.DTOs.Project.Requests;
 using ServicePerfectCV.Application.DTOs.Certification.Requests;
+using ServicePerfectCV.Application.Interfaces.AI;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 
 namespace ServicePerfectCV.Application.Services
 {
@@ -30,6 +31,7 @@ namespace ServicePerfectCV.Application.Services
         IContactRepository contactRepository,
         ISummaryRepository summaryRepository,
         JobDescriptionService jobDescriptionService,
+        IOCRService ocrService,
         IMapper mapper
     )
     {
@@ -49,6 +51,8 @@ namespace ServicePerfectCV.Application.Services
             {
                 await HandlePdfFileUploadAsync(newCV, request.PdfFile);
             }
+            if (newCV.PdfFile != null)
+                newCV.ExtractedText = await ocrService.ExtractTextFromPdfAsync(newCV.PdfFile);
 
             await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();

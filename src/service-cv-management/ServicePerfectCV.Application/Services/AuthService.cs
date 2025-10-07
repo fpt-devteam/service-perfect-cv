@@ -9,6 +9,7 @@ using ServicePerfectCV.Application.DTOs.Authentication.Requests;
 using ServicePerfectCV.Application.DTOs.Authentication.Responses;
 using ServicePerfectCV.Application.Exceptions;
 using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.Enums;

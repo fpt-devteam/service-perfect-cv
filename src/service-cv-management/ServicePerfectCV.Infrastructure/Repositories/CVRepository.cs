@@ -3,7 +3,7 @@ using ServicePerfectCV.Application.Common;
 using ServicePerfectCV.Application.DTOs.CV.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Requests;
 using ServicePerfectCV.Application.DTOs.Pagination.Responses;
-using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Domain.ValueObjects;

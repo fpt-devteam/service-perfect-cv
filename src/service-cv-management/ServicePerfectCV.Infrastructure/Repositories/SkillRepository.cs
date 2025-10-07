@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ServicePerfectCV.Application.DTOs.Skill.Requests;
-using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Constants;
 using ServicePerfectCV.Domain.Entities;
 using ServicePerfectCV.Infrastructure.Data;

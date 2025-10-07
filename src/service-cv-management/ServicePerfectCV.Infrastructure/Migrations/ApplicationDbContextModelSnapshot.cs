@@ -43,6 +43,9 @@ namespace ServicePerfectCV.Infrastructure.Migrations
                         .HasColumnType("timestamptz")
                         .HasDefaultValueSql("NULL");
 
+                    b.Property<string>("ExtractedText")
+                        .HasColumnType("text");
+
                     b.Property<string>("PdfContentType")
                         .HasColumnType("text");
 

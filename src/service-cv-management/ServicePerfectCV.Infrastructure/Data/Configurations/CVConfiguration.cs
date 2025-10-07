@@ -40,6 +40,11 @@ namespace ServicePerfectCV.Infrastructure.Data.Configurations
                .HasColumnType("timestamptz")
                .HasDefaultValueSql("NULL");
 
+         // OCR extracted text from PDF
+         builder.Property(c => c.ExtractedText)
+               .IsRequired(false)
+               .HasColumnType("text");
+
          builder.HasOne(c => c.User)
             .WithMany(u => u.CVs)
             .HasForeignKey(c => c.UserId)

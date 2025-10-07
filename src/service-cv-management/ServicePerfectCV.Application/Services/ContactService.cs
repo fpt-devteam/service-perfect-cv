@@ -3,7 +3,7 @@ using ServicePerfectCV.Application.Common;
 using ServicePerfectCV.Application.DTOs.Contact.Requests;
 using ServicePerfectCV.Application.DTOs.Contact.Responses;
 using ServicePerfectCV.Application.Exceptions;
-using ServicePerfectCV.Application.Interfaces;
+using ServicePerfectCV.Application.Interfaces.Repositories;
 using ServicePerfectCV.Domain.Entities;
 
 namespace ServicePerfectCV.Application.Services
