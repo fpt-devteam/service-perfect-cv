@@ -40,7 +40,7 @@ namespace ServicePerfectCV.Application.Services
 
             await _jobDescriptionRepository.SaveChangesAsync();
 
-            // await EnqueueBuildRubricJobAsync(createdJobDescription.Id);
+            await EnqueueBuildRubricJobAsync(createdJobDescription.Id);
 
             return createdJobDescription;
         }
@@ -62,7 +62,7 @@ namespace ServicePerfectCV.Application.Services
 
             await _jobDescriptionRepository.SaveChangesAsync();
 
-            // await EnqueueBuildRubricJobAsync(jobDescription.Id);
+            await EnqueueBuildRubricJobAsync(jobDescription.Id);
 
             return jobDescription;
         }

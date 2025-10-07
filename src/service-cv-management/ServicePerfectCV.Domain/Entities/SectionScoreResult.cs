@@ -7,12 +7,12 @@ namespace ServicePerfectCV.Domain.Entities
 {
     public class SectionScoreResult : IEntity<Guid>
     {
-        public Guid Id { get; set; }
-        public Guid CVId { get; set; }
-        public SectionType SectionType { get; set; }
-        public string JdHash { get; set; } = default!;
-        public string SectionContentHash { get; set; } = default!;
-        public SectionScore SectionScore { get; set; } = default!;
+        public required Guid Id { get; set; }
+        public required Guid CVId { get; set; }
+        public required SectionType SectionType { get; set; }
+        public required string JdHash { get; set; }
+        public required string SectionContentHash { get; set; }
+        public required SectionScore SectionScore { get; set; }
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset? UpdatedAt { get; set; }
         public DateTimeOffset? DeletedAt { get; set; }

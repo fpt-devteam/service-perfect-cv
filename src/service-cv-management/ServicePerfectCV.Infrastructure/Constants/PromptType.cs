@@ -4,6 +4,7 @@
     {
         SectionRubricBuilding,
         SectionScoring,
-        OverallSummary
+        OverallSummary,
+        CvSectionExtraction
     }
 }

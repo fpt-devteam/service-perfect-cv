@@ -10,7 +10,7 @@ public static class AzureAIFoundryInstaller
 {
     public static IServiceCollection AddAzureAIFoundry(this IServiceCollection services, IConfiguration config)
     {
-        services.Configure<AzureAIFoundrySettings>(config.GetSection("AzureAIFoundry"));
+        services.Configure<AzureAIFoundrySettings>(config.GetSection("AzureAIFoundrySettings"));
 
         services.AddSingleton<DocumentIntelligenceClient>(sp =>
         {

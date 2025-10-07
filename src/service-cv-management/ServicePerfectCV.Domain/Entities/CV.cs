@@ -27,6 +27,9 @@ namespace ServicePerfectCV.Domain.Entities
         // Extracted text from PDF using OCR
         public string? ExtractedText { get; set; }
 
+        // Indicates whether CV content has been structured by LLM
+        public bool IsStructuredDone { get; set; } = false;
+
         // Navigation properties
         public User User { get; set; } = default!;
         public JobDescription JobDescription { get; set; } = default!;

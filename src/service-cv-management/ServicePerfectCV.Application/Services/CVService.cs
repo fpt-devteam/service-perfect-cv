@@ -17,6 +17,10 @@ using ServicePerfectCV.Application.DTOs.Project.Requests;
 using ServicePerfectCV.Application.DTOs.Certification.Requests;
 using ServicePerfectCV.Application.Interfaces.AI;
 using ServicePerfectCV.Application.Interfaces.Repositories;
+using ServicePerfectCV.Application.Services.Jobs;
+using ServicePerfectCV.Application.DTOs.CvStructuring;
+using ServicePerfectCV.Domain.Enums;
+using ServicePerfectCV.Application.Interfaces;
 
 namespace ServicePerfectCV.Application.Services
 {
@@ -32,6 +36,8 @@ namespace ServicePerfectCV.Application.Services
         ISummaryRepository summaryRepository,
         JobDescriptionService jobDescriptionService,
         IOCRService ocrService,
+        JobService jobService,
+        IJsonHelper jsonHelper,
         IMapper mapper
     )
     {
@@ -46,16 +52,34 @@ namespace ServicePerfectCV.Application.Services
                 UpdatedAt = DateTime.UtcNow
             };
 
-            // Handle PDF file upload if provided
             if (request.PdfFile != null)
             {
                 await HandlePdfFileUploadAsync(newCV, request.PdfFile);
             }
             if (newCV.PdfFile != null)
+            {
                 newCV.ExtractedText = await ocrService.ExtractTextFromPdfAsync(newCV.PdfFile);
+            }
 
             await cvRepository.CreateAsync(newCV);
             await cvRepository.SaveChangesAsync();
+
+            // Enqueue CV structuring job if PDF was uploaded and text extracted
+            if (!string.IsNullOrWhiteSpace(newCV.ExtractedText))
+            {
+                var structureInput = new StructureCvContentInputDto
+                {
+                    CvId = newCV.Id,
+                    UserId = userId,
+                    RawText = newCV.ExtractedText
+                };
+
+                await jobService.CreateAsync(
+                    JobType.StructureCvContent,
+                    jsonHelper.SerializeToDocument(structureInput),
+                    priority: 10,
+                    cancellationToken: default);
+            }
 
             JobDescription createdJobDescription = await jobDescriptionService.CreateAsync(
                 jobDescription: new JobDescription
@@ -105,6 +129,18 @@ namespace ServicePerfectCV.Application.Services
         {
             var cv = await cvRepository.GetByCVIdAndUserIdAsync(cvId, userId) ??
                 throw new DomainException(CVErrors.CVNotFound);
+
+            // If CV structure is not done, return minimal response
+            if (!cv.IsStructuredDone)
+            {
+                return new CVResponse
+                {
+                    CVId = cv.Id,
+                    Title = cv.Title,
+                    IsStructuredDone = false,
+                    LastEditedAt = cv.UpdatedAt ?? cv.CreatedAt
+                };
+            }
 
             var jobDescription = await jobDescriptionRepository.GetByCVIdAsync(cvId) ??
                 throw new DomainException(CVErrors.JobDescriptionNotFound);

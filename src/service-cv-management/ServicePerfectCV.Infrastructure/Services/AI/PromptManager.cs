@@ -11,6 +11,7 @@ namespace ServicePerfectCV.Infrastructure.Services.AI
                 PromptType.SectionRubricBuilding => GetSectionRubricBuildingPrompt(),
                 PromptType.SectionScoring => GetSectionScoringPrompt(),
                 PromptType.OverallSummary => GetOverallSummaryPrompt(),
+                PromptType.CvSectionExtraction => GetCvSectionExtractionPrompt(),
                 _ => throw new ArgumentException($"Unknown prompt type: {promptType}")
             };
         }
@@ -141,10 +142,13 @@ namespace ServicePerfectCV.Infrastructure.Services.AI
             - START YOUR RESPONSE WITH { AND END WITH } - NOTHING ELSE
             - DO NOT ADD EXPLANATIONS, COMMENTS, OR ANY OTHER TEXT
             - MUST USE "weight0To1" AS PROPERTY NAME, NOT "weight"
+            - DO NOT RETURN THE JSON SCHEMA ITSELF - YOU MUST RETURN THE ACTUAL RUBRIC DATA
+            - YOUR RESPONSE MUST NOT CONTAIN "$schema", "$defs", or schema definition properties
+            - YOU MUST CREATE AND RETURN THE ACTUAL EVALUATION RUBRIC, NOT THE SCHEMA
 
             FAILURE TO FOLLOW THESE INSTRUCTIONS WILL CAUSE SYSTEM ERRORS.
 
-            Return only valid JSON with the exact structure required. No code blocks, no markdown, no explanations.
+            Return only valid JSON with the actual rubric data (not the schema). No code blocks, no markdown, no explanations.
             """;
         }
 
@@ -197,12 +201,105 @@ namespace ServicePerfectCV.Infrastructure.Services.AI
         {
             return """
             You are an overall readiness summarizer. Given section feedback map and JD, produce a short summary note (2 sentences max) emphasizing main strengths and one key improvement. Return plain text only.
-            
+
             JD:
             {{ $jd }}
-            
+
             Section Feedback JSON:
             {{ $sections }}
+            """;
+        }
+
+        private static string GetCvSectionExtractionPrompt()
+        {
+            return """
+            You are an expert CV parser. Extract and structure all information from the provided CV raw text into the specified JSON format.
+
+            CV RAW TEXT:
+            {{ $rawText }}
+
+            EXTRACTION INSTRUCTIONS:
+            1. Carefully read through the entire CV text
+            2. Extract all information for each section based on the schema below
+            3. Maintain accuracy - only extract information that is explicitly stated
+            4. Parse dates in ISO format (YYYY-MM-DD) when possible
+            5. If a section is not present in the CV, return null or empty array for that section
+            6. For skills, categorize them logically (e.g., "Programming Languages", "Frameworks", "Tools")
+
+            CRITICAL JSON STRUCTURE REQUIREMENTS:
+            You MUST return a JSON object with exactly this structure:
+            {
+              "contact": {
+                "phoneNumber": "string or null",
+                "email": "string or null",
+                "linkedInUrl": "string or null",
+                "gitHubUrl": "string or null",
+                "personalWebsiteUrl": "string or null",
+                "country": "string or null",
+                "city": "string or null"
+              },
+              "summary": {
+                "content": "string or null"
+              },
+              "education": [
+                {
+                  "organization": "string",
+                  "degree": "string",
+                  "fieldOfStudy": "string or null",
+                  "startDate": "YYYY-MM-DD or null",
+                  "endDate": "YYYY-MM-DD or null",
+                  "description": "string or null",
+                  "gpa": "string or null"
+                }
+              ],
+              "experience": [
+                {
+                  "jobTitle": "string",
+                  "employmentType": "Full-time|Part-time|Contract|Internship or null",
+                  "organization": "string",
+                  "location": "string or null",
+                  "startDate": "YYYY-MM-DD or null",
+                  "endDate": "YYYY-MM-DD or null",
+                  "description": "string or null"
+                }
+              ],
+              "skills": [
+                {
+                  "category": "string (e.g., Programming Languages, Frameworks)",
+                  "content": "string (comma-separated skills)"
+                }
+              ],
+              "projects": [
+                {
+                  "title": "string",
+                  "description": "string or null",
+                  "link": "string or null",
+                  "startDate": "YYYY-MM-DD or null",
+                  "endDate": "YYYY-MM-DD or null"
+                }
+              ],
+              "certifications": [
+                {
+                  "name": "string",
+                  "organization": "string or null",
+                  "issuedDate": "YYYY-MM-DD or null",
+                  "description": "string or null"
+                }
+              ]
+            }
+
+            CRITICAL RESPONSE FORMAT REQUIREMENTS:
+            - RETURN ONLY RAW JSON TEXT - NO MARKDOWN FORMATTING WHATSOEVER
+            - DO NOT USE ```json OR ``` CODE BLOCKS UNDER ANY CIRCUMSTANCES
+            - DO NOT INCLUDE ANY TEXT BEFORE OR AFTER THE JSON
+            - START YOUR RESPONSE WITH { AND END WITH } - NOTHING ELSE
+            - DO NOT ADD EXPLANATIONS, COMMENTS, OR ANY OTHER TEXT
+            - ENSURE ALL DATES ARE IN ISO FORMAT (YYYY-MM-DD)
+            - USE null FOR MISSING VALUES, NOT EMPTY STRINGS (except for arrays which should be [])
+
+            FAILURE TO FOLLOW THESE INSTRUCTIONS WILL CAUSE SYSTEM ERRORS.
+
+            Return only valid JSON with the exact structure required. No code blocks, no markdown, no explanations.
             """;
         }
     }

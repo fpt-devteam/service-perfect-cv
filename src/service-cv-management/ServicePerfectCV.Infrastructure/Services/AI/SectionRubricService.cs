@@ -66,6 +66,16 @@ namespace ServicePerfectCV.Infrastructure.Services.AI
 
                 rubricResultJson = CleanJsonResponse(rubricResultJson);
 
+                var originalLength = rubricResultJson?.Length ?? 0;
+                rubricResultJson = RemoveSchemaIfPresent(rubricResultJson);
+                var cleanedLength = rubricResultJson?.Length ?? 0;
+
+                if (originalLength != cleanedLength)
+                {
+                    _logger.LogWarning("Schema detected and removed from LLM response. Original length: {Original}, Cleaned length: {Cleaned}",
+                        originalLength, cleanedLength);
+                }
+
                 return _jsonHelper.Deserialize<SectionRubricDictionary>(rubricResultJson ?? string.Empty) ?? new SectionRubricDictionary();
             }
             catch (OperationCanceledException ex)
@@ -144,6 +154,64 @@ namespace ServicePerfectCV.Infrastructure.Services.AI
             }
             }
             """;
+        }
+
+        private static string RemoveSchemaIfPresent(string? jsonResponse)
+        {
+            if (string.IsNullOrWhiteSpace(jsonResponse))
+                return string.Empty;
+
+            try
+            {
+                // Parse as JsonDocument to manipulate
+                using var doc = JsonDocument.Parse(jsonResponse);
+                var root = doc.RootElement;
+
+                // Check if it contains schema properties that shouldn't be in rubric data
+                bool hasSchemaProperties = root.TryGetProperty("$schema", out _) ||
+                                          root.TryGetProperty("$defs", out _);
+
+                if (!hasSchemaProperties)
+                {
+                    // No schema detected, return as is
+                    return jsonResponse;
+                }
+
+                // Schema detected - need to extract only the valid rubric data
+                // The actual rubric data should be in properties like Contact, Summary, Skills, etc.
+                var validSections = new[] { "Contact", "Summary", "Skills", "Experience", "Projects", "Education", "Certifications" };
+                var cleanedData = new Dictionary<string, object>();
+
+                foreach (var section in validSections)
+                {
+                    if (root.TryGetProperty(section, out var sectionElement))
+                    {
+                        // Check if this property contains actual rubric data (not schema definitions)
+                        // Schema properties typically have "$ref" or type definitions
+                        var sectionJson = sectionElement.GetRawText();
+                        if (!sectionJson.Contains("\"$ref\"", StringComparison.OrdinalIgnoreCase) &&
+                            !sectionJson.Contains("\"type\": \"object\"", StringComparison.OrdinalIgnoreCase))
+                        {
+                            cleanedData[section] = JsonSerializer.Deserialize<object>(sectionJson) ?? new object();
+                        }
+                    }
+                }
+
+                // If we extracted some valid data, serialize it back
+                if (cleanedData.Count > 0)
+                {
+                    var cleaned = JsonSerializer.Serialize(cleanedData);
+                    return cleaned;
+                }
+
+                // If no valid data found, return original (will likely fail deserialization but with proper error)
+                return jsonResponse;
+            }
+            catch (JsonException)
+            {
+                // If parsing fails, return original response
+                return jsonResponse;
+            }
         }
 
         private static string CleanJsonResponse(string? jsonResponse)

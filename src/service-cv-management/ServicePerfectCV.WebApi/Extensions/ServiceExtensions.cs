@@ -102,11 +102,14 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IJobRepository, JobRepository>();
             services.AddScoped<IJobHandler, ScoreCvSectionHandler>();
             services.AddScoped<IJobHandler, BuildCvSectionRubricHandler>();
+            services.AddScoped<IJobHandler, StructureCvContentHandler>();
             services.AddScoped<JobRouter>();
             services.AddScoped<JobService>();
             services.AddHostedService<JobWorker>();
 
             services.AddScoped<PromptSanitizeHelper>();
+            services.AddScoped<ISectionRubricService, SectionRubricService>();
+            services.AddScoped<ISectionScoreService, SectionScoreService>();
             services.AddScoped<SectionRubricService>();
             services.AddScoped<SectionScoreService>();
             services.AddScoped<JobDescriptionService>();
@@ -114,6 +117,7 @@ namespace ServicePerfectCV.WebApi.Extensions
             services.AddScoped<IObjectHasher, SHA256ObjectHasher>();
 
             services.AddScoped<IOCRService, OCRService>();
+            services.AddScoped<ICvStructuringService, CvStructuringService>();
 
         }
     }

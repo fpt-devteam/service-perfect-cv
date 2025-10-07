@@ -6,6 +6,7 @@ namespace ServicePerfectCV.Domain.Enums
     {
         ScoreCV,
         BuildCvSectionRubric,
+        StructureCvContent,
         // Add more job types here as needed
         // GenerateResume,
         // OptimizeCV,
