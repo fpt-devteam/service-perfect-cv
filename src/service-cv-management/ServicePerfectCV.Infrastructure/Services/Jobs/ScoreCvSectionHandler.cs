@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ServicePerfectCV.Application.DTOs.Certification.Requests;
 using ServicePerfectCV.Application.DTOs.Certification.Responses;
@@ -26,48 +27,18 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
 {
     public sealed class ScoreCvSectionHandler : IJobHandler
     {
-        private readonly ISectionScoreService _sectionScoreService;
-        private readonly IJobDescriptionRepository _jobDescriptionRepository;
-        private readonly IContactRepository _contactRepository;
-        private readonly ISummaryRepository _summaryRepository;
-        private readonly IEducationRepository _educationRepository;
-        private readonly IExperienceRepository _experienceRepository;
-        private readonly ISkillRepository _skillRepository;
-        private readonly IProjectRepository _projectRepository;
-        private readonly ICertificationRepository _certificationRepository;
-        private readonly ISectionScoreResultRepository _sectionScoreResultRepository;
-        private readonly IObjectHasher _objectHasher;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IJsonHelper _jsonHelper;
         private readonly ILogger<ScoreCvSectionHandler> _logger;
 
         public JobType JobType => JobType.ScoreCV;
 
         public ScoreCvSectionHandler(
-            SectionScoreService sectionScoreService,
-            IJobDescriptionRepository jobDescriptionRepository,
-            IContactRepository contactRepository,
-            ISummaryRepository summaryRepository,
-            IEducationRepository educationRepository,
-            IExperienceRepository experienceRepository,
-            ISkillRepository skillRepository,
-            IProjectRepository projectRepository,
-            ICertificationRepository certificationRepository,
-            ISectionScoreResultRepository sectionScoreResultRepository,
-            IObjectHasher objectHasher,
+            IServiceScopeFactory serviceScopeFactory,
             IJsonHelper jsonHelper,
             ILogger<ScoreCvSectionHandler> logger)
         {
-            _sectionScoreService = sectionScoreService;
-            _jobDescriptionRepository = jobDescriptionRepository;
-            _contactRepository = contactRepository;
-            _summaryRepository = summaryRepository;
-            _educationRepository = educationRepository;
-            _experienceRepository = experienceRepository;
-            _skillRepository = skillRepository;
-            _projectRepository = projectRepository;
-            _certificationRepository = certificationRepository;
-            _sectionScoreResultRepository = sectionScoreResultRepository;
-            _objectHasher = objectHasher;
+            _serviceScopeFactory = serviceScopeFactory;
             _jsonHelper = jsonHelper;
             _logger = logger;
         }
@@ -86,83 +57,83 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
                         _jsonHelper.SerializeToDocument(allScoreResults));
                 }
 
-                // Step 1: Get JobDescription by CvId
-                var jobDescription = await _jobDescriptionRepository.GetByCVIdAsync(scoreSectionInputDto.CvId);
-                if (jobDescription?.SectionRubrics == null)
+                JobDescription? jobDescription;
+                Dictionary<SectionType, SectionScoreResult> existingResultsDict;
+                string jdHash;
+
+                // Step 1 & 2: Load job description and existing results using main scope
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    return JobHandlerResult.Failure("score_cv.no_rubric", "Please create a job description with meaningful rubrics before scoring.",
-                        _jsonHelper.SerializeToDocument(allScoreResults));
+                    var jobDescriptionRepository = scope.ServiceProvider.GetRequiredService<IJobDescriptionRepository>();
+                    var sectionScoreResultRepository = scope.ServiceProvider.GetRequiredService<ISectionScoreResultRepository>();
+                    var objectHasher = scope.ServiceProvider.GetRequiredService<IObjectHasher>();
+
+                    jobDescription = await jobDescriptionRepository.GetByCVIdAsync(scoreSectionInputDto.CvId);
+                    if (jobDescription?.SectionRubrics == null)
+                    {
+                        return JobHandlerResult.Failure("score_cv.no_rubric", "Please create a job description with meaningful rubrics before scoring.",
+                            _jsonHelper.SerializeToDocument(allScoreResults));
+                    }
+
+                    List<SectionScoreResult> existingResults = await sectionScoreResultRepository.GetByCVIdAsync(scoreSectionInputDto.CvId);
+                    existingResultsDict = existingResults.ToDictionary(r => r.SectionType, r => r);
+                    jdHash = objectHasher.Hash(jobDescription);
                 }
 
-                // Step 2: Load existing CvSectionScoreResults
-                List<SectionScoreResult> existingResults = await _sectionScoreResultRepository.GetByCVIdAsync(scoreSectionInputDto.CvId);
-                Dictionary<SectionType, SectionScoreResult> existingResultsDict = existingResults.ToDictionary(r => r.SectionType, r => r);
+                // Step 3: Load all section content concurrently (each with its own scope)
+                var sectionTypes = Enum.GetValues<SectionType>()
+                    .Where(st => jobDescription.SectionRubrics.ContainsKey(st))
+                    .ToList();
 
-                // Step 3: Process each section
-                foreach (var sectionType in Enum.GetValues<SectionType>())
+                _logger.LogInformation("Loading {Count} sections concurrently for CV {CvId}", sectionTypes.Count, scoreSectionInputDto.CvId);
+
+                var sectionContentTasks = sectionTypes
+                    .Select(async sectionType =>
+                    {
+                        using var scope = _serviceScopeFactory.CreateScope();
+                        var content = await GetSectionContentAsync(sectionType, scoreSectionInputDto.CvId, scoreSectionInputDto.UserId, scope.ServiceProvider);
+                        return new
+                        {
+                            SectionType = sectionType,
+                            Content = content
+                        };
+                    })
+                    .ToList();
+
+                var sectionContents = await Task.WhenAll(sectionContentTasks);
+
+                // Step 4: Score all sections concurrently (each with its own scope)
+                var scoringTasks = sectionContents
+                    .Where(sc => sc.Content != null)
+                    .Select(async sc => await ScoreSectionAsync(
+                        sc.SectionType,
+                        sc.Content!,
+                        jobDescription.SectionRubrics[sc.SectionType],
+                        jdHash,
+                        scoreSectionInputDto.CvId,
+                        existingResultsDict,
+                        cancellationToken))
+                    .ToList();
+
+                _logger.LogInformation("Scoring {Count} sections concurrently for CV {CvId}", scoringTasks.Count, scoreSectionInputDto.CvId);
+
+                var scoringResults = await Task.WhenAll(scoringTasks);
+
+                // Step 5: Collect all results
+                foreach (var result in scoringResults)
                 {
-                    if (!jobDescription.SectionRubrics.TryGetValue(sectionType, out var sectionRubric))
-                        continue;
-
-                    try
+                    if (result.Success)
                     {
-                        object? sectionContent = await GetSectionContentAsync(sectionType, scoreSectionInputDto.CvId, scoreSectionInputDto.UserId);
-                        if (sectionContent == null)
-                            continue;
-
-                        string jdHash = _objectHasher.Hash(jobDescription);
-                        string sectionContentHash = _objectHasher.Hash(sectionContent);
-
-                        bool needsUpdate = true;
-                        if (existingResultsDict.TryGetValue(sectionType, out SectionScoreResult? existingResult))
-                        {
-                            needsUpdate = existingResult.JdHash != jdHash ||
-                                        existingResult.SectionContentHash != sectionContentHash;
-                        }
-
-                        SectionScore scoreResult = existingResult?.SectionScore ?? new();
-
-                        if (needsUpdate)
-                        {
-                            var sectionContentString = _jsonHelper.Serialize(sectionContent);
-                            var sectionRubricString = _jsonHelper.Serialize(sectionRubric);
-
-                            scoreResult = await _sectionScoreService.ScoreSectionAsync(
-                                sectionRubricString, sectionContentString, sectionType.ToString(), cancellationToken);
-
-                            scoreResult.Weight0To1 = sectionRubric.Weight0To1;
-
-                            var sectionScoreResultEntity = new SectionScoreResult
-                            {
-                                Id = existingResult?.Id ?? Guid.NewGuid(),
-                                CVId = scoreSectionInputDto.CvId,
-                                SectionType = sectionType,
-                                JdHash = jdHash,
-                                SectionContentHash = sectionContentHash,
-                                SectionScore = scoreResult,
-                                CreatedAt = existingResult?.CreatedAt ?? DateTimeOffset.UtcNow,
-                                UpdatedAt = DateTimeOffset.UtcNow
-                            };
-
-                            if (existingResult != null)
-                            {
-                                _sectionScoreResultRepository.Update(sectionScoreResultEntity);
-                            }
-                            else
-                            {
-                                await _sectionScoreResultRepository.CreateAsync(sectionScoreResultEntity);
-                            }
-
-                            await _sectionScoreResultRepository.SaveChangesAsync();
-                        }
-
-                        allScoreResults[sectionType] = scoreResult;
+                        allScoreResults[result.SectionType] = result.Score!;
                     }
-                    catch (Exception)
+                    else
                     {
-                        allScoreResults[sectionType] = new SectionScore();
+                        _logger.LogWarning("Failed to score section {SectionType}: {Error}", result.SectionType, result.Error);
+                        allScoreResults[result.SectionType] = new SectionScore();
                     }
                 }
+
+                _logger.LogInformation("Completed scoring {Count} sections for CV {CvId}", allScoreResults.Count, scoreSectionInputDto.CvId);
 
                 return JobHandlerResult.Success(_jsonHelper.SerializeToDocument(allScoreResults));
             }
@@ -177,14 +148,123 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error during CV scoring for job {JobId}", job.Id);
                 return JobHandlerResult.Failure("score_cv.error", ex.Message,
                     _jsonHelper.SerializeToDocument(allScoreResults));
             }
         }
 
-        private async Task<ContactResponse?> GetContactSectionAsync(Guid cvId, Guid userId)
+        private async Task<SectionScoringResult> ScoreSectionAsync(
+            SectionType sectionType,
+            object sectionContent,
+            SectionRubric sectionRubric,
+            string jdHash,
+            Guid cvId,
+            Dictionary<SectionType, SectionScoreResult> existingResultsDict,
+            CancellationToken cancellationToken)
         {
-            var contact = await _contactRepository.GetByCVIdAsync(cvId);
+            try
+            {
+                // Create a new scope for this section's scoring operation
+                using var scope = _serviceScopeFactory.CreateScope();
+                var sectionScoreService = scope.ServiceProvider.GetRequiredService<ISectionScoreService>();
+                var sectionScoreResultRepository = scope.ServiceProvider.GetRequiredService<ISectionScoreResultRepository>();
+                var objectHasher = scope.ServiceProvider.GetRequiredService<IObjectHasher>();
+
+                string sectionContentHash = objectHasher.Hash(sectionContent);
+
+                bool needsUpdate = true;
+                SectionScoreResult? existingResult = null;
+
+                if (existingResultsDict.TryGetValue(sectionType, out existingResult))
+                {
+                    needsUpdate = existingResult.JdHash != jdHash ||
+                                existingResult.SectionContentHash != sectionContentHash;
+                }
+
+                SectionScore scoreResult = existingResult?.SectionScore ?? new();
+
+                if (needsUpdate)
+                {
+                    var sectionContentString = _jsonHelper.Serialize(sectionContent);
+                    var sectionRubricString = _jsonHelper.Serialize(sectionRubric);
+
+                    scoreResult = await sectionScoreService.ScoreSectionAsync(
+                        sectionRubricString, sectionContentString, sectionType.ToString(), cancellationToken);
+
+                    scoreResult.Weight0To1 = sectionRubric.Weight0To1;
+
+                    var sectionScoreResultEntity = new SectionScoreResult
+                    {
+                        Id = existingResult?.Id ?? Guid.NewGuid(),
+                        CVId = cvId,
+                        SectionType = sectionType,
+                        JdHash = jdHash,
+                        SectionContentHash = sectionContentHash,
+                        SectionScore = scoreResult,
+                        CreatedAt = existingResult?.CreatedAt ?? DateTimeOffset.UtcNow,
+                        UpdatedAt = DateTimeOffset.UtcNow
+                    };
+
+                    if (existingResult != null)
+                    {
+                        sectionScoreResultRepository.Update(sectionScoreResultEntity);
+                    }
+                    else
+                    {
+                        await sectionScoreResultRepository.CreateAsync(sectionScoreResultEntity);
+                    }
+
+                    // Save changes for this section
+                    await sectionScoreResultRepository.SaveChangesAsync();
+                }
+
+                return new SectionScoringResult
+                {
+                    Success = true,
+                    SectionType = sectionType,
+                    Score = scoreResult
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error scoring section {SectionType}", sectionType);
+                return new SectionScoringResult
+                {
+                    Success = false,
+                    SectionType = sectionType,
+                    Error = ex.Message
+                };
+            }
+        }
+
+        private class SectionScoringResult
+        {
+            public bool Success { get; set; }
+            public SectionType SectionType { get; set; }
+            public SectionScore? Score { get; set; }
+            public string? Error { get; set; }
+        }
+
+        private async Task<object?> GetSectionContentAsync(SectionType sectionType, Guid cvId, Guid userId, IServiceProvider serviceProvider)
+        {
+            return sectionType switch
+            {
+                SectionType.Contact => await GetContactSectionAsync(cvId, userId, serviceProvider),
+                SectionType.Summary => await GetSummarySectionAsync(cvId, userId, serviceProvider),
+                SectionType.Education => await GetEducationSectionAsync(cvId, userId, serviceProvider),
+                SectionType.Experience => await GetExperienceSectionAsync(cvId, userId, serviceProvider),
+                SectionType.Skills => await GetSkillsSectionAsync(cvId, userId, serviceProvider),
+                SectionType.Projects => await GetProjectsSectionAsync(cvId, userId, serviceProvider),
+                SectionType.Certifications => await GetCertificationsSectionAsync(cvId, userId, serviceProvider),
+                _ => null
+            };
+        }
+
+        private async Task<ContactResponse?> GetContactSectionAsync(Guid cvId, Guid userId, IServiceProvider serviceProvider)
+        {
+            var contactRepository = serviceProvider.GetRequiredService<IContactRepository>();
+            var contact = await contactRepository.GetByCVIdAsync(cvId);
             if (contact == null) return null;
 
             return new ContactResponse
@@ -201,9 +281,10 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
             };
         }
 
-        private async Task<SummaryResponse?> GetSummarySectionAsync(Guid cvId, Guid userId)
+        private async Task<SummaryResponse?> GetSummarySectionAsync(Guid cvId, Guid userId, IServiceProvider serviceProvider)
         {
-            var summary = await _summaryRepository.GetByCVIdAsync(cvId);
+            var summaryRepository = serviceProvider.GetRequiredService<ISummaryRepository>();
+            var summary = await summaryRepository.GetByCVIdAsync(cvId);
             if (summary == null) return null;
 
             return new SummaryResponse
@@ -214,9 +295,10 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
             };
         }
 
-        private async Task<List<EducationResponse>> GetEducationSectionAsync(Guid cvId, Guid userId)
+        private async Task<List<EducationResponse>> GetEducationSectionAsync(Guid cvId, Guid userId, IServiceProvider serviceProvider)
         {
-            var educations = await _educationRepository.GetByCVIdAndUserIdAsync(cvId, userId, new EducationQuery());
+            var educationRepository = serviceProvider.GetRequiredService<IEducationRepository>();
+            var educations = await educationRepository.GetByCVIdAndUserIdAsync(cvId, userId, new EducationQuery());
             return educations.Select(e => new EducationResponse
             {
                 Id = e.Id,
@@ -230,9 +312,10 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
             }).ToList();
         }
 
-        private async Task<List<ExperienceResponse>> GetExperienceSectionAsync(Guid cvId, Guid userId)
+        private async Task<List<ExperienceResponse>> GetExperienceSectionAsync(Guid cvId, Guid userId, IServiceProvider serviceProvider)
         {
-            var experiences = await _experienceRepository.GetByCVIdAndUserIdAsync(cvId, userId);
+            var experienceRepository = serviceProvider.GetRequiredService<IExperienceRepository>();
+            var experiences = await experienceRepository.GetByCVIdAndUserIdAsync(cvId, userId);
             return experiences.Select(e => new ExperienceResponse
             {
                 Id = e.Id,
@@ -250,9 +333,10 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
             }).ToList();
         }
 
-        private async Task<List<SkillResponse>> GetSkillsSectionAsync(Guid cvId, Guid userId)
+        private async Task<List<SkillResponse>> GetSkillsSectionAsync(Guid cvId, Guid userId, IServiceProvider serviceProvider)
         {
-            var skills = await _skillRepository.GetByCVIdAndUserIdAsync(cvId, userId, new SkillQuery());
+            var skillRepository = serviceProvider.GetRequiredService<ISkillRepository>();
+            var skills = await skillRepository.GetByCVIdAndUserIdAsync(cvId, userId, new SkillQuery());
             return skills.Select(s => new SkillResponse
             {
                 Id = s.Id,
@@ -263,9 +347,10 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
             }).ToList();
         }
 
-        private async Task<List<ProjectResponse>> GetProjectsSectionAsync(Guid cvId, Guid userId)
+        private async Task<List<ProjectResponse>> GetProjectsSectionAsync(Guid cvId, Guid userId, IServiceProvider serviceProvider)
         {
-            var projects = await _projectRepository.GetByCVIdAndUserIdAsync(cvId, userId, new ProjectQuery());
+            var projectRepository = serviceProvider.GetRequiredService<IProjectRepository>();
+            var projects = await projectRepository.GetByCVIdAndUserIdAsync(cvId, userId, new ProjectQuery());
             return projects.Select(p => new ProjectResponse
             {
                 Id = p.Id,
@@ -280,9 +365,10 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
             }).ToList();
         }
 
-        private async Task<List<CertificationResponse>> GetCertificationsSectionAsync(Guid cvId, Guid userId)
+        private async Task<List<CertificationResponse>> GetCertificationsSectionAsync(Guid cvId, Guid userId, IServiceProvider serviceProvider)
         {
-            var certifications = await _certificationRepository.GetByCVIdAndUserIdAsync(cvId, userId, new CertificationQuery());
+            var certificationRepository = serviceProvider.GetRequiredService<ICertificationRepository>();
+            var certifications = await certificationRepository.GetByCVIdAndUserIdAsync(cvId, userId, new CertificationQuery());
             return certifications.Select(c => new CertificationResponse
             {
                 Id = c.Id,
@@ -292,21 +378,6 @@ namespace ServicePerfectCV.Infrastructure.Services.Jobs
                 IssuedDate = c.IssuedDate,
                 Description = c.Description
             }).ToList();
-        }
-
-        private async Task<object?> GetSectionContentAsync(SectionType sectionType, Guid cvId, Guid userId)
-        {
-            return sectionType switch
-            {
-                SectionType.Contact => await GetContactSectionAsync(cvId, userId),
-                SectionType.Summary => await GetSummarySectionAsync(cvId, userId),
-                SectionType.Education => await GetEducationSectionAsync(cvId, userId),
-                SectionType.Experience => await GetExperienceSectionAsync(cvId, userId),
-                SectionType.Skills => await GetSkillsSectionAsync(cvId, userId),
-                SectionType.Projects => await GetProjectsSectionAsync(cvId, userId),
-                SectionType.Certifications => await GetCertificationsSectionAsync(cvId, userId),
-                _ => null
-            };
         }
     }
 }

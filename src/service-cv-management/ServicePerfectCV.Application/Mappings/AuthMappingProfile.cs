@@ -1,6 +1,7 @@
 using AutoMapper;
 using ServicePerfectCV.Application.DTOs.Authentication.Requests;
 using ServicePerfectCV.Application.DTOs.Authentication.Responses;
+using ServicePerfectCV.Application.DTOs.User.Responses;
 using ServicePerfectCV.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,12 @@ namespace ServicePerfectCV.Application.Mappings
             CreateMap<User, RegisterResponse>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
             CreateMap<LoginRequest, User>();
+
+            // User to UserResponse mapping
+            CreateMap<User, UserResponse>()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
+                .ForMember(dest => dest.TotalCredit, opt => opt.MapFrom(src => src.TotalCredit))
+                .ForMember(dest => dest.UsedCredit, opt => opt.MapFrom(src => src.UsedCredit));
         }
     }
 }

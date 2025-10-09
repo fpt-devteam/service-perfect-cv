@@ -49,7 +49,6 @@ namespace ServicePerfectCV.Seeder
             await SeedSkillsAsync(ct);
             await SeedSummariesAsync(ct);
             await SeedPackagesAsync(ct);
-
             await UpdateCVContentAsync(ct);
         }
 
@@ -854,7 +853,7 @@ namespace ServicePerfectCV.Seeder
                 {
                     Id = Guid.NewGuid(),
                     Name = "Basic",
-                    Price = 19000,
+                    Price = 2000,
                     NumCredits = 3,
                     IsActive = true,
                     CreatedAt = DateTimeOffset.UtcNow,

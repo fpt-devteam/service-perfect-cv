@@ -16,7 +16,7 @@ namespace ServicePerfectCV.Infrastructure.Repositories
         {
             return await _context.BillingHistories
                 .AsNoTracking()
-                .Where(b => b.UserId == userId && b.DeletedAt == null)
+                .Where(b => b.UserId == userId && b.DeletedAt == null && b.Status != Domain.Enums.PaymentStatus.Pending)
                 .ToListAsync();
         }
 

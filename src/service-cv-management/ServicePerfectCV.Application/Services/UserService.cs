@@ -43,7 +43,9 @@ namespace ServicePerfectCV.Application.Services
                 Role = user.Role.ToString(),
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                AvatarUrl = user.AvatarUrl
+                AvatarUrl = user.AvatarUrl,
+                TotalCredit = user.TotalCredit,
+                UsedCredit = user.UsedCredit
             };
         }
 

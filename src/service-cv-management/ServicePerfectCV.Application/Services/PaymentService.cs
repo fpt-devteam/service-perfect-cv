@@ -210,12 +210,20 @@ namespace ServicePerfectCV.Application.Services
 
         public async Task<CancelPaymentResponse> CancelPaymentAsync(int orderCode, CancelPaymentRequest request)
         {
-            PaymentLinkInformation cancelledPayment = await _payOS.cancelPaymentLink(orderCode, request.CancellationReason);
+            try
+            {
+
+                PaymentLinkInformation cancelledPayment = await _payOS.cancelPaymentLink(orderCode, request.CancellationReason);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error cancelling payment for order code: {OrderCode}", orderCode);
+            }
+            await HandlePaymentFailAsync(orderCode);
 
             return new CancelPaymentResponse
             {
-                OrderCode = (int)cancelledPayment.orderCode,
-                Status = ParsePaymentStatus(cancelledPayment.status),
+                OrderCode = orderCode,
                 CancellationReason = request.CancellationReason
             };
         }
