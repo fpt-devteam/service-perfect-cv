@@ -94,11 +94,22 @@ namespace ServicePerfectCV.Seeder
                 Role = UserRole.User
             };
 
+            User admin = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = "perfectcv.company@gmail.com",
+                PasswordHash = new PasswordHasher().HashPassword("Admin123!"),
+                AuthMethod = AuthenticationMethod.JWT,
+                Status = UserStatus.Active,
+                Role = UserRole.Admin
+            };
+
             dbContext.Users.Add(user);
+            dbContext.Users.Add(admin);
             await dbContext.SaveChangesAsync(ct);
             _userIds.Add(_thangUserId);
 
-            Console.WriteLine("Seeded thang User");
+            Console.WriteLine("Seeded thang User and admin User.");
         }
 
         private async Task SeedJobsTitleAsync(CancellationToken ct)
