@@ -91,7 +91,9 @@ namespace ServicePerfectCV.Seeder
                 PasswordHash = new PasswordHasher().HashPassword("Thang2704!"),
                 AuthMethod = AuthenticationMethod.JWT,
                 Status = UserStatus.Active,
-                Role = UserRole.User
+                Role = UserRole.User,
+                TotalCredit = 100,
+                UsedCredit = 0
             };
 
             User admin = new User
