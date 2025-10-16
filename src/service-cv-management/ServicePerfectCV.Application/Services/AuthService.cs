@@ -46,6 +46,8 @@ namespace ServicePerfectCV.Application.Services
             User newUser = mapper.Map<User>(registerRequest);
             newUser.PasswordHash = passwordHasher.HashPassword(registerRequest.Password);
             newUser.AuthMethod = Domain.Enums.AuthenticationMethod.JWT;
+            newUser.TotalCredit = 10; // Initial credit
+            newUser.UsedCredit = 0;
             await userRepository.CreateAsync(newUser);
             await userRepository.SaveChangesAsync();
             _ = Task.Run(async () =>
