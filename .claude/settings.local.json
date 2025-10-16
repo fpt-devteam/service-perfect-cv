@@ -20,7 +20,8 @@
       "Bash(dir \"C:\\Users\\NHATTHANG\\FptUniversity\\service-perfect-cv\\src\\service-cv-management\\ServicePerfectCV.WebApi\")",
       "Bash(docker logs:*)",
       "Bash(docker-compose:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(docker build:*)"
     ],
     "deny": [],
     "ask": []
