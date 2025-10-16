@@ -7,14 +7,14 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy project files
-COPY ["ServicePerfectCV.WebApi/ServicePerfectCV.WebApi.csproj", "ServicePerfectCV.WebApi/"]
-COPY ["ServicePerfectCV.Application/ServicePerfectCV.Application.csproj", "ServicePerfectCV.Application/"]
-COPY ["ServicePerfectCV.Domain/ServicePerfectCV.Domain.csproj", "ServicePerfectCV.Domain/"]
-COPY ["ServicePerfectCV.Infrastructure/ServicePerfectCV.Infrastructure.csproj", "ServicePerfectCV.Infrastructure/"]
+# Copy project files (assuming Railway root is service-cv-management)
+COPY ["./ServicePerfectCV.WebApi/ServicePerfectCV.WebApi.csproj", "./ServicePerfectCV.WebApi/"]
+COPY ["./ServicePerfectCV.Application/ServicePerfectCV.Application.csproj", "./ServicePerfectCV.Application/"]
+COPY ["./ServicePerfectCV.Domain/ServicePerfectCV.Domain.csproj", "./ServicePerfectCV.Domain/"]
+COPY ["./ServicePerfectCV.Infrastructure/ServicePerfectCV.Infrastructure.csproj", "./ServicePerfectCV.Infrastructure/"]
 
 # Restore dependencies
-RUN dotnet restore "ServicePerfectCV.WebApi/ServicePerfectCV.WebApi.csproj"
+RUN dotnet restore "./ServicePerfectCV.WebApi/ServicePerfectCV.WebApi.csproj"
 
 # Copy all source files
 COPY . .
