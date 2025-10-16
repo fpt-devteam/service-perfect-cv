@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using ServicePerfectCV.Infrastructure.Data;
 using ServicePerfectCV.Infrastructure.DependencyInjections;
 using ServicePerfectCV.WebApi.Extensions;
 using ServicePerfectCV.WebApi.Middleware;
@@ -28,6 +30,10 @@ namespace ServicePerfectCV.WebApi
             builder.Services.AddPayOS(builder.Configuration);
 
             WebApplication app = builder.Build();
+
+            // Run database migrations automatically on startup
+            await MigrateDatabaseAsync(app);
+
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseSwagger();
@@ -40,6 +46,31 @@ namespace ServicePerfectCV.WebApi
             app.MapControllers();
 
             await app.RunAsync();
+        }
+
+        private static async Task MigrateDatabaseAsync(WebApplication app)
+        {
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+
+            try
+            {
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                var logger = services.GetRequiredService<ILogger<Program>>();
+
+                logger.LogInformation("Starting database migration...");
+
+                // Ensure database is created and apply pending migrations
+                await context.Database.MigrateAsync();
+
+                logger.LogInformation("Database migration completed successfully.");
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occurred while migrating the database.");
+                throw;
+            }
         }
     }
 }
