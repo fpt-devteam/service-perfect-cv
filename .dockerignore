@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+README.md
+LICENSE
+
+# IDE
+.vs
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Build artifacts
+**/bin/
+**/obj/
+**/out/
+
+# Node modules
+**/node_modules/
+**/package-lock.json
+
+# Environment files
+.env
+.env.*
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Railway
+railway.toml
+
+# Other services (exclude if you only want backend)
+src/service-ai-analyzer/
+
+# Test files
+**/*Tests/
+**/*.Tests/
