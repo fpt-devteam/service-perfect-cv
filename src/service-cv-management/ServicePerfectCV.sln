@@ -12,6 +12,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicePerfectCV.WebApi", "ServicePerfectCV.WebApi\ServicePerfectCV.WebApi.csproj", "{3CBF79C3-D493-4B59-9454-ED0817489467}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CA13B030-A1CF-4812-BF72-360E8D8D8B28}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{DE2BEB24-BA83-4977-BB13-360218228307}"
 EndProject

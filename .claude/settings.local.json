@@ -16,7 +16,11 @@
       "Bash(docker-compose up:*)",
       "Bash(docker-compose logs:*)",
       "Bash(dotnet ef database update:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(dir \"C:\\Users\\NHATTHANG\\FptUniversity\\service-perfect-cv\\src\\service-cv-management\\ServicePerfectCV.WebApi\")",
+      "Bash(docker logs:*)",
+      "Bash(docker-compose:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []
