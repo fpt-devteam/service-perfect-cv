@@ -81,7 +81,6 @@ obj/
 *.sln.iml
 
 # Ignore publish output
-wwwroot/
 node_modules/
 
 
