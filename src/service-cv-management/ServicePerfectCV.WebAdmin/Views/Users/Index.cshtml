@@ -1,0 +1,203 @@
+@model List<ServicePerfectCV.WebAdmin.Models.Users.UserListViewModel>
+@{
+  ViewData["Title"] = "Users Management";
+  Layout = "~/Views/Shared/_AdminLayout.cshtml";
+  var currentSearch = ViewData["CurrentSearch"] as string;
+  var currentStatus = ViewData["CurrentStatus"] as ServicePerfectCV.Domain.Constants.UserStatus?;
+  var currentRole = ViewData["CurrentRole"] as ServicePerfectCV.Domain.Constants.UserRole?;
+  var currentPage = (int)ViewData["CurrentPage"]!;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>Users Management</h2>
+    <p class="text-muted">Total: @ViewBag.TotalCount users</p>
+  </div>
+  <div>
+    <a asp-action="Export" asp-route-search="@currentSearch" asp-route-status="@currentStatus"
+      asp-route-role="@currentRole" class="btn btn-success">
+      <i class="bi bi-download"></i> Export to CSV
+    </a>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="stat-card mb-4">
+  <form method="get" class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label">Search</label>
+      <input type="text" name="search" class="form-control" placeholder="Email, first name, or last name"
+        value="@currentSearch" />
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Status</label>
+      <select name="status" class="form-select">
+        <option value="">All Statuses</option>
+        <option value="0" selected="@(currentStatus == ServicePerfectCV.Domain.Constants.UserStatus.Active)">Active
+        </option>
+        <option value="1" selected="@(currentStatus == ServicePerfectCV.Domain.Constants.UserStatus.Inactive)">Inactive
+        </option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Role</label>
+      <select name="role" class="form-select">
+        <option value="">All Roles</option>
+        <option value="1" selected="@(currentRole == ServicePerfectCV.Domain.Constants.UserRole.Admin)">Admin</option>
+        <option value="2" selected="@(currentRole == ServicePerfectCV.Domain.Constants.UserRole.User)">User</option>
+      </select>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+  </form>
+</div>
+
+<!-- Bulk Actions Bar -->
+<div id="bulkActionsBar" class="alert alert-info d-none mb-3">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <strong><span id="selectedCount">0</span></strong> item(s) selected
+    </div>
+    <div>
+      <button type="button" class="btn btn-sm btn-danger" onclick="bulkDeleteUsers()">
+        <i class="bi bi-trash"></i> Delete Selected
+      </button>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="bulkSelection.clearSelection()">
+        Clear Selection
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Users Table -->
+<div class="stat-card">
+  @if (Model.Any())
+  {
+    <div class="table-responsive">
+      <table id="usersTable" class="table table-hover">
+        <thead>
+          <tr>
+            <th style="width: 40px;">
+              <input type="checkbox" class="form-check-input select-all-checkbox" />
+            </th>
+            <th>User</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Credits</th>
+            <th>CVs</th>
+            <th>Registered</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var user in Model)
+          {
+            <tr>
+              <td>
+                <input type="checkbox" class="form-check-input row-checkbox" value="@user.Id" />
+              </td>
+              <td>
+                <div class="fw-bold">@user.FullName</div>
+              </td>
+              <td>@user.Email</td>
+              <td>
+                <span
+                  class="badge bg-@(user.Role == ServicePerfectCV.Domain.Constants.UserRole.Admin ? "danger" : "secondary")">
+                  @user.Role
+                </span>
+              </td>
+              <td>
+                <span
+                  class="badge bg-@(user.Status == ServicePerfectCV.Domain.Constants.UserStatus.Active ? "success" : "warning")">
+                  @user.Status
+                </span>
+              </td>
+              <td>
+                <span class="badge bg-info">@user.RemainingCredit / @user.TotalCredit</span>
+              </td>
+              <td>@user.CVCount</td>
+              <td>
+                <small>@user.CreatedAt.ToString("MMM dd, yyyy")</small>
+              </td>
+              <td>
+                <div class="btn-group btn-group-sm">
+                  <a href="@Url.Action("Details", new { id = user.Id })" class="btn btn-outline-primary">View</a>
+                  <a href="@Url.Action("Edit", new { id = user.Id })" class="btn btn-outline-secondary">Edit</a>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (ViewBag.TotalPages > 1)
+    {
+      <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+          @for (int i = 1; i <= ViewBag.TotalPages; i++)
+          {
+            <li class="page-item @(i == currentPage ? "active" : "")">
+              <a class="page-link"
+                href="@Url.Action("Index", new { search = currentSearch, status = currentStatus, role = currentRole, page = i })">@i</a>
+            </li>
+          }
+        </ul>
+      </nav>
+    }
+  }
+  else
+  {
+    <div class="text-center py-5">
+      <p class="text-muted">No users found</p>
+    </div>
+  }
+</div>
+
+@section Scripts {
+  <script>
+    // Initialize bulk selection
+    document.addEventListener('DOMContentLoaded', function () {
+      bulkSelection.init('usersTable');
+    });
+
+    // Bulk delete users function
+    async function bulkDeleteUsers() {
+      if (!bulkSelection.performAction('delete',
+        `Are you sure you want to delete ${bulkSelection.selectedIds.size} selected user(s)? This action cannot be undone.`)) {
+        return;
+      }
+
+      const selectedIds = bulkSelection.getSelectedIds();
+
+      try {
+        window.perfectCV.showLoading();
+
+        const response = await fetch('@Url.Action("BulkDelete", "Users")', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+          },
+          body: JSON.stringify({ ids: selectedIds })
+        });
+
+        window.perfectCV.hideLoading();
+
+        if (response.ok) {
+          window.perfectCV.showToast('Users deleted successfully', 'success');
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          const error = await response.text();
+          window.perfectCV.showToast('Error deleting users: ' + error, 'danger');
+        }
+      } catch (error) {
+        window.perfectCV.hideLoading();
+        window.perfectCV.showToast('Error: ' + error.message, 'danger');
+      }
+    }
+  </script>
+}

@@ -1,0 +1,83 @@
+@model List<ServicePerfectCV.WebAdmin.Models.Organizations.OrganizationListViewModel>
+@{
+  ViewData["Title"] = "Organizations";
+  Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>Organizations</h2>
+    <p class="text-muted">Total: @ViewBag.TotalCount organizations</p>
+  </div>
+  <div>
+    <a href="@Url.Action("Create")" class="btn btn-primary">Add Organization</a>
+  </div>
+</div>
+
+<div class="stat-card mb-4">
+  <form method="get" class="row g-3">
+    <div class="col-md-10">
+      <input type="text" name="search" class="form-control" placeholder="Search by name, location, or website..."
+        value="@ViewData["CurrentSearch"]" />
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Search</button>
+    </div>
+  </form>
+</div>
+
+<div class="stat-card">
+  @if (Model.Any())
+  {
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Usage Count</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var org in Model)
+          {
+            <tr>
+              <td>
+                @if (!string.IsNullOrEmpty(org.LogoUrl))
+                {
+                  <img src="@org.LogoUrl" alt="@org.Name"
+                    style="width: 24px; height: 24px; object-fit: cover; border-radius: 4px; margin-right: 8px;" />
+                }
+                <strong>@org.Name</strong>
+              </td>
+              <td><span class="badge bg-secondary">@org.OrganizationTypeDisplay</span></td>
+              <td>@(string.IsNullOrEmpty(org.Description) ? "-" : (org.Description.Length > 50 ?
+                            org.Description.Substring(0, 50) + "..." : org.Description))</td>
+          <td><span class="badge bg-info">@org.UsageCount</span></td>
+          <td>@org.CreatedAt.ToString("MMM dd, yyyy")</td>
+          <td>
+            <div class="btn-group btn-group-sm">
+              <a href="@Url.Action("Edit", new { id = org.Id })" class="btn btn-outline-primary">Edit</a>
+              <form asp-action="Delete" asp-route-id="@org.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger"
+                  onclick="return confirm('Delete this organization?')">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+                }
+        </tbody>
+      </table>
+    </div>
+  }
+  else
+  {
+    <div class="text-center py-5">
+      <p class="text-muted">No organizations found</p>
+    </div>
+  }
+</div>

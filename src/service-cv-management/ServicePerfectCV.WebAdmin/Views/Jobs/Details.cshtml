@@ -1,0 +1,124 @@
+@model ServicePerfectCV.WebAdmin.Models.Jobs.JobDetailViewModel
+@{
+    ViewData["Title"] = "Job Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Job Details</h2>
+        <p class="text-muted">@Model.Type</p>
+    </div>
+    <div>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="stat-card">
+            <h5 class="mb-4">Job Information</h5>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>ID:</strong></div>
+                <div class="col-sm-8"><code>@Model.Id</code></div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Type:</strong></div>
+                <div class="col-sm-8">@Model.Type</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Status:</strong></div>
+                <div class="col-sm-8">
+                    <span class="badge bg-@(Model.Status == ServicePerfectCV.Domain.Enums.JobStatus.Succeeded ? "success" : 
+                                          Model.Status == ServicePerfectCV.Domain.Enums.JobStatus.Failed ? "danger" :
+                                          Model.Status == ServicePerfectCV.Domain.Enums.JobStatus.Running ? "info" : "warning")">
+                        @Model.Status
+                    </span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Priority:</strong></div>
+                <div class="col-sm-8">@Model.Priority</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Created:</strong></div>
+                <div class="col-sm-8">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm:ss")</div>
+            </div>
+            @if (Model.StartedAt.HasValue)
+            {
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Started:</strong></div>
+                    <div class="col-sm-8">@Model.StartedAt.Value.ToString("MMM dd, yyyy HH:mm:ss")</div>
+                </div>
+            }
+            @if (Model.CompletedAt.HasValue)
+            {
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Completed:</strong></div>
+                    <div class="col-sm-8">@Model.CompletedAt.Value.ToString("MMM dd, yyyy HH:mm:ss")</div>
+                </div>
+            }
+            @if (Model.Duration.HasValue)
+            {
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Duration:</strong></div>
+                    <div class="col-sm-8">@Model.Duration.Value.TotalSeconds.ToString("F2") seconds</div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.ErrorCode))
+            {
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Error Code:</strong></div>
+                    <div class="col-sm-8"><span class="text-danger">@Model.ErrorCode</span></div>
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Error Message:</strong></div>
+                    <div class="col-sm-8"><span class="text-danger">@Model.ErrorMessage</span></div>
+                </div>
+            }
+        </div>
+
+        <div class="stat-card mt-4">
+            <h5 class="mb-3">Input Data</h5>
+            <pre class="bg-light p-3 rounded"><code>@Model.InputJson</code></pre>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.OutputJson))
+        {
+            <div class="stat-card mt-4">
+                <h5 class="mb-3">Output Data</h5>
+                <pre class="bg-light p-3 rounded"><code>@Model.OutputJson</code></pre>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <div class="stat-card">
+            <h5 class="mb-4">Actions</h5>
+            <div class="d-grid gap-2">
+                @if (Model.Status == ServicePerfectCV.Domain.Enums.JobStatus.Queued || Model.Status == ServicePerfectCV.Domain.Enums.JobStatus.Running)
+                {
+                    <form asp-action="Cancel" asp-route-id="@Model.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-warning w-100" onclick="return confirm('Cancel this job?')">Cancel Job</button>
+                    </form>
+                }
+                @if (Model.Status == ServicePerfectCV.Domain.Enums.JobStatus.Failed)
+                {
+                    <form asp-action="RetryFailed" asp-route-id="@Model.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-info w-100">Retry Job</button>
+                    </form>
+                }
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Delete this job?')">Delete Job</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,143 @@
+@model List<ServicePerfectCV.WebAdmin.Models.Jobs.JobListViewModel>
+@{
+    ViewData["Title"] = "Jobs Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Jobs Management</h2>
+        <p class="text-muted">Total: @ViewBag.TotalCount jobs</p>
+    </div>
+    <div>
+        <form asp-action="ClearCompleted" method="post" class="d-inline">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Clear all completed jobs older than 7 days?')">
+                Clear Old Completed
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="stat-card text-center">
+            <h4>@ViewBag.QueuedCount</h4>
+            <small>Queued</small>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="stat-card text-center">
+            <h4>@ViewBag.RunningCount</h4>
+            <small>Running</small>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="stat-card text-center">
+            <h4>@ViewBag.SucceededCount</h4>
+            <small>Succeeded</small>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="stat-card text-center">
+            <h4>@ViewBag.FailedCount</h4>
+            <small>Failed</small>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="stat-card text-center">
+            <h4>@ViewBag.CanceledCount</h4>
+            <small>Canceled</small>
+        </div>
+    </div>
+</div>
+
+<div class="stat-card mb-4">
+    <form method="get" class="row g-3">
+        <div class="col-md-4">
+            <select name="type" class="form-select">
+                <option value="">All Types</option>
+                <option value="0">CV Analysis</option>
+                <option value="1">CV Generation</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select name="status" class="form-select">
+                <option value="">All Status</option>
+                <option value="0">Queued</option>
+                <option value="1">Running</option>
+                <option value="2">Succeeded</option>
+                <option value="3">Failed</option>
+                <option value="4">Canceled</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+</div>
+
+<div class="stat-card">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Created</th>
+                        <th>Duration</th>
+                        <th>Error</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var job in Model)
+                    {
+                        <tr>
+                            <td>@job.Type</td>
+                            <td>
+                                <span class="badge bg-@(job.Status == ServicePerfectCV.Domain.Enums.JobStatus.Succeeded ? "success" : 
+                                                      job.Status == ServicePerfectCV.Domain.Enums.JobStatus.Failed ? "danger" :
+                                                      job.Status == ServicePerfectCV.Domain.Enums.JobStatus.Running ? "info" :
+                                                      job.Status == ServicePerfectCV.Domain.Enums.JobStatus.Canceled ? "secondary" : "warning")">
+                                    @job.Status
+                                </span>
+                            </td>
+                            <td>@job.Priority</td>
+                            <td>@job.CreatedAt.ToString("MMM dd, HH:mm")</td>
+                            <td>
+                                @if (job.Duration.HasValue)
+                                {
+                                    <span>@job.Duration.Value.TotalSeconds.ToString("F1")s</span>
+                                }
+                                else
+                                {
+                                    <span>-</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(job.ErrorCode))
+                                {
+                                    <span class="text-danger">@job.ErrorCode</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="@Url.Action("Details", new { id = job.Id })" class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <p class="text-muted">No jobs found</p>
+        </div>
+    }
+</div>
+

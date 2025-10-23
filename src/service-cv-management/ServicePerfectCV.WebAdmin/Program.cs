@@ -30,6 +30,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Configure Application Services
 builder.Services.ConfigureAdminServices();
 
+// Add WebAdmin-specific services
+builder.Services.AddScoped<ServicePerfectCV.WebAdmin.Services.ExportService>();
+
 // Add session-based authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

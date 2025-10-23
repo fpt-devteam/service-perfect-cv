@@ -1,0 +1,111 @@
+@model List<ServicePerfectCV.WebAdmin.Models.Settings.JobTitleViewModel>
+@{
+  ViewData["Title"] = "Job Titles";
+  Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>Job Titles</h2>
+    <p class="text-muted">Total: @ViewBag.TotalCount job titles</p>
+  </div>
+  <div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Add Job
+      Title</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Back to Settings</a>
+  </div>
+</div>
+
+<div class="stat-card">
+  @if (Model.Any())
+  {
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Usage Count</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var jobTitle in Model)
+          {
+            <tr>
+              <td><strong>@jobTitle.Name</strong></td>
+              <td><span class="badge bg-info">@jobTitle.UsageCount</span></td>
+              <td>@(jobTitle.CreatedAt?.ToString("MMM dd, yyyy") ?? "N/A")</td>
+              <td>
+                <button type="button" class="btn btn-sm btn-outline-primary"
+                  onclick="editItem('@jobTitle.Id', '@jobTitle.Name')">Edit</button>
+                <form asp-action="DeleteJobTitle" asp-route-id="@jobTitle.Id" method="post" class="d-inline">
+                  @Html.AntiForgeryToken()
+                  <button type="submit" class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('Delete?')">Delete</button>
+                </form>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  else
+  {
+    <p class="text-muted">No job titles found</p>
+  }
+</div>
+
+<div class="modal fade" id="createModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form asp-action="CreateJobTitle" method="post">
+        @Html.AntiForgeryToken()
+        <div class="modal-header">
+          <h5 class="modal-title">Add Job Title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" name="Name" class="form-control" placeholder="Job Title" required />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form asp-action="UpdateJobTitle" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" id="editId" />
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Job Title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" name="Name" id="editName" class="form-control" required />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  <script>
+    function editItem(id, name) {
+      document.getElementById('editId').value = id;
+      document.getElementById('editName').value = name;
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+  </script>
+}

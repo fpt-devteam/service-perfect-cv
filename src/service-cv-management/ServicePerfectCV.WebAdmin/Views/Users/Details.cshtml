@@ -1,0 +1,180 @@
+@model ServicePerfectCV.WebAdmin.Models.Users.UserDetailViewModel
+@{
+    ViewData["Title"] = "User Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>User Details</h2>
+        <p class="text-muted">@Model.Email</p>
+    </div>
+    <div>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+        <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-primary">Edit User</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="stat-card">
+            <h5 class="mb-4">User Information</h5>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Email:</strong></div>
+                <div class="col-sm-8">@Model.Email</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Name:</strong></div>
+                <div class="col-sm-8">@Model.FirstName @Model.LastName</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Role:</strong></div>
+                <div class="col-sm-8">
+                    <span class="badge bg-@(Model.Role == ServicePerfectCV.Domain.Constants.UserRole.Admin ? "danger" : "secondary")">
+                        @Model.Role
+                    </span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Status:</strong></div>
+                <div class="col-sm-8">
+                    <span class="badge bg-@(Model.Status == ServicePerfectCV.Domain.Constants.UserStatus.Active ? "success" : "warning")">
+                        @Model.Status
+                    </span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Auth Method:</strong></div>
+                <div class="col-sm-8">@Model.AuthMethod</div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Credits:</strong></div>
+                <div class="col-sm-8">
+                    <span class="badge bg-info">@(Model.TotalCredit - Model.UsedCredit) / @Model.TotalCredit remaining</span>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-4"><strong>Registered:</strong></div>
+                <div class="col-sm-8">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</div>
+            </div>
+            @if (Model.UpdatedAt.HasValue)
+            {
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Last Updated:</strong></div>
+                    <div class="col-sm-8">@Model.UpdatedAt.Value.ToString("MMM dd, yyyy HH:mm")</div>
+                </div>
+            }
+        </div>
+
+        <div class="stat-card mt-4">
+            <h5 class="mb-4">Recent CVs</h5>
+            @if (Model.RecentCVs.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var cv in Model.RecentCVs)
+                            {
+                                <tr>
+                                    <td>@cv.Title</td>
+                                    <td>
+                                        <span class="badge bg-@(cv.IsStructuredDone ? "success" : "warning")">
+                                            @(cv.IsStructuredDone ? "Structured" : "Pending")
+                                        </span>
+                                    </td>
+                                    <td>@cv.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <a href="@Url.Action("Details", "CVs", new { id = cv.Id })" class="btn btn-sm btn-outline-primary">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No CVs created yet</p>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="stat-card">
+            <h5 class="mb-4">Statistics</h5>
+            <div class="d-flex justify-content-between mb-3">
+                <span>Total CVs:</span>
+                <strong>@Model.CVCount</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span>Devices:</span>
+                <strong>@Model.DeviceCount</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span>Total Spent:</span>
+                <strong>$@Model.TotalSpent.ToString("N2")</strong>
+            </div>
+        </div>
+
+        <div class="stat-card mt-4">
+            <h5 class="mb-4">Quick Actions</h5>
+            <div class="d-grid gap-2">
+                @if (Model.Status == ServicePerfectCV.Domain.Constants.UserStatus.Inactive)
+                {
+                    <form asp-action="ActivateAccount" asp-route-id="@Model.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success w-100">Activate Account</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="DeactivateAccount" asp-route-id="@Model.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-warning w-100" onclick="return confirm('Are you sure you want to deactivate this account?')">Deactivate Account</button>
+                    </form>
+                }
+
+                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addCreditsModal">Add Credits</button>
+
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">Delete User</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Credits Modal -->
+<div class="modal fade" id="addCreditsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="AddCredits" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Credits</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Number of Credits</label>
+                        <input type="number" name="credits" class="form-control" min="1" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Credits</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
