@@ -4,13 +4,30 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj and restore as distinct layers
-COPY ServicePerfectCV.WebAdmin.csproj ./
-RUN dotnet restore "ServicePerfectCV.WebAdmin.csproj"
+# NOTE:
+# This Dockerfile assumes the Docker build CONTEXT contains the sibling projects
+# (ServicePerfectCV.Application, ServicePerfectCV.Infrastructure, ServicePerfectCV.Domain)
+# in the parent directory. If your platform limits the context to only this folder,
+# set your Railway service Root Directory to "src/service-cv-management" instead,
+# or use the monorepo Dockerfile at src/service-cv-management/Dockerfile.
 
-# Copy everything and publish
-COPY . .
-RUN dotnet publish "ServicePerfectCV.WebAdmin.csproj" -c Release -o /app/publish /p:UseAppHost=false
+# 1) Copy project files for layer-cached restore
+COPY ServicePerfectCV.WebAdmin.csproj ServicePerfectCV.WebAdmin/
+COPY ../ServicePerfectCV.Application/ServicePerfectCV.Application.csproj ServicePerfectCV.Application/
+COPY ../ServicePerfectCV.Infrastructure/ServicePerfectCV.Infrastructure.csproj ServicePerfectCV.Infrastructure/
+COPY ../ServicePerfectCV.Domain/ServicePerfectCV.Domain.csproj ServicePerfectCV.Domain/
+
+# 2) Restore dependencies (based on project references)
+RUN dotnet restore ServicePerfectCV.WebAdmin/ServicePerfectCV.WebAdmin.csproj
+
+# 3) Copy source code
+COPY . ServicePerfectCV.WebAdmin/
+COPY ../ServicePerfectCV.Application/ ServicePerfectCV.Application/
+COPY ../ServicePerfectCV.Infrastructure/ ServicePerfectCV.Infrastructure/
+COPY ../ServicePerfectCV.Domain/ ServicePerfectCV.Domain/
+
+# 4) Publish
+RUN dotnet publish ServicePerfectCV.WebAdmin/ServicePerfectCV.WebAdmin.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 # ---- Run stage ----
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
