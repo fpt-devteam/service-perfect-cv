@@ -2,11 +2,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy csproj files (from project root via railway.toml)
-COPY ServicePerfectCV.Domain/ServicePerfectCV.Domain.csproj ServicePerfectCV.Domain/
-COPY ServicePerfectCV.Application/ServicePerfectCV.Application.csproj ServicePerfectCV.Application/
-COPY ServicePerfectCV.Infrastructure/ServicePerfectCV.Infrastructure.csproj ServicePerfectCV.Infrastructure/
-COPY ServicePerfectCV.WebApi/ServicePerfectCV.WebApi.csproj ServicePerfectCV.WebApi/
+# Copy csproj files (from project root via railway setting)
+COPY src/service-cv-management/ServicePerfectCV.Domain/ServicePerfectCV.Domain.csproj ServicePerfectCV.Domain/
+COPY src/service-cv-management/ServicePerfectCV.Application/ServicePerfectCV.Application.csproj ServicePerfectCV.Application/
+COPY src/service-cv-management/ServicePerfectCV.Infrastructure/ServicePerfectCV.Infrastructure.csproj ServicePerfectCV.Infrastructure/
+COPY src/service-cv-management/ServicePerfectCV.WebApi/ServicePerfectCV.WebApi.csproj ServicePerfectCV.WebApi/
 
 # Restore dependencies
 RUN dotnet restore ServicePerfectCV.WebApi/ServicePerfectCV.WebApi.csproj
