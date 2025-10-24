@@ -7,7 +7,7 @@ WORKDIR /src
 COPY src/service-cv-management/ServicePerfectCV.Domain/ServicePerfectCV.Domain.csproj ServicePerfectCV.Domain/
 COPY src/service-cv-management/ServicePerfectCV.Application/ServicePerfectCV.Application.csproj ServicePerfectCV.Application/
 COPY src/service-cv-management/ServicePerfectCV.Infrastructure/ServicePerfectCV.Infrastructure.csproj ServicePerfectCV.Infrastructure/
-COPY src/service-cv-management/ServicePerfectCV.WebApi/ServicePerfectCV.WebApi.csproj ServicePerfectCV.WebAdmin/
+COPY src/service-cv-management/ServicePerfectCV.WebAdmin/ServicePerfectCV.WebAdmin.csproj ServicePerfectCV.WebAdmin/
 
 
 # 2) Restore dependencies (based on project references)
