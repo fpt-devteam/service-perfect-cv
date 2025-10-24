@@ -140,6 +140,101 @@
         }
     };
 
-    console.log('Perfect CV Admin Panel initialized');
+    // Bulk Selection for Tables
+    window.bulkSelection = {
+        selectedIds: new Set(),
+
+        // Initialize bulk selection for a table
+        init: function(tableId) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+
+            // Add select all checkbox to header
+            const selectAllCheckbox = table.querySelector('.select-all-checkbox');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', (e) => {
+                    this.toggleAll(e.target.checked, tableId);
+                });
+            }
+
+            // Add event listeners to all row checkboxes
+            const rowCheckboxes = table.querySelectorAll('.row-checkbox');
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    this.toggleRow(e.target.value, e.target.checked);
+                    this.updateBulkActions();
+                });
+            });
+
+            this.updateBulkActions();
+        },
+
+        // Toggle all rows
+        toggleAll: function(checked, tableId) {
+            const table = document.getElementById(tableId);
+            const rowCheckboxes = table.querySelectorAll('.row-checkbox');
+            
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = checked;
+                this.toggleRow(checkbox.value, checked);
+            });
+
+            this.updateBulkActions();
+        },
+
+        // Toggle individual row
+        toggleRow: function(id, checked) {
+            if (checked) {
+                this.selectedIds.add(id);
+            } else {
+                this.selectedIds.delete(id);
+            }
+        },
+
+        // Update bulk actions UI
+        updateBulkActions: function() {
+            const bulkActionsBar = document.getElementById('bulkActionsBar');
+            const selectedCount = document.getElementById('selectedCount');
+            
+            if (bulkActionsBar && selectedCount) {
+                if (this.selectedIds.size > 0) {
+                    bulkActionsBar.classList.remove('d-none');
+                    selectedCount.textContent = this.selectedIds.size;
+                } else {
+                    bulkActionsBar.classList.add('d-none');
+                }
+            }
+        },
+
+        // Clear all selections
+        clearSelection: function() {
+            this.selectedIds.clear();
+            document.querySelectorAll('.row-checkbox, .select-all-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+            this.updateBulkActions();
+        },
+
+        // Get selected IDs as array
+        getSelectedIds: function() {
+            return Array.from(this.selectedIds);
+        },
+
+        // Perform bulk action
+        performAction: function(action, confirmMessage) {
+            if (this.selectedIds.size === 0) {
+                window.perfectCV.showToast('Please select at least one item', 'warning');
+                return false;
+            }
+
+            if (confirmMessage && !confirm(confirmMessage)) {
+                return false;
+            }
+
+            return true;
+        }
+    };
+
+    console.log('Perfect CV Admin Panel initialized with bulk selection');
 })();
 

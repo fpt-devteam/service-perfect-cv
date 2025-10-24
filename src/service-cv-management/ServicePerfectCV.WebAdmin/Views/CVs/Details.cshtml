@@ -1,0 +1,142 @@
+@model ServicePerfectCV.WebAdmin.Models.CVs.CVDetailViewModel
+@{
+    ViewData["Title"] = "CV Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>@Model.Title</h2>
+        <p class="text-muted">Created by @Model.UserFullName</p>
+    </div>
+    <div>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+        @if (!string.IsNullOrEmpty(Model.PdfFileName))
+        {
+            <a href="@Url.Action("DownloadPdf", new { id = Model.Id })" class="btn btn-info">Download PDF</a>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="stat-card mb-4">
+            <h5>Basic Information</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Status:</strong> <span class="badge bg-@(Model.IsStructuredDone ? "success" : "warning")">@(Model.IsStructuredDone ? "Structured" : "Pending")</span></p>
+                    <p><strong>Created:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>User:</strong> <a href="@Url.Action("Details", "Users", new { id = Model.UserId })">@Model.UserEmail</a></p>
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <p><strong>Updated:</strong> @Model.UpdatedAt.Value.ToString("MMM dd, yyyy HH:mm")</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Contact != null)
+        {
+            <div class="stat-card mb-4">
+                <h5>Contact Information</h5>
+                @if (!string.IsNullOrEmpty(Model.Contact.Email)) { <p><strong>Email:</strong> @Model.Contact.Email</p> }
+                @if (!string.IsNullOrEmpty(Model.Contact.PhoneNumber)) { <p><strong>Phone:</strong> @Model.Contact.PhoneNumber</p> }
+                @if (!string.IsNullOrEmpty(Model.Contact.LinkedInUrl)) { <p><strong>LinkedIn:</strong> <a href="@Model.Contact.LinkedInUrl" target="_blank">@Model.Contact.LinkedInUrl</a></p> }
+                @if (!string.IsNullOrEmpty(Model.Contact.GitHubUrl)) { <p><strong>GitHub:</strong> <a href="@Model.Contact.GitHubUrl" target="_blank">@Model.Contact.GitHubUrl</a></p> }
+                @if (!string.IsNullOrEmpty(Model.Contact.PersonalWebsiteUrl)) { <p><strong>Website:</strong> <a href="@Model.Contact.PersonalWebsiteUrl" target="_blank">@Model.Contact.PersonalWebsiteUrl</a></p> }
+                @if (!string.IsNullOrEmpty(Model.Contact.Country)) { <p><strong>Location:</strong> @Model.Contact.City, @Model.Contact.Country</p> }
+            </div>
+        }
+
+        @if (Model.Summary != null)
+        {
+            <div class="stat-card mb-4">
+                <h5>Summary</h5>
+                <p>@Model.Summary.Content</p>
+            </div>
+        }
+
+        @if (Model.Educations.Any())
+        {
+            <div class="stat-card mb-4">
+                <h5>Education (@Model.Educations.Count)</h5>
+                @foreach (var edu in Model.Educations)
+                {
+                    <div class="mb-3">
+                        <h6>@edu.Degree - @edu.Organization</h6>
+                        <p class="text-muted mb-1">@(edu.StartDate?.ToString("MMM yyyy") ?? "N/A") - @(edu.EndDate?.ToString("MMM yyyy") ?? "Present")</p>
+                        @if (!string.IsNullOrEmpty(edu.FieldOfStudy)) { <p><strong>Field:</strong> @edu.FieldOfStudy</p> }
+                        @if (!string.IsNullOrEmpty(edu.Description)) { <p>@edu.Description</p> }
+                        @if (edu.Gpa.HasValue) { <p><strong>GPA:</strong> @edu.Gpa.Value.ToString("F2")</p> }
+                    </div>
+                }
+            </div>
+        }
+
+        @if (Model.Experiences.Any())
+        {
+            <div class="stat-card mb-4">
+                <h5>Experience (@Model.Experiences.Count)</h5>
+                @foreach (var exp in Model.Experiences)
+                {
+                    <div class="mb-3">
+                        <h6>@exp.JobTitle - @exp.Organization</h6>
+                        <p class="text-muted mb-1">@(exp.StartDate?.ToString("MMM yyyy") ?? "N/A") - @(exp.EndDate?.ToString("MMM yyyy") ?? "Present") | @exp.EmploymentTypeName</p>
+                        @if (!string.IsNullOrEmpty(exp.Location)) { <p><strong>Location:</strong> @exp.Location</p> }
+                        @if (!string.IsNullOrEmpty(exp.Description)) { <p>@exp.Description</p> }
+                    </div>
+                }
+            </div>
+        }
+
+        @if (Model.Skills.Any())
+        {
+            <div class="stat-card mb-4">
+                <h5>Skills (@Model.Skills.Count)</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var skill in Model.Skills)
+                    {
+                        <span class="badge bg-primary">@skill.Category: @skill.Content</span>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (Model.Projects.Any())
+        {
+            <div class="stat-card mb-4">
+                <h5>Projects (@Model.Projects.Count)</h5>
+                @foreach (var project in Model.Projects)
+                {
+                    <div class="mb-3">
+                        <h6>@project.Title</h6>
+                        @if (!string.IsNullOrEmpty(project.Description)) { <p>@project.Description</p> }
+                        @if (!string.IsNullOrEmpty(project.Link)) { <p><strong>Link:</strong> <a href="@project.Link" target="_blank">@project.Link</a></p> }
+                        @if (project.StartDate.HasValue || project.EndDate.HasValue)
+                        {
+                            <p class="text-muted">@(project.StartDate?.ToString("MMM yyyy") ?? "N/A") - @(project.EndDate?.ToString("MMM yyyy") ?? "Present")</p>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        @if (Model.Certifications.Any())
+        {
+            <div class="stat-card mb-4">
+                <h5>Certifications (@Model.Certifications.Count)</h5>
+                @foreach (var cert in Model.Certifications)
+                {
+                    <div class="mb-3">
+                        <h6>@cert.Name - @cert.Organization</h6>
+                        @if (cert.IssuedDate.HasValue) { <p class="text-muted mb-1">Issued: @cert.IssuedDate.Value.ToString("MMM yyyy")</p> }
+                        @if (!string.IsNullOrEmpty(cert.Description)) { <p>@cert.Description</p> }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+

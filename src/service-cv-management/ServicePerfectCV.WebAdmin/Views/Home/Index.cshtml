@@ -1,85 +1,521 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+﻿@model ServicePerfectCV.WebAdmin.Models.Dashboard.DashboardViewModel
+@{
+  ViewData["Title"] = "Dashboard";
+  Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <div class="dashboard-grid">
-    <div class="stat-card">
-        <div class="stat-header">
-            <div class="stat-icon primary">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" 
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-        </div>
-        <div class="stat-value">1,247</div>
-        <div class="stat-label">Total Users</div>
-        <div class="stat-change positive">↑ 12.5% from last month</div>
+  <div class="stat-card">
+    <div class="stat-header">
+      <div class="stat-icon primary">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
     </div>
+    <div class="stat-value">@Model.Stats.TotalUsers.ToString("N0")</div>
+    <div class="stat-label">Total Users (@Model.Stats.ActiveUsers.ToString("N0") Active)</div>
+    <div class="stat-change @(Model.Stats.UserGrowthPercent >= 0 ? "positive" : "negative")">
+      @(Model.Stats.UserGrowthPercent >= 0 ? "↑" : "↓") @Math.Abs(Model.Stats.UserGrowthPercent).ToString("F1")% from
+      last month
+    </div>
+  </div>
 
-    <div class="stat-card">
-        <div class="stat-header">
-            <div class="stat-icon success">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-        </div>
-        <div class="stat-value">3,842</div>
-        <div class="stat-label">CVs Created</div>
-        <div class="stat-change positive">↑ 8.2% from last month</div>
+  <div class="stat-card">
+    <div class="stat-header">
+      <div class="stat-icon success">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
     </div>
+    <div class="stat-value">@Model.Stats.TotalCVs.ToString("N0")</div>
+    <div class="stat-label">CVs Created</div>
+    <div class="stat-change @(Model.Stats.CVGrowthPercent >= 0 ? "positive" : "negative")">
+      @(Model.Stats.CVGrowthPercent >= 0 ? "↑" : "↓") @Math.Abs(Model.Stats.CVGrowthPercent).ToString("F1")% from last
+      month
+    </div>
+  </div>
 
-    <div class="stat-card">
-        <div class="stat-header">
-            <div class="stat-icon warning">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" 
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-        </div>
-        <div class="stat-value">524</div>
-        <div class="stat-label">Active Jobs</div>
-        <div class="stat-change positive">↑ 5.1% from last month</div>
+  <div class="stat-card">
+    <div class="stat-header">
+      <div class="stat-icon warning">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
     </div>
+    <div class="stat-value">@Model.Stats.TotalJobs.ToString("N0")</div>
+    <div class="stat-label">Total Jobs</div>
+    <div class="stat-detail">
+      <small>
+        Queued: @Model.Stats.PendingJobs | Running: @Model.Stats.RunningJobs |
+        Success: @Model.Stats.SucceededJobs | Failed: @Model.Stats.FailedJobs
+      </small>
+    </div>
+  </div>
 
-    <div class="stat-card">
-        <div class="stat-header">
-            <div class="stat-icon info">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" 
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-        </div>
-        <div class="stat-value">89.2%</div>
-        <div class="stat-label">Success Rate</div>
-        <div class="stat-change positive">↑ 2.3% from last month</div>
+  <div class="stat-card">
+    <div class="stat-header">
+      <div class="stat-icon info">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
     </div>
+    <div class="stat-value">@Model.Stats.SuccessRate.ToString("F1")%</div>
+    <div class="stat-label">Job Success Rate</div>
+    <div class="stat-detail">
+      <small>Revenue: $@Model.Stats.TotalRevenue.ToString("N2")</small>
+    </div>
+  </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="stat-card">
-            <h3 class="mb-4">Welcome to Perfect CV Admin</h3>
-            <p class="text-muted mb-4">
-                This is your central hub for managing the Perfect CV platform. Here you can monitor user activity, 
-                manage CVs, process jobs, and view analytics.
-            </p>
-            <div class="alert alert-info">
-                <strong>Quick Tip:</strong> Use the sidebar navigation to access different sections of the admin panel. 
-                Your session will automatically expire after 8 hours of inactivity.
+<div class="row mt-4">
+  <div class="col-lg-8">
+    <div class="stat-card">
+      <h5 class="mb-4">Recent Activity</h5>
+      @if (Model.RecentActivities.Any())
+      {
+        <div class="activity-list">
+          @foreach (var activity in Model.RecentActivities)
+          {
+            <div class="activity-item">
+              <div class="activity-icon bg-@activity.Color">
+                <i class="bi bi-@activity.Icon"></i>
+              </div>
+              <div class="activity-content">
+                <div class="activity-description">
+                  <strong>@activity.Type:</strong> @activity.Description
+                </div>
+                <div class="activity-meta">
+                  <span class="activity-user">@activity.UserEmail</span>
+                  <span class="activity-time">@activity.Timestamp.ToString("MMM dd, HH:mm")</span>
+                </div>
+              </div>
             </div>
+          }
         </div>
+      }
+      else
+      {
+        <p class="text-muted">No recent activity</p>
+      }
     </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="stat-card">
+      <h5 class="mb-4">Top Users</h5>
+      @if (Model.TopUsers.Any())
+      {
+        <div class="top-users-list">
+          @foreach (var user in Model.TopUsers.Take(5))
+          {
+            <div class="top-user-item">
+              <div class="top-user-info">
+                <div class="top-user-name">@user.FullName</div>
+                <div class="top-user-email">@user.Email</div>
+              </div>
+              <div class="top-user-stats">
+                <span class="badge bg-primary">@user.CVCount CVs</span>
+                @if (user.TotalSpent > 0)
+                {
+                  <span class="badge bg-success">$@user.TotalSpent.ToString("N2")</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+      else
+      {
+        <p class="text-muted">No users yet</p>
+      }
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-lg-6">
+    <div class="stat-card">
+      <h5 class="mb-4">User Growth (Last 7 Days)</h5>
+      <canvas id="userGrowthChart" height="250"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="stat-card">
+      <h5 class="mb-4">CV Creation Trends (Last 7 Days)</h5>
+      <canvas id="cvCreationChart" height="250"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-lg-6">
+    <div class="stat-card">
+      <h5 class="mb-4">Job Status Distribution</h5>
+      <canvas id="jobStatusChart" height="250"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="stat-card">
+      <h5 class="mb-4">Revenue Overview (Last 30 Days)</h5>
+      <canvas id="revenueChart" height="250"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Revenue Analytics Section -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="stat-card">
+      <h4 class="mb-4">💰 Revenue Analytics</h4>
+
+      <!-- Revenue Summary Cards -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="revenue-card">
+            <div class="revenue-label">Total Revenue</div>
+            <div class="revenue-value">$@Model.RevenueAnalytics.TotalRevenue.ToString("N2")</div>
+            <div class="revenue-subtitle">All time</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="revenue-card">
+            <div class="revenue-label">Monthly Revenue</div>
+            <div class="revenue-value">$@Model.RevenueAnalytics.MonthlyRevenue.ToString("N2")</div>
+            <div class="revenue-subtitle">This month</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="revenue-card">
+            <div class="revenue-label">Weekly Revenue</div>
+            <div class="revenue-value">$@Model.RevenueAnalytics.WeeklyRevenue.ToString("N2")</div>
+            <div class="revenue-subtitle">Last 7 days</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="revenue-card">
+            <div class="revenue-label">Today's Revenue</div>
+            <div class="revenue-value">$@Model.RevenueAnalytics.TodayRevenue.ToString("N2")</div>
+            <div class="revenue-subtitle">Last 24 hours</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction Metrics -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <div class="metric-box">
+            <span class="metric-label">Total Transactions</span>
+            <span class="metric-value">@Model.RevenueAnalytics.TotalTransactions</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="metric-box">
+            <span class="metric-label">Monthly Transactions</span>
+            <span class="metric-value">@Model.RevenueAnalytics.MonthlyTransactions</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="metric-box">
+            <span class="metric-label">Average Order Value</span>
+            <span class="metric-value">$@Model.RevenueAnalytics.AverageOrderValue.ToString("N2")</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Revenue Breakdown -->
+<div class="row mt-4">
+  <div class="col-lg-6">
+    <div class="stat-card">
+      <h5 class="mb-4">Revenue by Package</h5>
+      @if (Model.RevenueAnalytics.RevenueByPackage.Any())
+      {
+        <canvas id="packageRevenueChart" height="300"></canvas>
+      }
+      else
+      {
+        <p class="text-muted">No revenue data available</p>
+      }
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="stat-card">
+      <h5 class="mb-4">Top Paying Users</h5>
+      @if (Model.RevenueAnalytics.TopPayingUsers.Any())
+      {
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Total Spent</th>
+                <th>Transactions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach (var user in Model.RevenueAnalytics.TopPayingUsers.Take(5))
+              {
+                <tr>
+                  <td>@user.FullName</td>
+                  <td><small>@user.Email</small></td>
+                  <td><strong>$@user.TotalSpent.ToString("N2")</strong></td>
+                  <td>@user.TransactionCount</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+      else
+      {
+        <p class="text-muted">No payment data available</p>
+      }
+    </div>
+  </div>
 </div>
 
 @section Scripts {
-    <script>
-        // Dashboard specific JavaScript
-        console.log('Dashboard loaded');
-    </script>
+  <script>
+    // Dashboard charts data
+    const userGrowthData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.UserGrowthData));
+    const cvCreationData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.CVCreationData));
+
+    // Chart configuration
+    const chartColors = {
+      primary: '#4f46e5',
+      success: '#10b981',
+      warning: '#f59e0b',
+      danger: '#ef4444',
+      info: '#3b82f6',
+      secondary: '#6b7280'
+    };
+
+    // User Growth Chart
+    const userCtx = document.getElementById('userGrowthChart').getContext('2d');
+    const userGrowthChart = new Chart(userCtx, {
+      type: 'line',
+      data: {
+        labels: userGrowthData.map(d => d.date),
+        datasets: [{
+          label: 'New Users',
+          data: userGrowthData.map(d => d.count),
+          borderColor: chartColors.primary,
+          backgroundColor: chartColors.primary + '20',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+
+    // CV Creation Chart
+    const cvCtx = document.getElementById('cvCreationChart').getContext('2d');
+    const cvCreationChart = new Chart(cvCtx, {
+      type: 'bar',
+      data: {
+        labels: cvCreationData.map(d => d.date),
+        datasets: [{
+          label: 'CVs Created',
+          data: cvCreationData.map(d => d.count),
+          backgroundColor: chartColors.success,
+          borderColor: chartColors.success,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        }
+      }
+    });
+
+    // Job Status Distribution Chart
+    const jobCtx = document.getElementById('jobStatusChart').getContext('2d');
+    const jobStatusChart = new Chart(jobCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Pending', 'Running', 'Succeeded', 'Failed'],
+        datasets: [{
+          data: [@Model.Stats.PendingJobs, @Model.Stats.RunningJobs, @Model.Stats.SucceededJobs, @Model.Stats.FailedJobs],
+          backgroundColor: [
+            chartColors.info,
+            chartColors.warning,
+            chartColors.success,
+            chartColors.danger
+          ],
+          borderWidth: 2,
+          borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'right'
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                return label + ': ' + value + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Revenue Chart (Last 30 days - real data)
+    const revenueData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RevenueData));
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+
+    const revenueChart = new Chart(revenueCtx, {
+      type: 'line',
+      data: {
+        labels: revenueData.labels,
+        datasets: [{
+          label: 'Daily Revenue ($)',
+          data: revenueData.values,
+          borderColor: chartColors.success,
+          backgroundColor: chartColors.success + '20',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function (context) {
+                return 'Revenue: $' + context.parsed.y.toFixed(2);
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return '$' + value.toFixed(0);
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Package Revenue Chart
+    @if (Model.RevenueAnalytics.RevenueByPackage.Any())
+      {
+        <text>
+          const packageCtx = document.getElementById('packageRevenueChart').getContext('2d');
+          const packageRevenueChart = new Chart(packageCtx, {
+            type: 'doughnut',
+          data: {
+            labels: [@Html.Raw(string.Join(",", Model.RevenueAnalytics.RevenueByPackage.Select(p => $"'{p.PackageName}'")))],
+          datasets: [{
+            data: [@string.Join(",", Model.RevenueAnalytics.RevenueByPackage.Select(p => p.Revenue))],
+          backgroundColor: [
+          chartColors.primary,
+          chartColors.success,
+          chartColors.warning,
+          chartColors.danger,
+          chartColors.info,
+          chartColors.secondary
+          ],
+          borderWidth: 2,
+          borderColor: '#fff'
+                        }]
+                    },
+          options: {
+            responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+            display: true,
+          position: 'right'
+                            },
+          tooltip: {
+            callbacks: {
+            label: function(context) {
+                                        const label = context.label || '';
+          const value = context.parsed || 0;
+          const percentage = [@string.Join(",", Model.RevenueAnalytics.RevenueByPackage.Select(p => p.Percentage))][context.dataIndex];
+          return label + ': $' + value.toFixed(2) + ' (' + percentage.toFixed(1) + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+        </text>
+    }
+
+      console.log('Dashboard loaded with charts and revenue analytics!');
+  </script>
 }

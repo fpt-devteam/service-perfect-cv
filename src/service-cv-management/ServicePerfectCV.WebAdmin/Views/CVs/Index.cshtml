@@ -1,0 +1,186 @@
+@model List<ServicePerfectCV.WebAdmin.Models.CVs.CVListViewModel>
+@{
+    ViewData["Title"] = "CVs Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>CVs Management</h2>
+        <p class="text-muted">Total: @ViewBag.TotalCount CVs</p>
+    </div>
+    <div>
+        <a asp-action="Export" 
+           asp-route-search="@ViewData["CurrentSearch"]" 
+           asp-route-isStructuredDone="@ViewData["CurrentStructured"]" 
+           class="btn btn-success">
+            <i class="bi bi-download"></i> Export to CSV
+        </a>
+    </div>
+</div>
+
+<div class="stat-card mb-4">
+    <form method="get" class="row g-3">
+        <div class="col-md-6">
+            <input type="text" name="search" class="form-control" placeholder="Search by title, user email, or name..." value="@ViewData["CurrentSearch"]" />
+        </div>
+        <div class="col-md-4">
+            <select name="isStructuredDone" class="form-select">
+                <option value="">All CVs</option>
+                <option value="true">Structured</option>
+                <option value="false">Pending</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+</div>
+
+<!-- Bulk Actions Bar -->
+<div id="bulkActionsBar" class="alert alert-info d-none mb-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <strong><span id="selectedCount">0</span></strong> item(s) selected
+        </div>
+        <div>
+            <button type="button" class="btn btn-sm btn-danger" onclick="bulkDeleteCVs()">
+                <i class="bi bi-trash"></i> Delete Selected
+            </button>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="bulkSelection.clearSelection()">
+                Clear Selection
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="stat-card">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table id="cvsTable" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" class="form-check-input select-all-checkbox" />
+                        </th>
+                        <th>Title</th>
+                        <th>User</th>
+                        <th>Status</th>
+                        <th>Sections</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cv in Model)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="form-check-input row-checkbox" value="@cv.Id" />
+                            </td>
+                            <td>
+                                <strong>@cv.Title</strong>
+                                @if (cv.HasPdf)
+                                {
+                                    <span class="badge bg-info ms-2">PDF</span>
+                                }
+                            </td>
+                            <td>
+                                <div>@cv.UserFullName</div>
+                                <small class="text-muted">@cv.UserEmail</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-@(cv.IsStructuredDone ? "success" : "warning")">
+                                    @(cv.IsStructuredDone ? "Structured" : "Pending")
+                                </span>
+                            </td>
+                            <td>
+                                <small>
+                                    Edu: @cv.EducationCount | Exp: @cv.ExperienceCount<br/>
+                                    Skills: @cv.SkillCount | Projects: @cv.ProjectCount
+                                </small>
+                            </td>
+                            <td>@cv.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="@Url.Action("Details", new { id = cv.Id })" class="btn btn-outline-primary">View</a>
+                                    @if (cv.HasPdf)
+                                    {
+                                        <a href="@Url.Action("DownloadPdf", new { id = cv.Id })" class="btn btn-outline-info">PDF</a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (ViewBag.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == (int)ViewData["CurrentPage"]! ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <p class="text-muted">No CVs found</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize bulk selection
+        document.addEventListener('DOMContentLoaded', function() {
+            bulkSelection.init('cvsTable');
+        });
+
+        // Bulk delete CVs function
+        async function bulkDeleteCVs() {
+            if (!bulkSelection.performAction('delete', 
+                `Are you sure you want to delete ${bulkSelection.selectedIds.size} selected CV(s)? This action cannot be undone.`)) {
+                return;
+            }
+
+            const selectedIds = bulkSelection.getSelectedIds();
+            
+            try {
+                window.perfectCV.showLoading();
+                
+                const response = await fetch('@Url.Action("BulkDelete", "CVs")', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    },
+                    body: JSON.stringify({ ids: selectedIds })
+                });
+
+                window.perfectCV.hideLoading();
+
+                if (response.ok) {
+                    window.perfectCV.showToast('CVs deleted successfully', 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    const error = await response.text();
+                    window.perfectCV.showToast('Error deleting CVs: ' + error, 'danger');
+                }
+            } catch (error) {
+                window.perfectCV.hideLoading();
+                window.perfectCV.showToast('Error: ' + error.message, 'danger');
+            }
+        }
+    </script>
+}
+
