@@ -104,7 +104,7 @@ namespace ServicePerfectCV.Infrastructure.Services.OAuth
                     Status = UserStatus.Active,
                     AuthMethod = Domain.Enums.AuthenticationMethod.Google,
                     Role = UserRole.User,
-                    TotalCredit = 10, // Initial credit
+                    TotalCredit = 3, // Initial credit
                     UsedCredit = 0,
                     PasswordHash = "",
                     CreatedAt = DateTime.UtcNow,
