@@ -262,19 +262,24 @@ namespace ServicePerfectCV.Application.Services
 
         /// <summary>
         /// Generate unique order code using timestamp + random number to avoid collisions
-        /// Format: Unix timestamp (10 digits) + Random 3-digit number
-        /// Result: 13-digit unique number that fits in int32 range
+        /// Format: Unix timestamp + Random 3-digit number
+        /// Result: 10-digit positive number that fits safely in int32 range (max: ~2.1 billion)
         /// </summary>
         private static int GenerateUniqueOrderCode()
         {
             long timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
-            int timestampPart = (int)(timestamp % 10000000); // 7 digits max
+            // Giảm xuống 2 triệu (7 chữ số) để tránh overflow khi nhân 1000
+            // 2,147,483 * 1000 + 999 = 2,147,483,999 < int.MaxValue (2,147,483,647)
+            int timestampPart = (int)(timestamp % 2147483); // An toàn cho int32
 
             Random random = new Random();
-            int randomPart = random.Next(100, 1000); // 3 digits
+            int randomPart = random.Next(100, 1000); // 3 chữ số (100-999)
 
-            return timestampPart * 1000 + randomPart;
+            int orderCode = timestampPart * 1000 + randomPart;
+
+            // Double check - đảm bảo 100% dương
+            return Math.Abs(orderCode);
         }
     }
 }
